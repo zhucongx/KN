@@ -21,8 +21,8 @@ add_subdirectory(external/keras2cpp)
 file(GLOB KN_SRC
         ${KN_SOURCE_DIR}/*.cpp
         ${KN_INCLUDE_DIR}/*)
-add_executable(KN ${KN_SRC})
-
+add_executable(${PROJECT_NAME} ${KN_SRC})
+#add_executable(${PROJECT_NAME} src/Atom.cpp src/Configuration.cpp)
 
 include(FindPkgConfig)
 
