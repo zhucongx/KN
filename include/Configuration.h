@@ -5,6 +5,10 @@
 #ifndef _CONFIGURATION_H_
 #define _CONFIGURATION_H_
 
+
+#include <string>
+#include <fstream>
+#include <array>
 #include <vector>
 #include "Atom.h"
 
@@ -26,6 +30,15 @@ class Configuration {
  public:
   Configuration();
   ~Configuration();
+  bool operator<(const Configuration &rhs) const;
+  bool operator>(const Configuration &rhs) const;
+  bool operator<=(const Configuration &rhs) const;
+  bool operator>=(const Configuration &rhs) const;
+
+  void readLammpsData(const string & fileName);
+  void readConfig(const string & fileName);
+  void readPOSCAR(const string & fileName);
+
 };
 
 #endif //KN_SRC_CONFIGURATION_H_
