@@ -1,6 +1,8 @@
-bin/*
-obj/*
-lib/*
+bin/
+obj/
+lib/
 prod/
 build/
 .idea/
+.DS_Store
+
