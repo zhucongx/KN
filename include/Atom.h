@@ -6,44 +6,61 @@
 #define _ATOM_H_
 
 #include <string>
+#include <fstream>
 #include <array>
 #include <vector>
+#include "armadillo"
 
-using std::vector;
-using std::string;
-using std::array;
 // For FCC the first nearest neighbor is 12
 #define firstNearestNbr 12
 // 3D simulation
 #define dimension 3
+enum { XX = 0, YY = 1, ZZ = 2, XY = 3, YZ = 4, ZX = 5 };
+enum { X = 0, Y = 1, Z = 2 };
 
 class Atom {
  private:
   // atom id which is an unique int for every atom indexed form 0
   int id;
-  string type;
+  double mass{};
+  std::string type;
   // real position
-  double position[dimension];
+  double pst[dimension]{};
   // relative position in the box
-  double relativePosition[dimension];
+  double prl[dimension]{};
   //
-  vector<int> nearNbrList;
+  std::vector<int> nearNbrList;
   // First nearest neighbor list
-  array<int, firstNearestNbr> firstNearestNbrList;
+  std::array<int, firstNearestNbr> firstNearestNbrList{};
  public:
   Atom();
-  Atom(int inId);
-  Atom(int inId, double x, double y, double z);
-  Atom(int inId, const string &inType, double x, double y, double z);
-  ~Atom();
+  Atom(int i);
+  Atom(int i, std::string tp);
+  // Atom(int i, double x, double y, double z);
+  Atom(int i, double m, std::string tp, double x, double y, double z);
+  virtual ~Atom();
   bool operator<(const Atom &rhs) const;
   bool operator>(const Atom &rhs) const;
   bool operator<=(const Atom &rhs) const;
   bool operator>=(const Atom &rhs) const;
+
   int getId() const;
-  void setId(int id);
-  const string &getType() const;
-  void setType(const string &type);
+  void setId(int i);
+  const std::string &getType() const;
+  void setType(const std::string &tp);
+  double findMass() const;
+
+  void cnvPrl2Pst(const std::array<double, 3> &bvx,
+                  const std::array<double, 3> &bvy,
+                  const std::array<double, 3> &bvz);
+  void cnvPst2Prl(const arma::mat&);
+
+  bool readConfig(std::ifstream &ifs);
+  void writeConfig(std::ofstream &ofs) const;
+  bool readPOSCARDirect(std::ifstream &ifs);
+  bool readPOSCARCartesian(std::ifstream &ifs);
 };
+
+#include "Elem.inl"
 
 #endif //_ATOMCLASS_H_
