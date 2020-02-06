@@ -18,7 +18,6 @@ bool Configuration::operator<=(const Configuration &rhs) const {
 bool Configuration::operator>=(const Configuration &rhs) const {
   return !(*this < rhs);
 }
-
 void Configuration::cnvPrl2Pst() {
   for (auto &atm:atoms) {
     atm.cnvPrl2Pst(bvx, bvy, bvz);
@@ -33,8 +32,7 @@ void Configuration::cnvPst2Prl() {
     atm.cnvPst2Prl(bm);
   }
 }
-
-bool Configuration::readLammpsData(const std::string &fileName) {;}
+bool Configuration::readLammpsData(const std::string &fileName) {}
 bool Configuration::readConfig(const std::string &fileName) {
   std::ifstream ifs(fileName, std::ifstream::in);
   if (ifs.fail()) { return false; }
@@ -72,29 +70,9 @@ bool Configuration::readConfig(const std::string &fileName) {
     if (!atm.readConfig(ifs)) { return false; }
     atoms.push_back(atm);
   }
-
   ifs.close();
+  cnvPrl2Pst();
   return true;
-}
-void Configuration::writeConfig(const std::string &fileName = "Config") const {
-  std::ofstream ofs(fileName, std::ofstream::out);
-  ofs << "Number of particles = " << numAtoms << std::endl;
-  ofs << "A = 1.0 Angstrom (basic length-scale)" << std::endl;
-  ofs << "H0(1,1) = " << bvx[X] << " A" << std::endl;
-  ofs << "H0(1,2) = " << bvx[Y] << " A" << std::endl;
-  ofs << "H0(1,3) = " << bvx[Z] << " A" << std::endl;
-  ofs << "H0(2,1) = " << bvy[X] << " A" << std::endl;
-  ofs << "H0(2,2) = " << bvy[Y] << " A" << std::endl;
-  ofs << "H0(2,3) = " << bvy[Z] << " A" << std::endl;
-  ofs << "H0(3,1) = " << bvz[X] << " A" << std::endl;
-  ofs << "H0(3,2) = " << bvz[Y] << " A" << std::endl;
-  ofs << "H0(3,3) = " << bvz[Z] << " A" << std::endl;
-  ofs << ".NO_VELOCITY." << std::endl;
-  ofs << "entry_count = 3" << std::endl;
-  for (const auto &atm : atoms) {
-    atm.writeConfig(ofs);
-  }
-  ofs.close();
 }
 bool Configuration::readPOSCAR(const std::string &fileName) {
   std::ifstream ifs(fileName, std::ifstream::in);
@@ -123,37 +101,79 @@ bool Configuration::readPOSCAR(const std::string &fileName) {
   std::vector<int> elemCounts;
   int count;
   std::istringstream countIss(line);
-  while (countIss >> count) {
-    elemCounts.push_back(count);
-  }
+  while (countIss >> count) { elemCounts.push_back(count); }
   numAtoms = accumulate(elemCounts.begin(), elemCounts.end(), 0);
+
   if (!getline(ifs, line)) { return false; }
-  if (line[0] == 'D' || line[0] == 'd') {
-    int idCount = 0;
-    for (int i = 0; i < elemCounts.size(); i++) {
-      for (int j = 0; j < elemCounts[i]; j++) {
-        Atom atm(idCount, elemNames[i]);
-        idCount++;
-        atm.readPOSCARDirect(ifs);
-        atoms.push_back(atm);
-      }
+  bool relOpt;
+  if (line[0] == 'D' || line[0] == 'd') { relOpt = true; }
+  else if (line[0] == 'C' || line[0] == 'c') { relOpt = false; }
+  else { return false; }
+
+  int idCount = 0;
+  for (int i = 0; i < elemCounts.size(); i++) {
+    for (int j = 0; j < elemCounts[i]; j++) {
+      Atom atm(idCount, elemNames[i]);
+      idCount++;
+      atm.readPOSCAR(ifs, relOpt);
+      atoms.push_back(atm);
     }
-    cnvPrl2Pst();
-  } else if (line[0] == 'C' || line[0] == 'c') {
-    int idCount = 0;
-    for (int i = 0; i < elemCounts.size(); i++) {
-      for (int j = 0; j < elemCounts[i]; j++) {
-        Atom atm(idCount, elemNames[i]);
-        idCount++;
-        atm.readPOSCARCartesian(ifs);
-        atoms.push_back(atm);
-      }
-    }
-    cnvPst2Prl();
-  } else { return false; }
+  }
+  if (relOpt) { cnvPrl2Pst(); } else { cnvPst2Prl(); }
   ifs.close();
   return true;
 }
+void Configuration::writeConfig(const std::string &fileName) const {
+  std::ofstream ofs(fileName, std::ofstream::out);
+  ofs << "Number of particles = " << numAtoms << std::endl;
+  ofs << "A = 1.0 Angstrom (basic length-scale)" << std::endl;
+  ofs << "H0(1,1) = " << bvx[X] << " A" << std::endl;
+  ofs << "H0(1,2) = " << bvx[Y] << " A" << std::endl;
+  ofs << "H0(1,3) = " << bvx[Z] << " A" << std::endl;
+  ofs << "H0(2,1) = " << bvy[X] << " A" << std::endl;
+  ofs << "H0(2,2) = " << bvy[Y] << " A" << std::endl;
+  ofs << "H0(2,3) = " << bvy[Z] << " A" << std::endl;
+  ofs << "H0(3,1) = " << bvz[X] << " A" << std::endl;
+  ofs << "H0(3,2) = " << bvz[Y] << " A" << std::endl;
+  ofs << "H0(3,3) = " << bvz[Z] << " A" << std::endl;
+  ofs << ".NO_VELOCITY." << std::endl;
+  ofs << "entry_count = 3" << std::endl;
+  for (const auto &atm : atoms) {
+    atm.writeConfig(ofs);
+  }
+  ofs.close();
+}
+void Configuration::writePOSCAR(const std::string &fileName,
+                                const bool &vacOption) const {
+  std::ofstream ofs(fileName, std::ofstream::out);
+  ofs << "#comment" << std::endl << "1.00000" << std::endl;
+  ofs << bvx[X] << " " << bvx[Y] << " " << bvx[Z] << std::endl;
+  ofs << bvy[X] << " " << bvy[Y] << " " << bvy[Z] << std::endl;
+  ofs << bvz[X] << " " << bvz[Y] << " " << bvz[Z] << std::endl;
+
+  std::map<std::string, int> elemCounts;
+  for (const auto &atm : atoms) {
+    elemCounts[atm.getType()]++;
+  }
+
+  std::ostringstream eleOss, countOss;
+  for (const auto &elemCount:elemCounts) {
+    if (!vacOption || elemCount.first != "X") {
+      eleOss << elemCount.first << " ";
+      countOss << elemCount.second << " ";
+    }
+  }
+  ofs << eleOss.str() << std::endl << countOss.str() << std::endl;
+  ofs << "Direct"<<std::endl;
+  for (const auto &atm : atoms) {
+    if (!vacOption || atm.getType() != "X") {
+      atm.writePrl(ofs);
+    }
+  }
+  ofs.close();
+}
+
+
 
 
 

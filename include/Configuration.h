@@ -42,8 +42,13 @@ class Configuration {
 
   bool readLammpsData(const std::string &fileName);
   bool readConfig(const std::string &fileName);
-  void writeConfig(const std::string &fileName) const;
   bool readPOSCAR(const std::string &fileName);
+
+  void writeConfig(const std::string &fileName) const;
+  // Write Configuration out as POSCAR file. If the vacOption is true, output
+  // will have "X" for visualization. If false, vacancies will be ignored for
+  // VASP calculation.
+  void writePOSCAR(const std::string &fileName, const bool &vacOption) const;
 };
 
 #endif //KN_SRC_CONFIGURATION_H_

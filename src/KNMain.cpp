@@ -6,12 +6,19 @@
 
 int main(int argc, char *argv[]) {
   Configuration test;
-  test.readConfig("test");
-  test.writeConfig("test1");
-  test.cnvPrl2Pst();
-  test.cnvPst2Prl();
+  test.readConfig("test.conf");
+  // test.writeConfig("test1");
+  // test.cnvPrl2Pst();
+  // test.cnvPst2Prl();
 
-
-  test.writeConfig("test2");
+  // test.readPOSCAR("test.pos");
+  test.writePOSCAR("test2",false);
   return 1;
 }
+
+/***
+vacO X
+T    T    T
+T    F
+
+***/

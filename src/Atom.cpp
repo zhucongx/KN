@@ -86,19 +86,23 @@ bool Atom::readConfig(std::ifstream &ifs) {
   return true;
 }
 void Atom::writeConfig(std::ofstream &ofs) const {
-  ofs << ((mass > 0) ? mass : findMass()) << std::endl << type << std::endl
-      << prl[X] << " " << prl[Y] << " " << prl[Z] << std::endl;
+  ofs << ((mass > 0) ? mass : findMass()) << std::endl << type << std::endl;
+  writePrl(ofs);
 }
-bool Atom::readPOSCARDirect(std::ifstream &ifs) {
+// Read from POSCAR file to atom. If Direct meaning relative position,
+// relativeOption should be true. If Cartesian meaning real position,
+// relativeOption should be false.
+bool Atom::readPOSCAR(std::ifstream &ifs, const bool &relativeOption) {
   std::string line;
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf %lf %lf", &prl[X], &prl[Y], &prl[Z]);
-  return true;
-}
-bool Atom::readPOSCARCartesian(std::ifstream &ifs) {
-  std::string line;
-  if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf %lf %lf", &pst[X], &pst[Y], &pst[Z]);
+  if (relativeOption) {
+    sscanf(line.c_str(), "%lf %lf %lf", &prl[X], &prl[Y], &prl[Z]);
+  } else {
+    sscanf(line.c_str(), "%lf %lf %lf", &pst[X], &pst[Y], &pst[Z]);
+  }
   return true;
 }
 
+void Atom::writePrl(std::ofstream &ofs) const {
+  ofs << prl[X] << " " << prl[Y] << " " << prl[Z] << std::endl;
+}

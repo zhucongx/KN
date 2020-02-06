@@ -57,8 +57,8 @@ class Atom {
 
   bool readConfig(std::ifstream &ifs);
   void writeConfig(std::ofstream &ofs) const;
-  bool readPOSCARDirect(std::ifstream &ifs);
-  bool readPOSCARCartesian(std::ifstream &ifs);
+  bool readPOSCAR(std::ifstream &ifs, const bool&realOption);
+  void writePrl(std::ofstream &ofs) const;
 };
 
 #include "Elem.inl"
