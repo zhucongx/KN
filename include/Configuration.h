@@ -26,7 +26,8 @@ class Configuration {
   std::array<double, 3> length{};
   // bvx, bvy, bvz form a matrix matching the matrix in Config and POSCAR file
   // representing three Bravais lattice vector
-  std::array<double, 3> bvx{}, bvy{}, bvz{}, tvx{}, tvy{}, tvz{};
+  std::array<double, 3> bvx{}, bvy{}, bvz{};
+  std::array<double, 3> tvx{}, tvy{}, tvz{};
   std::vector<Atom> atoms;
   std::vector<int> vacList;
  public:
@@ -40,15 +41,17 @@ class Configuration {
   void cnvPrl2Pst();
   void cnvPst2Prl();
 
-  bool readLammpsData(const std::string &fileName);
+  bool readLammps(const std::string &fileName);
   bool readConfig(const std::string &fileName);
   bool readPOSCAR(const std::string &fileName);
 
-  void writeConfig(const std::string &fileName) const;
+  void writeConfig(const std::string &fileName = "config") const;
   // Write Configuration out as POSCAR file. If the vacOption is true, output
   // will have "X" for visualization. If false, vacancies will be ignored for
   // VASP calculation.
-  void writePOSCAR(const std::string &fileName, const bool &vacOption) const;
+  void writePOSCAR(const std::string &fileName = "POSCAR",
+                   const bool &vacOption = false) const;
+  void writeLammps(const std::string &fileName) const;
 };
 
 #endif //KN_SRC_CONFIGURATION_H_

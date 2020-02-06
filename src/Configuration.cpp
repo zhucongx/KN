@@ -32,7 +32,12 @@ void Configuration::cnvPst2Prl() {
     atm.cnvPst2Prl(bm);
   }
 }
-bool Configuration::readLammpsData(const std::string &fileName) {}
+// bool Configuration::readLammps(const std::string &fileName) {
+//   std::ifstream ifs(fileName, std::ifstream::in);
+//   if (ifs.fail()) { return false; }
+//   std::string line;
+//   if (!getline(ifs, line)) { return false; }
+// }
 bool Configuration::readConfig(const std::string &fileName) {
   std::ifstream ifs(fileName, std::ifstream::in);
   if (ifs.fail()) { return false; }
@@ -164,7 +169,7 @@ void Configuration::writePOSCAR(const std::string &fileName,
     }
   }
   ofs << eleOss.str() << std::endl << countOss.str() << std::endl;
-  ofs << "Direct"<<std::endl;
+  ofs << "Direct" << std::endl;
   for (const auto &atm : atoms) {
     if (!vacOption || atm.getType() != "X") {
       atm.writePrl(ofs);
@@ -172,8 +177,8 @@ void Configuration::writePOSCAR(const std::string &fileName,
   }
   ofs.close();
 }
-
-
-
-
+// void Configuration::writeLammps(const std::string &fileName) const {
+//   std::ofstream ofs(fileName, std::ofstream::out);
+//   ofs<<"LAMMPS Description" << endl <<
+// }
 
