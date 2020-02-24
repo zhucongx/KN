@@ -1,8 +1,16 @@
-/* -----------------------------------------------------------------------------
+
+/* --------------------------------------------------------------------------
  * Atomic weight data taken from:
  * Pure Appl. Chem., Vol. 83, No. 2, pp. 359–396, 2011.
  * Atomic weights of the elements 2009 (IUPAC Technical Report)
- * ---------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------- */
+#ifndef _ELEMINFO_H_
+#define _ELEMINFO_H_
+
+#include <string>
+#include <vector>
+
+namespace ElemInfo {
 const std::vector<double> massList = {
     0.,                                                              // Vacancy
     1.00797,     4.0026,      6.939,       9.012182,    10.811,      // H  - B
@@ -29,7 +37,6 @@ const std::vector<double> massList = {
     263.12,      262.12,      265.,        266.,        269.,        // Sg - Ds
     272.,        285.                                                // Rg - Cn
 };
-
 const std::vector<std::string> elementList = {
     "X",
     "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne",
@@ -45,7 +52,6 @@ const std::vector<std::string> elementList = {
     "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds",
     "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Os"
 };
-
 const std::vector<int> atomicNumList = {
     0,
     1,   2,   3,   4,   5,   6,   7,   8,   9,   10,
@@ -61,3 +67,7 @@ const std::vector<int> atomicNumList = {
     101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
     111, 112, 113, 114, 115, 116, 117, 118
 };
+double findMass(const std::string elem);
+double findMass(const int atomicNum);
+} // namespace ElemInfo
+#endif //_ELEMINFO_H_

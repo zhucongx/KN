@@ -1,44 +1,42 @@
 //
-//CreatedbyZhucongXion1/31/20.
+// Created by Zhucong Xi on 1/31/20.
 //
+#include"Config.h"
 
-#include"Configuration.h"
+Config::Config() : numAtoms(0), energy(0.0) {
+}
+Config::~Config() = default;
 
-Configuration::Configuration() : numAtoms(0), numTypes(0), energy(0.0) {}
-Configuration::~Configuration() = default;
-bool Configuration::operator<(const Configuration &rhs) const {
+void Config::clear(){
+  numAtoms = 0;
+  energy = 0;
+  bvx.fill(0);
+  bvy.fill(0);
+  bvz.fill(0);
+  atoms.clear();
+}
+
+bool Config::operator<(const Config &rhs) const {
   return energy < rhs.energy;
 }
-bool Configuration::operator>(const Configuration &rhs) const {
-  return rhs < *this;
-}
-bool Configuration::operator<=(const Configuration &rhs) const {
-  return !(rhs < *this);
-}
-bool Configuration::operator>=(const Configuration &rhs) const {
-  return !(*this < rhs);
-}
-void Configuration::cnvPrl2Pst() {
+
+void Config::cnvPrl2Pst() {
   for (auto &atm:atoms) {
     atm.cnvPrl2Pst(bvx, bvy, bvz);
   }
 }
-void Configuration::cnvPst2Prl() {
+void Config::cnvPst2Prl() {
   arma::mat bm = {{bvx[0], bvx[1], bvx[2]},
                   {bvy[0], bvy[1], bvy[2]},
                   {bvz[0], bvz[1], bvz[2]}};
-
   for (auto &atm:atoms) {
     atm.cnvPst2Prl(bm);
   }
 }
-// bool Configuration::readLammps(const std::string &fileName) {
-//   std::ifstream ifs(fileName, std::ifstream::in);
-//   if (ifs.fail()) { return false; }
-//   std::string line;
-//   if (!getline(ifs, line)) { return false; }
-// }
-bool Configuration::readConfig(const std::string &fileName) {
+
+
+bool Config::readConfig(const std::string &fileName) {
+  clear();
   std::ifstream ifs(fileName, std::ifstream::in);
   if (ifs.fail()) { return false; }
   std::string line;
@@ -69,9 +67,17 @@ bool Configuration::readConfig(const std::string &fileName) {
   if (!getline(ifs, line)) { return false; }
   int entry = 3;
   sscanf(line.c_str(), "entry_count = %i", &entry);
-
-  for (int i = 0; i < numAtoms; i++) {
-    Atom atm;
+  for (int i = 0; i < numAtoms; ++i) {
+    // double mass, prlX, prlY, prlZ;;
+    // std::string type;
+    // if (!getline(ifs, line)) { return false; }
+    // sscanf(line.c_str(), "%lf", &mass);
+    // if (!getline(ifs, line)) { return false; }
+    // type = line;
+    // if (!getline(ifs, line)) { return false; }
+    // sscanf(line.c_str(), "%lf %lf %lf", &prlX, &prlY, &prlZ);
+    // atoms.emplace_back(i,mass,type,prlX,prlY,prlZ);
+    Atom atm(i);
     if (!atm.readConfig(ifs)) { return false; }
     atoms.push_back(atm);
   }
@@ -79,7 +85,8 @@ bool Configuration::readConfig(const std::string &fileName) {
   cnvPrl2Pst();
   return true;
 }
-bool Configuration::readPOSCAR(const std::string &fileName) {
+bool Config::readPOSCAR(const std::string &fileName) {
+  clear();
   std::ifstream ifs(fileName, std::ifstream::in);
   if (ifs.fail()) { return false; }
   std::string line;
@@ -93,7 +100,6 @@ bool Configuration::readPOSCAR(const std::string &fileName) {
   sscanf(line.c_str(), "%lf %lf %lf", &bvy[X], &bvy[Y], &bvy[Z]);
   if (!getline(ifs, line)) { return false; }
   sscanf(line.c_str(), "%lf %lf %lf", &bvz[X], &bvz[Y], &bvz[Z]);
-
   if (!getline(ifs, line)) { return false; }
   std::vector<std::string> elemNames;
   std::string elem;
@@ -101,25 +107,22 @@ bool Configuration::readPOSCAR(const std::string &fileName) {
   while (eleIss >> elem) {
     elemNames.push_back(elem);
   }
-
   if (!getline(ifs, line)) { return false; }
   std::vector<int> elemCounts;
   int count;
   std::istringstream countIss(line);
   while (countIss >> count) { elemCounts.push_back(count); }
   numAtoms = accumulate(elemCounts.begin(), elemCounts.end(), 0);
-
   if (!getline(ifs, line)) { return false; }
   bool relOpt;
   if (line[0] == 'D' || line[0] == 'd') { relOpt = true; }
   else if (line[0] == 'C' || line[0] == 'c') { relOpt = false; }
   else { return false; }
-
   int idCount = 0;
-  for (int i = 0; i < elemCounts.size(); i++) {
-    for (int j = 0; j < elemCounts[i]; j++) {
-      Atom atm(idCount, elemNames[i]);
-      idCount++;
+  for (int i = 0; i < elemNames.size(); ++i) {
+    double mass = ElemInfo::findMass(elemNames[i]);
+    for (int j = 0; j < elemCounts[i]; ++j) {
+      Atom atm(idCount++, mass, elemNames[i]);
       atm.readPOSCAR(ifs, relOpt);
       atoms.push_back(atm);
     }
@@ -128,7 +131,7 @@ bool Configuration::readPOSCAR(const std::string &fileName) {
   ifs.close();
   return true;
 }
-void Configuration::writeConfig(const std::string &fileName) const {
+void Config::writeConfig(const std::string &fileName) const {
   std::ofstream ofs(fileName, std::ofstream::out);
   ofs << "Number of particles = " << numAtoms << std::endl;
   ofs << "A = 1.0 Angstrom (basic length-scale)" << std::endl;
@@ -148,19 +151,17 @@ void Configuration::writeConfig(const std::string &fileName) const {
   }
   ofs.close();
 }
-void Configuration::writePOSCAR(const std::string &fileName,
-                                const bool &vacOption) const {
+void Config::writePOSCAR(const std::string &fileName,
+                         const bool &vacOption) const {
   std::ofstream ofs(fileName, std::ofstream::out);
   ofs << "#comment" << std::endl << "1.00000" << std::endl;
   ofs << bvx[X] << " " << bvx[Y] << " " << bvx[Z] << std::endl;
   ofs << bvy[X] << " " << bvy[Y] << " " << bvy[Z] << std::endl;
   ofs << bvz[X] << " " << bvz[Y] << " " << bvz[Z] << std::endl;
-
   std::map<std::string, int> elemCounts;
   for (const auto &atm : atoms) {
     elemCounts[atm.getType()]++;
   }
-
   std::ostringstream eleOss, countOss;
   for (const auto &elemCount:elemCounts) {
     if (!vacOption || elemCount.first != "X") {
@@ -177,8 +178,4 @@ void Configuration::writePOSCAR(const std::string &fileName,
   }
   ofs.close();
 }
-// void Configuration::writeLammps(const std::string &fileName) const {
-//   std::ofstream ofs(fileName, std::ofstream::out);
-//   ofs<<"LAMMPS Description" << endl <<
-// }
 

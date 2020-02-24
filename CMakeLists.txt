@@ -18,7 +18,7 @@ add_subdirectory(external/keras2cpp)
 
 file(GLOB KN_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp
-        ${PROJECT_SOURCE_DIR}/include/*.h)
+        ${PROJECT_SOURCE_DIR}/include/*)
 add_executable(${PROJECT_NAME} ${KN_SRC})
 
 

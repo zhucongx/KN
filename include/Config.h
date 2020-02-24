@@ -2,8 +2,8 @@
 // Created by Zhucong Xi on 1/31/20.
 //
 
-#ifndef _CONFIGURATION_H_
-#define _CONFIGURATION_H_
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
 #include <string>
 #include <fstream>
@@ -13,45 +13,47 @@
 #include <array>
 #include <vector>
 #include "armadillo"
+#include "FCCEmbededCluster.h"
 #include "Atom.h"
 
-class Configuration {
+
+class Config {
  private:
   int numAtoms;
-  int numTypes;
   double energy;
   // lowx, lowy, lowz, highx, highy, highz, xy xz yz
-  std::array<double, 9> cell{};
+  // std::array<double, 9> cell;
   // length of three edges
-  std::array<double, 3> length{};
+  // std::array<double, 3> length;
   // bvx, bvy, bvz form a matrix matching the matrix in Config and POSCAR file
   // representing three Bravais lattice vector
-  std::array<double, 3> bvx{}, bvy{}, bvz{};
-  std::array<double, 3> tvx{}, tvy{}, tvz{};
+  std::array<double, 3> bvx, bvy, bvz;
+  // Three translational Bravais lattice vector
+  // std::array<double, 3> tvx, tvy, tvz;
   std::vector<Atom> atoms;
-  std::vector<int> vacList;
- public:
-  Configuration();
-  virtual ~Configuration();
-  bool operator<(const Configuration &rhs) const;
-  bool operator>(const Configuration &rhs) const;
-  bool operator<=(const Configuration &rhs) const;
-  bool operator>=(const Configuration &rhs) const;
-
+  // std::vector<int> vacList;
   void cnvPrl2Pst();
   void cnvPst2Prl();
-
-  bool readLammps(const std::string &fileName);
+ public:
+  Config();
+  virtual ~Config();
+  bool operator<(const Config &rhs) const;
+  void clear();
   bool readConfig(const std::string &fileName);
   bool readPOSCAR(const std::string &fileName);
-
   void writeConfig(const std::string &fileName = "config") const;
   // Write Configuration out as POSCAR file. If the vacOption is true, output
   // will have "X" for visualization. If false, vacancies will be ignored for
   // VASP calculation.
   void writePOSCAR(const std::string &fileName = "POSCAR",
                    const bool &vacOption = false) const;
-  void writeLammps(const std::string &fileName) const;
+  /**
+   * ConfigGenerate.cpp
+   **/
+  void generateFCC(const double &latticeConstant, const std::string &elm,
+                   const std::vector<int> &factors);
+  void embedCluster(const std::pair<std::string, std::string> &Elems,
+                    const FCCEmbededCluster::occupInfo_256 &o256, const int &i);
 };
 
-#endif //KN_SRC_CONFIGURATION_H_
+#endif //_CONFIG_H_
