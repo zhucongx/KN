@@ -48,7 +48,7 @@ class Config {
   void writePOSCAR(const std::string &fileName = "POSCAR",
                    const bool &vacOption = false) const;
   /**
-   * ConfigGenerate.cpp
+   ConfigGenerate.cpp
    **/
   void generateFCC(const double &latticeConstant, const std::string &elm,
                    const std::vector<int> &factors);
