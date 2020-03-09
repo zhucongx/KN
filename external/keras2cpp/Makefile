@@ -1,5 +1,5 @@
 
-CC_SERIAL = g++
+CC_SERIAL = icpc
 CPPFLAGS = --std=c++17 -I. -I./layers -Wall -Werror -MMD -O3 -mtune=core2
 
 KRSRC =	./baseLayer.cc \
@@ -17,20 +17,21 @@ KRSRC =	./baseLayer.cc \
 	./layers/locally1d.cc \
 	./layers/locally2d.cc \
 	./layers/lstm.cc \
-	./layers/maxPooling2d.cc
+	./layers/maxPooling2d.cc 
 
 
 CC = ${CC_SERIAL}
 OBJECTS := $(subst .cc,.o,${KRSRC})
 
 %.o: %.cc ./layers/%.cc
-	${CC} -c  $<  ${CINCLUDE}  ${OPTFLAGS}  ${CPPFLAGS}
+	${CC} -c  $<  ${CINCLUDE}  ${OPTFLAGS}  ${CPPFLAGS} 
 
 lib:	$(OBJECTS)
-	ar rcs ../../lib/libkeras2cpp.a ${OBJECTS}
+	mkdir -p ../../lib
+	ar rcs ../../lib/libkeras2cpp.a model.o tensor.o ${OBJECTS}                                
 
 clean:
-	rm -f  *.o *.d ./layers/*.o ./layers/*.d
+	rm -f  *.o *.d ./layers/*.o ./layers/*.d 
 
 
 -include $(OBJ_FILES:.o=.d)

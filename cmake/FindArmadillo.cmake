@@ -1,4 +1,10 @@
-set(FIND_ARMADILLO_PATHS /usr/local/Cellar/armadillo/9.800.3_1)
+if (APPLE)
+    message("-- Looking for armadillo on macOS")
+    set(FIND_ARMADILLO_PATHS /usr/local/)
+elseif (UNIX)
+    message("-- Looking for armadillo on Linux")
+    set(FIND_ARMADILLO_PATHS /usr/)
+endif()
 
 find_path(LIBARMADILLO_INCLUDE_DIR armadillo
         PATH_SUFFIXES include
