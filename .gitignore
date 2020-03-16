@@ -1,8 +1,8 @@
+build/
 bin/
 obj/
 lib/
-prod/
-build/
+cmake-build-*/
 .idea/
 .DS_Store
 
