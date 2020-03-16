@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-set(CMAKE_C_COMPILER "gcc")
+set(CMAKE_C_COMPILER "mpicc")
 set(CMAKE_CXX_COMPILER "mpicxx")
 
 project(KN)
@@ -49,7 +49,7 @@ find_package(ARMADILLO REQUIRED)
 include_directories(${LIBARMADILLO_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${LIBARMADILLO_LIBRARY})
 
-# Lib keras2cpp
-add_subdirectory(external/keras2cpp)
-include_directories(external/keras2cpp)
-target_link_libraries(${PROJECT_NAME} Keras2cpp)
+## Lib keras2cpp
+#add_subdirectory(external/keras2cpp)
+#include_directories(external/keras2cpp)
+#target_link_libraries(${PROJECT_NAME} Keras2cpp)
