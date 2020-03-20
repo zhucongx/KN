@@ -25,7 +25,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 file(GLOB KNN2_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp
-        ${PROJECT_SOURCE_DIR}/include/*.h)
+        ${PROJECT_SOURCE_DIR}/src/*.h)
 
 add_executable(${PROJECT_NAME} ${KNN2_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
