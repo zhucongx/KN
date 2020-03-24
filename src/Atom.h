@@ -1,9 +1,5 @@
-//
-// Created by Zhucong Xi on 1/31/20.
-//
-
-#ifndef KN_INCLUDE_ATOM_H_
-#define KN_INCLUDE_ATOM_H_
+#ifndef KN_SRC_ATOM_H_
+#define KN_SRC_ATOM_H_
 
 #include <fstream>
 #include <array>
@@ -14,18 +10,17 @@
 
 // typedef int Rank;
 // For FCC the first nearest neighbor is 12
-const int kNumFirstNearestNeighbors = 12;
+constexpr int kNumFirstNearestNeighbors = 12;
 // For FCC the first and second nearest neighbor is 18
-const int kNumNearNeighbors = 18;
+constexpr int kNumNearNeighbors = 18;
 // 3D simulation
-const int kDimension = 3;
-enum { kXDim = 0, kYDim = 1, kZDim = 2 };
+constexpr int kDimension = 3;
+enum : char { kXDim = 0, kYDim = 1, kZDim = 2 };
 
 class Atom {
  public:
   Atom(int id);
   Atom(int id, double mass, std::string type);
-  // Atom(int i, double x, double y, double z);
   Atom(int i, double m, std::string tp, double x, double y, double z);
   virtual ~Atom();
   void SetId(int id);
@@ -43,11 +38,6 @@ class Atom {
   [[nodiscard]] const std::array<double,
                                  kDimension> &GetRelativePosition() const;
 
-
-  inline void writeConfig(std::ofstream &ofs) const;
-  inline bool readPOSCAR(std::ifstream &ifs, const bool &realOption);
-  inline void writePrl(std::ofstream &ofs) const;
-
  private:
   // atom id which is an unique int for every atom indexed form 0
   int id_;
@@ -61,7 +51,5 @@ class Atom {
   std::array<int, kNumNearNeighbors> near_neighbor_list_{};
   // First nearest neighbor list
   std::array<int, kNumFirstNearestNeighbors> first_nearest_neighbor_list_{};
-
 };
-
-#endif //KN_INCLUDE_ATOM_H_
+#endif //KN_SRC_ATOM_H_
