@@ -2,8 +2,8 @@
 // Created by Zhucong Xi on 2/10/20.
 //
 
-#ifndef _FCCEMBEDEDCLUSTER_H_
-#define _FCCEMBEDEDCLUSTER_H_
+#ifndef KN_INCLUDE_FCCEMBEDEDCLUSTER_H_
+#define KN_INCLUDE_FCCEMBEDEDCLUSTER_H_
 
 #include <vector>
 #include <string>
@@ -148,4 +148,4 @@ struct occupInfo_256 {
   ~occupInfo_256() = default;
 };
 } // namespace FCCEmbededCluster
-#endif //_FCCEMBEDEDCLUSTER_H_
+#endif //KN_INCLUDE_FCCEMBEDEDCLUSTER_H_
