@@ -1,83 +1,59 @@
-//
-// Created by Zhucong Xi on 1/31/20.
-//
 #include "Atom.h"
 
-Atom::Atom() : id(0), type("X") {}
-Atom::Atom(int i) : id(i), type("X") {}
-Atom::Atom(int i, double m, std::string tp)
-    : id(i), mass(m), type(std::move(tp)) {}
-Atom::Atom(int i, double m, std::string tp, double x, double y, double z)
-    : id(i), mass(m), type(std::move(tp)) {
-  prl[0] = x;
-  prl[1] = y;
-  prl[2] = z;
-  pst[0] = x;
-  pst[1] = y;
-  pst[2] = z;
-  firstNearestNbrList.fill(-1);
+#include <utility>
+
+Atom::Atom(int id): id_(id), mass_(0), type_("Vac") {}
+Atom::Atom(int id, double mass, std::string type)
+    : id_(id), mass_(mass), type_(std::move(type)) {}
+Atom::Atom(int id, double mass, std::string type, double x, double y, double z)
+    : id_(id), mass_(mass), type_(std::move(type)) {
+  // Set both relative and absolute position, but will be corrected later
+  relative_position_[kXDim] = x;
+  relative_position_[kYDim] = y;
+  relative_position_[kZDim] = z;
+
+  absolute_position_[kXDim] = x;
+  absolute_position_[kYDim] = y;
+  absolute_position_[kZDim] = z;
 }
 Atom::~Atom() = default;
+int Atom::GetId() const {
+  return id_;
+}
+void Atom::SetId(int id) {
+  id_ = id;
+}
+double Atom::GetMass() const {
+  return mass_;
+}
+void Atom::SetMass(double mass) {
+  mass_ = mass;
+}
+const std::string &Atom::GetType() const {
+  return type_;
+}
+void Atom::SetType(const std::string &type) {
+  type_ = type;
+}
 
-int Atom::getId() const {
-  return id;
+void Atom::SetAbsolutePosition(
+    const std::array<double, kDimension> &absolute_position) {
+  absolute_position_ = absolute_position;
 }
-void Atom::setId(int i) {
-  id = i;
+void Atom::SetRelativePosition(
+    const std::array<double, kDimension> &relative_position) {
+  relative_position_ = relative_position;
 }
-const std::string &Atom::getType() const {
-  return type;
+const std::array<double, kDimension> &Atom::GetAbsolutePosition() const {
+  return absolute_position_;
 }
-void Atom::setType(const std::string &tp) {
-  type = tp;
-  mass = getMass();
+const std::array<double, kDimension> &Atom::GetRelativePosition() const {
+  return relative_position_;
 }
-double Atom::getMass() const {
-  return ElemInfo::findMass(type);
-}
-void Atom::cnvPrl2Pst(const std::array<double, 3> &bvx,
-                      const std::array<double, 3> &bvy,
-                      const std::array<double, 3> &bvz) {
-  for (const int i : {X, Y, Z}) {
-    pst[i] = prl[X] * bvx[i] + prl[Y] * bvy[i] + prl[Z] * bvz[i];
-  }
-}
-void Atom::cnvPst2Prl(const arma::mat &bm) {
-  arma::vec b = {pst[X],
-                 pst[Y],
-                 pst[Z]};
-  arma::vec x = solve(bm, b);
-  prl[X] = x[X];
-  prl[Y] = x[Y];
-  prl[Z] = x[Z];
-}
-bool Atom::readConfig(std::ifstream &ifs) {
-  std::string line;
-  if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf", &mass);
-  if (!getline(ifs, line)) { return false; }
-  type = line;
-  if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf %lf %lf", &prl[X], &prl[Y], &prl[Z]);
-  return true;
-}
-// Read from POSCAR file to atom. If Direct meaning relative position,
-// relativeOption should be true. If Cartesian meaning real position,
-// relativeOption should be false.
-bool Atom::readPOSCAR(std::ifstream &ifs, const bool &relativeOption) {
-  std::string line;
-  if (!getline(ifs, line)) { return false; }
-  if (relativeOption) {
-    sscanf(line.c_str(), "%lf %lf %lf", &prl[X], &prl[Y], &prl[Z]);
-  } else {
-    sscanf(line.c_str(), "%lf %lf %lf", &pst[X], &pst[Y], &pst[Z]);
-  }
-  return true;
-}
-void Atom::writeConfig(std::ofstream &ofs) const {
-  ofs << ((mass > 0) ? mass : getMass()) << std::endl << type << std::endl;
-  writePrl(ofs);
-}
+
 void Atom::writePrl(std::ofstream &ofs) const {
-  ofs << prl[X] << " " << prl[Y] << " " << prl[Z] << std::endl;
+  ofs << relative_position_[kXDim] << " " << relative_position_[kYDim] << " "
+      << relative_position_[kZDim] << std::endl;
 }
+
+

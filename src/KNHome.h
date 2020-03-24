@@ -2,8 +2,8 @@
 // Created by Zhucong Xi on 2/11/20.
 //
 
-#ifndef _KNHOME_H_
-#define _KNHOME_H_
+#ifndef KN_INCLUDE_KNHOME_H_
+#define KN_INCLUDE_KNHOME_H_
 
 #include <string>
 #include <vector>
@@ -24,4 +24,4 @@ class KNHome {
 
 };
 
-#endif //_KNHOME_H_
+#endif //KN_INCLUDE_KNHOME_H_
