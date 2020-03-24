@@ -21,11 +21,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -g3"
         CACHE INTERNAL ""
         )
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${PROJECT_SOURCE_DIR}/include)
+#include_directories(${PROJECT_SOURCE_DIR}/src)
+#include_directories(${PROJECT_SOURCE_DIR}/include)
 file(GLOB KNN2_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp
-        ${PROJECT_SOURCE_DIR}/include/*.h)
+        src/include/*.h)
 
 add_executable(${PROJECT_NAME} ${KNN2_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
