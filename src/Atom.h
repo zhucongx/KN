@@ -19,9 +19,9 @@ enum : char { kXDim = 0, kYDim = 1, kZDim = 2 };
 
 class Atom {
  public:
-  Atom(int id);
+  explicit Atom(int id);
   Atom(int id, double mass, std::string type);
-  Atom(int i, double m, std::string tp, double x, double y, double z);
+  Atom(int id, double mass, std::string type, double x, double y, double z);
   virtual ~Atom();
   void SetId(int id);
   [[nodiscard]] int GetId() const;

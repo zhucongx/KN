@@ -3,7 +3,7 @@
 Config::Config() = default;
 Config::~Config() = default;
 
-void Config::clear(){
+void Config::clear() {
   num_atoms_ = 0;
   energy_ = 0;
   x_bravais_vector_.fill(0);
@@ -204,43 +204,43 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
 }
 void Config::WriteConfig(const std::string &file_name) const {
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "Number of particles = " << num_atoms_ << std::endl;
-  ofs << "A = 1.0 Angstrom (basic length-scale)" << std::endl;
-  ofs << "H0(1,1) = " << x_bravais_vector_[0] << " A" << std::endl;
-  ofs << "H0(1,2) = " << x_bravais_vector_[1] << " A" << std::endl;
-  ofs << "H0(1,3) = " << x_bravais_vector_[2] << " A" << std::endl;
-  ofs << "H0(2,1) = " << y_bravais_vector_[0] << " A" << std::endl;
-  ofs << "H0(2,2) = " << y_bravais_vector_[1] << " A" << std::endl;
-  ofs << "H0(2,3) = " << y_bravais_vector_[2] << " A" << std::endl;
-  ofs << "H0(3,1) = " << z_bravais_vector_[0] << " A" << std::endl;
-  ofs << "H0(3,2) = " << z_bravais_vector_[1] << " A" << std::endl;
-  ofs << "H0(3,3) = " << z_bravais_vector_[2] << " A" << std::endl;
-  ofs << ".NO_VELOCITY." << std::endl;
-  ofs << "entry_count = 3" << std::endl;
+  ofs << "Number of particles = " << num_atoms_ << "\n";
+  ofs << "A = 1.0 Angstrom (basic length-scale)\n";
+  ofs << "H0(1,1) = " << x_bravais_vector_[0] << " A\n";
+  ofs << "H0(1,2) = " << x_bravais_vector_[1] << " A\n";
+  ofs << "H0(1,3) = " << x_bravais_vector_[2] << " A\n";
+  ofs << "H0(2,1) = " << y_bravais_vector_[0] << " A\n";
+  ofs << "H0(2,2) = " << y_bravais_vector_[1] << " A\n";
+  ofs << "H0(2,3) = " << y_bravais_vector_[2] << " A\n";
+  ofs << "H0(3,1) = " << z_bravais_vector_[0] << " A\n";
+  ofs << "H0(3,2) = " << z_bravais_vector_[1] << " A\n";
+  ofs << "H0(3,3) = " << z_bravais_vector_[2] << " A\n";
+  ofs << ".NO_VELOCITY.\n";
+  ofs << "entry_count = 3\n";
   for (const auto &atom : atom_list_) {
     double mass = atom.GetMass();
     const std::string &type = atom.GetType();
     auto relative_position = atom.GetRelativePosition();
-    ofs << ((mass > 0) ? mass : elem_info::FindMass(type)) << std::endl
-        << type << std::endl
+    ofs << ((mass > 0) ? mass : elem_info::FindMass(type)) << "\n"
+        << type << "\n"
         << relative_position[kXDim] << " " << relative_position[kYDim] << " "
-        << relative_position[kZDim] << std::endl;
+        << relative_position[kZDim] << "\n";
   }
   ofs.close();
 }
 void Config::WritePOSCAR(const std::string &file_name,
                          const bool &show_vacancy_option) const {
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "#comment" << std::endl << "1.00000" << std::endl;
+  ofs << "#comment\n" << "1.00000\n";
   ofs << x_bravais_vector_[kXDim] << " "
       << x_bravais_vector_[kYDim] << " "
-      << x_bravais_vector_[kZDim] << std::endl;
+      << x_bravais_vector_[kZDim] << "\n";
   ofs << y_bravais_vector_[kXDim] << " "
       << y_bravais_vector_[kYDim] << " "
-      << y_bravais_vector_[kZDim] << std::endl;
+      << y_bravais_vector_[kZDim] << "\n";
   ofs << z_bravais_vector_[kXDim] << " "
       << z_bravais_vector_[kYDim] << " "
-      << z_bravais_vector_[kZDim] << std::endl;
+      << z_bravais_vector_[kZDim] << "\n";
   std::map<std::string, int> elem_counts;
   for (const auto &atm : atom_list_) {
     elem_counts[atm.GetType()]++;
@@ -252,13 +252,13 @@ void Config::WritePOSCAR(const std::string &file_name,
       count_oss << elem_count.second << " ";
     }
   }
-  ofs << ele_oss.str() << std::endl << count_oss.str() << std::endl;
-  ofs << "Direct" << std::endl;
+  ofs << ele_oss.str() << "\n" << count_oss.str() << "\n";
+  ofs << "Direct\n";;
   for (const auto &atom : atom_list_) {
     if (!show_vacancy_option || atom.GetType() != "Vac") {
       auto relative_position = atom.GetRelativePosition();
       ofs << relative_position[kXDim] << " " << relative_position[kYDim] << " "
-          << relative_position[kZDim] << std::endl;
+          << relative_position[kZDim] << "\n";
     }
   }
   ofs.close();
