@@ -1,7 +1,3 @@
-//
-// Created by Zhucong Xi on 2/11/20.
-//
-
 #include "Config.h"
 //
 // void Config::generateFCC(const double &latticeConstant,
