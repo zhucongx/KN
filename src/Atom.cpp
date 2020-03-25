@@ -51,9 +51,3 @@ const std::array<double, kDimension> &Atom::GetRelativePosition() const {
   return relative_position_;
 }
 
-void Atom::writePrl(std::ofstream &ofs) const {
-  ofs << relative_position_[kXDim] << " " << relative_position_[kYDim] << " "
-      << relative_position_[kZDim] << std::endl;
-}
-
-

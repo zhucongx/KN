@@ -1,8 +1,6 @@
 #include"Config.h"
 
-#include <cstdio>
-
-Config::Config() {}
+Config::Config() = default;
 Config::~Config() = default;
 
 void Config::clear(){
@@ -54,51 +52,80 @@ void Config::ConvertAbsoluteToRelative() {
   }
 }
 
-
 bool Config::ReadConfig(const std::string &file_name) {
   clear();
   std::ifstream ifs(file_name, std::ifstream::in);
   if (ifs.fail()) { return false; }
   std::string line;
+  std::istringstream iss;
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "Number of particles = %i", &num_atoms_);
+  // "Number of particles = %i"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> num_atoms_)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // A = 1.0 Angstrom (basic length-scale)
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(1,1) = %lf A", &x_bravais_vector_[kXDim]);
+  // "H0(1,1) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> x_bravais_vector_[kXDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(1,2) = %lf A", &x_bravais_vector_[kYDim]);
+  // "H0(1,2) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> x_bravais_vector_[kYDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(1,3) = %lf A", &x_bravais_vector_[kZDim]);
+  // "H0(1,3) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> x_bravais_vector_[kZDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(2,1) = %lf A", &y_bravais_vector_[kXDim]);
+  // "H0(2,1) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> y_bravais_vector_[kXDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(2,2) = %lf A", &y_bravais_vector_[kYDim]);
+  // "H0(2,2) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> y_bravais_vector_[kYDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(2,3) = %lf A", &y_bravais_vector_[kZDim]);
+  // sscanf(line.c_str(), "H0(2,3) = %lf A", &y_bravais_vector_[kZDim]);
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> y_bravais_vector_[kZDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(3,1) = %lf A", &z_bravais_vector_[kXDim]);
+  // "H0(3,1) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> z_bravais_vector_[kXDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(3,2) = %lf A", &z_bravais_vector_[kYDim]);
+  // "H0(3,2) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> z_bravais_vector_[kYDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "H0(3,3) = %lf A", &z_bravais_vector_[kZDim]);
+  // "H0(3,3) = %lf A"
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> z_bravais_vector_[kZDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
   // .NO_VELOCITY.
   if (!getline(ifs, line)) { return false; }
-  int entry = 3;
-  sscanf(line.c_str(), "entry_count = %i", &entry);
+  // "entry_count = 3"
   for (int i = 0; i < num_atoms_; ++i) {
     double mass, relative_position_X, relative_position_Y, relative_position_Z;
     std::string type;
     if (!getline(ifs, line)) { return false; }
-    sscanf(line.c_str(), "%lf", &mass);
+    iss = std::istringstream(line);
+    if (!(iss >> mass)) { return false; }
     if (!getline(ifs, line)) { return false; }
     type = line;
     if (!getline(ifs, line)) { return false; }
-    sscanf(line.c_str(), "%lf %lf %lf",
-           &relative_position_X,
-           &relative_position_Y,
-           &relative_position_Z);
+    iss = std::istringstream(line);
+    if (!(iss >> relative_position_X >> relative_position_Y
+              >> relative_position_Z)) { return false; }
     atom_list_.emplace_back(i, mass, type,
                             relative_position_X,
                             relative_position_Y,
@@ -113,19 +140,24 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   std::ifstream ifs(file_name, std::ifstream::in);
   if (ifs.fail()) { return false; }
   std::string line;
+  std::istringstream iss;
   if (!getline(ifs, line)) { return false; }
   // #comment
   if (!getline(ifs, line)) { return false; }
   // scale factor, usually which is 1
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf %lf %lf", &x_bravais_vector_[0],
-      &x_bravais_vector_[1], &x_bravais_vector_[2]);
+  iss = std::istringstream(line);
+  if (!(iss >> x_bravais_vector_[kXDim] >> x_bravais_vector_[kYDim]
+            >> x_bravais_vector_[kZDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf %lf %lf", &y_bravais_vector_[0],
-      &y_bravais_vector_[1], &y_bravais_vector_[2]);
+
+  iss = std::istringstream(line);
+  if (!(iss >> y_bravais_vector_[kXDim] >> y_bravais_vector_[kYDim]
+            >> y_bravais_vector_[kZDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
-  sscanf(line.c_str(), "%lf %lf %lf", &z_bravais_vector_[0],
-      &z_bravais_vector_[1], &z_bravais_vector_[2]);
+  iss = std::istringstream(line);
+  if (!(iss >> z_bravais_vector_[kXDim] >> z_bravais_vector_[kYDim]
+            >> z_bravais_vector_[kZDim])) { return false; }
   if (!getline(ifs, line)) { return false; }
   std::vector<std::string> elem_names;
   std::string elem;
@@ -156,8 +188,8 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
     for (int j = 0; j < elem_counts[i]; ++j) {
       double position_X, position_Y, position_Z;
       if (!getline(ifs, line)) { return false; }
-      sscanf(line.c_str(), "%lf %lf %lf",
-             &position_X, &position_Y, &position_Z);
+      iss = std::istringstream(line);
+      if (!(iss >> position_X >> position_Y >> position_Z)) { return false; }
       atom_list_.emplace_back(id_count++, mass, elem_names[i],
                               position_X, position_Y, position_Z);
     }
