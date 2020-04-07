@@ -7,6 +7,8 @@
 #include <array>
 #include <vector>
 
+#include "armadillo"
+
 #include "Atom.h"
 
 class Config {
@@ -27,10 +29,19 @@ class Config {
   void WritePOSCAR(const std::string &file_name = "POSCAR",
                    const bool &show_vacancy_option = false) const;
 
-  void generateFCC(const double &latticeConstant, const std::string &elm,
-                   const std::vector<int> &factors);
+  void GenerateFCC(const double &lattice_constant_a,
+                   const std::string &element,
+                   const std::array<int, kDimension> &factors);
+  void GenerateBCC(const double &lattice_constant_a,
+                   const std::string &element,
+                   const std::array<int, kDimension> &factors);
+  void GenerateHCP(const double &lattice_constant_a,
+                   const double &lattice_constant_c,
+                   const std::string &element,
+                   const std::array<int, kDimension> &factors);
  private:
   int num_atoms_{};
+  double scale_{};
   double energy_{};
   // lowx, lowy, lowz, highx, highy, highz, xy xz yz
   // std::array<double, 9> cell;

@@ -5,11 +5,13 @@ Config::~Config() = default;
 
 void Config::clear() {
   num_atoms_ = 0;
-  energy_ = 0;
-  x_bravais_vector_.fill(0);
-  y_bravais_vector_.fill(0);
-  z_bravais_vector_.fill(0);
+  scale_ = 1.0;
+  energy_ = 0.0;
+  x_bravais_vector_.fill(0.0);
+  y_bravais_vector_.fill(0.0);
+  z_bravais_vector_.fill(0.0);
   atom_list_.clear();
+  vacancy_list_.clear();
 }
 
 bool Config::operator<(const Config &rhs) const {
@@ -65,6 +67,9 @@ bool Config::ReadConfig(const std::string &file_name) {
   if (!(iss >> num_atoms_)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // A = 1.0 Angstrom (basic length-scale)
+  iss = std::istringstream(line);
+  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
+  if (!(iss >> scale_)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(1,1) = %lf A"
   iss = std::istringstream(line);
@@ -145,6 +150,8 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   // #comment
   if (!getline(ifs, line)) { return false; }
   // scale factor, usually which is 1
+  iss = std::istringstream(line);
+  if (!(iss >> scale_)) { return false; }
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
   if (!(iss >> x_bravais_vector_[kXDim] >> x_bravais_vector_[kYDim]
@@ -205,7 +212,7 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
 void Config::WriteConfig(const std::string &file_name) const {
   std::ofstream ofs(file_name, std::ofstream::out);
   ofs << "Number of particles = " << num_atoms_ << "\n";
-  ofs << "A = 1.0 Angstrom (basic length-scale)\n";
+  ofs << "A = " << scale_ << " Angstrom (basic length-scale)\n";
   ofs << "H0(1,1) = " << x_bravais_vector_[0] << " A\n";
   ofs << "H0(1,2) = " << x_bravais_vector_[1] << " A\n";
   ofs << "H0(1,3) = " << x_bravais_vector_[2] << " A\n";
@@ -231,7 +238,7 @@ void Config::WriteConfig(const std::string &file_name) const {
 void Config::WritePOSCAR(const std::string &file_name,
                          const bool &show_vacancy_option) const {
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "#comment\n" << "1.00000\n";
+  ofs << "#comment\n" << scale_ << "\n";
   ofs << x_bravais_vector_[kXDim] << " "
       << x_bravais_vector_[kYDim] << " "
       << x_bravais_vector_[kZDim] << "\n";

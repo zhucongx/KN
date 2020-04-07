@@ -10,9 +10,10 @@ int main(int argc, char *argv[]) {
   // test.cnvPrl2Pst();
   // test.cnvPst2Prl();
 
-  if(!test.ReadConfig("test.conf")) { return 5;};
-  test.ConvertAbsoluteToRelative();
-  test.ConvertRelativeToAbsolute();
+  // if(!test.ReadPOSCAR("test.pos")) { return 5;}
+  // test.ConvertAbsoluteToRelative();
+  // test.ConvertRelativeToAbsolute();
+  test.GenerateHCP(3.209,5.211,"Mg",{2,2,2});
   test.WriteConfig();
   test.WritePOSCAR();
 
