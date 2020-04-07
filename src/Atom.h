@@ -4,8 +4,6 @@
 #include <fstream>
 #include <array>
 
-#include "armadillo"
-
 #include "ElemInfo.h"
 
 // typedef int Rank;
