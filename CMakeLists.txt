@@ -27,7 +27,7 @@ file(GLOB KNN2_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp
         src/include/*.h)
 
-add_executable(${PROJECT_NAME} ${KNN2_SRC})
+add_executable(${PROJECT_NAME} ${KNN2_SRC} src/ConfigIO.cpp)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
 

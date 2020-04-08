@@ -13,7 +13,7 @@ constexpr int kNumFirstNearestNeighbors = 12;
 constexpr int kNumNearNeighbors = 18;
 // 3D simulation
 constexpr int kDimension = 3;
-enum : char { kXDim = 0, kYDim = 1, kZDim = 2 };
+enum Dimension: char { kXDim = 0, kYDim = 1, kZDim = 2 };
 
 class Atom {
  public:

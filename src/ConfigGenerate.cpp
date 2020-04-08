@@ -5,9 +5,9 @@ void Config::GenerateFCC(const double &lattice_constant_a,
                          const std::array<int, kDimension> &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  x_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
-  y_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
-  z_bravais_vector_[kZDim] = lattice_constant_a * factors[kZDim];
+  first_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
+  second_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
+  third_bravais_vector_[kZDim] = lattice_constant_a * factors[kZDim];
   num_atoms_ = 0;
   scale_ = 1.0;
   auto x_length = static_cast<double>(factors[kXDim]);
@@ -45,9 +45,9 @@ void Config::GenerateBCC(const double &lattice_constant_a,
                          const std::array<int, kDimension> &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  x_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
-  y_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
-  z_bravais_vector_[kZDim] = lattice_constant_a * factors[kZDim];
+  first_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
+  second_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
+  third_bravais_vector_[kZDim] = lattice_constant_a * factors[kZDim];
   num_atoms_ = 0;
   scale_ = 1.0;
   auto x_length = static_cast<double>(factors[kXDim]);
@@ -79,11 +79,11 @@ void Config::GenerateHCP(const double &lattice_constant_a,
                          const std::array<int, kDimension> &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  x_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
-  y_bravais_vector_[kXDim] = -0.5 * lattice_constant_a * factors[kYDim];
-  y_bravais_vector_[kYDim] =
+  first_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
+  second_bravais_vector_[kXDim] = -0.5 * lattice_constant_a * factors[kYDim];
+  second_bravais_vector_[kYDim] =
       0.5 * sqrt(3) * lattice_constant_a * factors[kYDim];
-  z_bravais_vector_[kZDim] = lattice_constant_c * factors[kZDim];
+  third_bravais_vector_[kZDim] = lattice_constant_c * factors[kZDim];
   num_atoms_ = 0;
   scale_ = 1.0;
   auto x_length = static_cast<double>(factors[kXDim]);
