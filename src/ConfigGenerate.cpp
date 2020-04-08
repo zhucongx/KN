@@ -3,7 +3,7 @@
 void Config::GenerateFCC(const double &lattice_constant_a,
                          const std::string &element,
                          const std::array<int, kDimension> &factors) {
-  clear();
+  Initialize();
   double mass = elem_info::FindMass(element);
   x_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
   y_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
@@ -43,7 +43,7 @@ void Config::GenerateFCC(const double &lattice_constant_a,
 void Config::GenerateBCC(const double &lattice_constant_a,
                          const std::string &element,
                          const std::array<int, kDimension> &factors) {
-  clear();
+  Initialize();
   double mass = elem_info::FindMass(element);
   x_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
   y_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
@@ -77,7 +77,7 @@ void Config::GenerateHCP(const double &lattice_constant_a,
                          const double &lattice_constant_c,
                          const std::string &element,
                          const std::array<int, kDimension> &factors) {
-  clear();
+  Initialize();
   double mass = elem_info::FindMass(element);
   x_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
   y_bravais_vector_[kXDim] = -0.5 * lattice_constant_a * factors[kYDim];

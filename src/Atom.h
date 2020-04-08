@@ -19,6 +19,7 @@ class Atom {
  public:
   explicit Atom(int id);
   Atom(int id, double mass, std::string type);
+  // Set both relative and absolute position, but will be corrected later
   Atom(int id, double mass, std::string type, double x, double y, double z);
   virtual ~Atom();
   void SetId(int id);

@@ -19,7 +19,7 @@ class Config {
   Config();
   virtual ~Config();
   bool operator<(const Config &rhs) const;
-  void clear();
+  void Initialize();
   bool ReadConfig(const std::string &file_name);
   bool ReadPOSCAR(const std::string &file_name);
   void WriteConfig(const std::string &file_name = "config") const;

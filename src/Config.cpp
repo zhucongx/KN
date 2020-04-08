@@ -3,7 +3,7 @@
 Config::Config() = default;
 Config::~Config() = default;
 
-void Config::clear() {
+void Config::Initialize() {
   num_atoms_ = 0;
   scale_ = 1.0;
   energy_ = 0.0;
@@ -55,7 +55,7 @@ void Config::ConvertAbsoluteToRelative() {
 }
 
 bool Config::ReadConfig(const std::string &file_name) {
-  clear();
+  Initialize();
   std::ifstream ifs(file_name, std::ifstream::in);
   if (ifs.fail()) { return false; }
   std::string line;
@@ -141,7 +141,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   return true;
 }
 bool Config::ReadPOSCAR(const std::string &file_name) {
-  clear();
+  Initialize();
   std::ifstream ifs(file_name, std::ifstream::in);
   if (ifs.fail()) { return false; }
   std::string line;
