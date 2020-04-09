@@ -29,6 +29,6 @@
 //   FCCEmbededCluster::occupInfo_256 o256;
 //   int index = 0;
 //   for (int i = 0; i < o256.mapping.size(); ++i)
-//     index = createOrderedSingle(i, index, cnfModifier, dupFactors, \
+//     index = createOrderedSingle(i, index, cnfModifier, dupFactors,
 //                                 LC, POT, o256);
 // }
