@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -O0 -g3 -ggdb"
         CACHE INTERNAL ""
         )
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3 -g3"
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3"
         CACHE INTERNAL ""
         )
 
@@ -27,7 +27,7 @@ file(GLOB KNN2_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp
         src/include/*.h)
 
-add_executable(${PROJECT_NAME} ${KNN2_SRC})
+add_executable(${PROJECT_NAME} ${KNN2_SRC} src/ConfigIO.cpp)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
 

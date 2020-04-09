@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
   // test.ConvertAbsoluteToRelative();
   // test.ConvertRelativeToAbsolute();
   test.GenerateHCP(3.209,5.211,"Mg",{2,2,2});
+  test.Perturb();
   test.WriteConfig();
   test.WritePOSCAR();
 
