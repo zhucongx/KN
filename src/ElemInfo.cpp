@@ -1,5 +1,6 @@
-
 #include "ElemInfo.h"
+
+#include <algorithm>
 
 namespace elem_info {
 double FindMass(const std::string &elem) {
