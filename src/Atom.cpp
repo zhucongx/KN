@@ -2,7 +2,7 @@
 
 #include <utility>
 
-Atom::Atom(int id): id_(id), mass_(0), type_("Vac") {}
+Atom::Atom(int id) : id_(id), mass_(0), type_("Vac") {}
 Atom::Atom(int id, double mass, std::string type)
     : id_(id), mass_(mass), type_(std::move(type)) {}
 Atom::Atom(int id, double mass, std::string type, double x, double y, double z)
@@ -37,17 +37,17 @@ void Atom::SetType(const std::string &type) {
 }
 
 void Atom::SetAbsolutePosition(
-    const std::array<double, kDimension> &absolute_position) {
+    const Double3 &absolute_position) {
   absolute_position_ = absolute_position;
 }
 void Atom::SetRelativePosition(
-    const std::array<double, kDimension> &relative_position) {
+    const Double3 &relative_position) {
   relative_position_ = relative_position;
 }
-const std::array<double, kDimension> &Atom::GetAbsolutePosition() const {
+const Double3 &Atom::GetAbsolutePosition() const {
   return absolute_position_;
 }
-const std::array<double, kDimension> &Atom::GetRelativePosition() const {
+const Double3 &Atom::GetRelativePosition() const {
   return relative_position_;
 }
 

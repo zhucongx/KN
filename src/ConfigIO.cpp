@@ -7,7 +7,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   std::string line;
   std::istringstream iss;
   double scale;
-  std::array<double, kDimension> first_bravais_vector{},
+  Double3 first_bravais_vector{},
       second_bravais_vector{}, third_bravais_vector{};
   if (!getline(ifs, line)) { return false; }
   // "Number of particles = %i"
@@ -104,7 +104,7 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   std::string line;
   std::istringstream iss;
   double scale;
-  std::array<double, kDimension> first_bravais_vector{},
+  Double3 first_bravais_vector{},
       second_bravais_vector{}, third_bravais_vector{};
   if (!getline(ifs, line)) { return false; }
   // #comment

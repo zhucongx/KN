@@ -9,25 +9,22 @@ void Box::SetScale(double scale) {
   scale_ = scale;
 }
 
-const std::array<double, kDimension> &Box::GetFirstBravaisVector() const {
+const Double3 &Box::GetFirstBravaisVector() const {
   return first_bravais_vector_;
 }
-void Box::SetFirstBravaisVector(const std::array<double,
-                                                 kDimension> &first_bravais_vector) {
+void Box::SetFirstBravaisVector(const Double3 &first_bravais_vector) {
   first_bravais_vector_ = first_bravais_vector;
 }
-const std::array<double, kDimension> &Box::GetSecondBravaisVector() const {
+const Double3 &Box::GetSecondBravaisVector() const {
   return second_bravais_vector_;
 }
-void Box::SetSecondBravaisVector(const std::array<double,
-                                                  kDimension> &second_bravais_vector) {
+void Box::SetSecondBravaisVector(const Double3 &second_bravais_vector) {
   second_bravais_vector_ = second_bravais_vector;
 }
-const std::array<double, kDimension> &Box::GetThirdBravaisVector() const {
+const Double3 &Box::GetThirdBravaisVector() const {
   return third_bravais_vector_;
 }
-void Box::SetThirdBravaisVector(const std::array<double,
-                                                 kDimension> &third_bravais_vector) {
+void Box::SetThirdBravaisVector(const Double3 &third_bravais_vector) {
   third_bravais_vector_ = third_bravais_vector;
 }
 

@@ -2,7 +2,7 @@
 
 void Config::GenerateFCC(const double &lattice_constant_a,
                          const std::string &element,
-                         const std::array<int, kDimension> &factors) {
+                         const Int3 &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
   box_.SetFirstBravaisVector({lattice_constant_a * factors[kXDim], 0, 0});
@@ -42,7 +42,7 @@ void Config::GenerateFCC(const double &lattice_constant_a,
 }
 void Config::GenerateBCC(const double &lattice_constant_a,
                          const std::string &element,
-                         const std::array<int, kDimension> &factors) {
+                         const Int3 &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
   box_.SetFirstBravaisVector({lattice_constant_a * factors[kXDim], 0, 0});
@@ -76,7 +76,7 @@ void Config::GenerateBCC(const double &lattice_constant_a,
 void Config::GenerateHCP(const double &lattice_constant_a,
                          const double &lattice_constant_c,
                          const std::string &element,
-                         const std::array<int, kDimension> &factors) {
+                         const Int3 &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
   box_.SetFirstBravaisVector({lattice_constant_a * factors[kXDim], 0, 0});
