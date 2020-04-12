@@ -80,7 +80,7 @@ inline double FindMass(const int &atomicNum) {
 }
 } // namespace elem_info
 
-namespace double3_calculation {
+namespace double3_calc {
 inline Double3 CrossProduct(const Double3 &first, const Double3 &second) {
 
   double result_x = first[kYDim] * second[kZDim] - first[kZDim] * second[kYDim];
@@ -104,5 +104,5 @@ inline Double3 LinearTransform(const Double3 &left,
   }
   return result;
 }
-} // namespace double3_calculation
+} // namespace double3_calc
 #endif //KN_SRC_UTILITY_H_
