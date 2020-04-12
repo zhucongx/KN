@@ -49,16 +49,17 @@ void Config::ConvertAbsoluteToRelative() {
         second_bravais_vector[kZDim]},
        {third_bravais_vector[kXDim], third_bravais_vector[kYDim],
         third_bravais_vector[kZDim]}};
+  arma::mat inverse_bravais_matrix = arma::inv(bravais_matrix);
+
   for (auto &atom:atom_list_) {
     std::array<double, kDimension> absolute_position =
         atom.GetAbsolutePosition();
     std::array<double, kDimension> relative_position{};
-    arma::vec b = {absolute_position[kXDim],
-                   absolute_position[kYDim],
-                   absolute_position[kZDim]};
-    arma::vec x = solve(bravais_matrix, b);
     for (const auto &i : {kXDim, kYDim, kZDim}) {
-      relative_position[i] = x[i];
+      relative_position[i] =
+          absolute_position[kXDim] * inverse_bravais_matrix(kXDim,i)
+              + absolute_position[kYDim] * inverse_bravais_matrix(kYDim,i)
+              + absolute_position[kZDim] * inverse_bravais_matrix(kZDim,i);
     }
     atom.SetRelativePosition(relative_position);
   }

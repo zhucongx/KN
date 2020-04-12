@@ -7,12 +7,11 @@ int main(int argc, char *argv[]) {
   Config test;
   // test.GenerateFCC(16.184,"Al",{1,1,1});
 
-  test.GenerateHCP(3.209,5.211,"Mg",{50,50,50});
+  // test.GenerateHCP(3.209,5.211,"Mg",{50,50,50});
 
-  // if(!test.ReadConfig("test.conf")) { return 5;}
-  // test.ConvertAbsoluteToRelative();
-  //
-  // test.ConvertRelativeToAbsolute();
+  if(!test.ReadPOSCAR("test.pos")) { return 5;}
+  test.ConvertAbsoluteToRelative();
+  test.ConvertRelativeToAbsolute();
   // test.Perturb();
   test.WriteConfig();
   test.WritePOSCAR();
