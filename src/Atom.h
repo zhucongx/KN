@@ -3,17 +3,16 @@
 
 #include <fstream>
 #include <array>
+#include <memory>
 
 #include "ElemInfo.h"
+#include "constants.h"
 
-// typedef int Rank;
 // For FCC the first nearest neighbor is 12
 constexpr int kNumFirstNearestNeighbors = 12;
 // For FCC the first and second nearest neighbor is 18
 constexpr int kNumNearNeighbors = 18;
-// 3D simulation
-constexpr int kDimension = 3;
-enum Dimension: char { kXDim = 0, kYDim = 1, kZDim = 2 };
+
 
 class Atom {
  public:
@@ -47,8 +46,8 @@ class Atom {
   // relative position in the box
   std::array<double, kDimension> relative_position_{};
   // First and second nearest neighbor list
-  std::array<int, kNumNearNeighbors> near_neighbor_list_{};
+  std::shared_ptr<Atom> near_neighbor_list_{};
   // First nearest neighbor list
-  std::array<int, kNumFirstNearestNeighbors> first_nearest_neighbor_list_{};
+  std::shared_ptr<Atom> first_nearest_neighbor_list_{};
 };
 #endif //KN_SRC_ATOM_H_

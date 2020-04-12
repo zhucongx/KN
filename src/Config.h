@@ -10,6 +10,7 @@
 #include "armadillo"
 
 #include "Atom.h"
+#include "Box.h"
 
 class Config {
  public:
@@ -19,7 +20,6 @@ class Config {
   void ConvertRelativeToAbsolute();
   void ConvertAbsoluteToRelative();
   Config();
-  virtual ~Config();
   bool operator<(const Config &rhs) const;
   void Initialize();
   // void ConvertBravisLatticeToReciprocal();
@@ -50,19 +50,8 @@ class Config {
                    const std::array<int, kDimension> &factors);
  private:
   int num_atoms_{};
-  double scale_{};
   double energy_{};
-  // lowx, lowy, lowz, highx, highy, highz, xy xz yz
-  // std::array<double, 9> cell;
-  // length of three edges
-  // std::array<double, 3> length;
-  // This three vectors form a matrix matching the matrix in Config and POSCAR file
-  // representing three Bravais lattice vector
-  std::array<double, kDimension> first_bravais_vector_{},
-      second_bravais_vector_{}, third_bravais_vector_{};
-  // Three translational Bravais lattice vector
-  // std::array<double, kDimension> first_reciprocal_vector_{},
-  //     second_reciprocal_vector_{}, third_reciprocal_vector_{};
+  Box box_;
   std::vector<Atom> atom_list_;
   std::vector<int> vacancy_list_;
 };

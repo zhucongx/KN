@@ -5,11 +5,11 @@ void Config::GenerateFCC(const double &lattice_constant_a,
                          const std::array<int, kDimension> &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  first_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
-  second_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
-  third_bravais_vector_[kZDim] = lattice_constant_a * factors[kZDim];
+  box_.SetFirstBravaisVector({lattice_constant_a * factors[kXDim], 0, 0});
+  box_.SetSecondBravaisVector({0, lattice_constant_a * factors[kYDim], 0});
+  box_.SetThirdBravaisVector({0, 0, lattice_constant_a * factors[kZDim]});
+  box_.SetScale(1.0);
   num_atoms_ = 0;
-  scale_ = 1.0;
   auto x_length = static_cast<double>(factors[kXDim]);
   auto y_length = static_cast<double>(factors[kYDim]);
   auto z_length = static_cast<double>(factors[kZDim]);
@@ -32,8 +32,8 @@ void Config::GenerateFCC(const double &lattice_constant_a,
                                 y_reference / y_length,
                                 (z_reference + 0.5) / z_length);
         atom_list_.emplace_back(num_atoms_++, mass, element,
-                                (x_reference + 0.5) / x_length,
-                                y_reference / y_length,
+                                x_reference / x_length,
+                                (y_reference + 0.5) / y_length,
                                 (z_reference + 0.5) / z_length);
       }
     }
@@ -45,11 +45,11 @@ void Config::GenerateBCC(const double &lattice_constant_a,
                          const std::array<int, kDimension> &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  first_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
-  second_bravais_vector_[kYDim] = lattice_constant_a * factors[kYDim];
-  third_bravais_vector_[kZDim] = lattice_constant_a * factors[kZDim];
+  box_.SetFirstBravaisVector({lattice_constant_a * factors[kXDim], 0, 0});
+  box_.SetSecondBravaisVector({0, lattice_constant_a * factors[kYDim], 0});
+  box_.SetThirdBravaisVector({0, 0, lattice_constant_a * factors[kZDim]});
+  box_.SetScale(1.0);
   num_atoms_ = 0;
-  scale_ = 1.0;
   auto x_length = static_cast<double>(factors[kXDim]);
   auto y_length = static_cast<double>(factors[kYDim]);
   auto z_length = static_cast<double>(factors[kZDim]);
@@ -79,13 +79,14 @@ void Config::GenerateHCP(const double &lattice_constant_a,
                          const std::array<int, kDimension> &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  first_bravais_vector_[kXDim] = lattice_constant_a * factors[kXDim];
-  second_bravais_vector_[kXDim] = -0.5 * lattice_constant_a * factors[kYDim];
-  second_bravais_vector_[kYDim] =
-      0.5 * sqrt(3) * lattice_constant_a * factors[kYDim];
-  third_bravais_vector_[kZDim] = lattice_constant_c * factors[kZDim];
+  box_.SetFirstBravaisVector({lattice_constant_a * factors[kXDim], 0, 0});
+  box_.SetSecondBravaisVector({-0.5 * lattice_constant_a * factors[kYDim],
+                               0.5 * sqrt(3) * lattice_constant_a
+                                   * factors[kYDim], 0});
+  box_.SetThirdBravaisVector({0, 0, lattice_constant_c * factors[kZDim]});
+  box_.SetScale(1.0);
   num_atoms_ = 0;
-  scale_ = 1.0;
+
   auto x_length = static_cast<double>(factors[kXDim]);
   auto y_length = static_cast<double>(factors[kYDim]);
   auto z_length = static_cast<double>(factors[kZDim]);

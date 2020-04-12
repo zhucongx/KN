@@ -8,16 +8,15 @@ set(CMAKE_CXX_STANDARD 20)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
+set(CMAKE_CXX_FLAGS " -std=c++20 -Wall -Wextra"
             CACHE INTERNAL ""
             )
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -O0 -g3 -ggdb"
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -ggdb"
         CACHE INTERNAL ""
         )
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -O3"
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ffast-math -fno-rtti"
         CACHE INTERNAL ""
         )
 
@@ -27,7 +26,7 @@ file(GLOB KNN2_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp
         src/include/*.h)
 
-add_executable(${PROJECT_NAME} ${KNN2_SRC} src/ConfigIO.cpp)
+add_executable(${PROJECT_NAME} ${KNN2_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
 
