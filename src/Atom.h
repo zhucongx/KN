@@ -3,16 +3,9 @@
 
 #include <fstream>
 #include <array>
-#include <memory>
+#include <vector>
 
-#include "ElemInfo.h"
 #include "constants.h"
-
-// For FCC the first nearest neighbor is 12
-constexpr int kNumFirstNearestNeighbors = 12;
-// For FCC the first and second nearest neighbor is 18
-constexpr int kNumNearNeighbors = 18;
-
 
 class Atom {
  public:

@@ -11,6 +11,7 @@
 
 #include "Atom.h"
 #include "Box.h"
+#include "Utility.h"
 
 class Config {
  public:

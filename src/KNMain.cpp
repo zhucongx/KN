@@ -9,11 +9,11 @@ int main(int argc, char *argv[]) {
 
   // test.GenerateHCP(3.209,5.211,"Mg",{50,50,50});
 
-  if(!test.ReadConfig("0.cfg")) { return 5;}
+  if(!test.ReadPOSCAR("test.pos")) { return 5;}
   // test.Perturb();
   test.UpdateNeighbors(3.5,4.5);
-  // test.WriteConfig();
-  // test.WritePOSCAR();
+  test.WriteConfig();
+  test.WritePOSCAR();
 
 
   return 0;

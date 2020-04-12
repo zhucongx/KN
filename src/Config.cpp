@@ -1,5 +1,4 @@
 #include"Config.h"
-#include "Utility.h"
 const double kMean = 0;
 const double kStandardDeviation = 0.15;
 const double kCutOff = 0.4;
@@ -26,10 +25,11 @@ void Config::ConvertRelativeToAbsolute() {
   for (auto &atom:atom_list_) {
 
     auto relative_position = atom.GetRelativePosition();
-    Double3 absolute_position = LinearTransform(relative_position,
-                                                first_bravais_vector,
-                                                second_bravais_vector,
-                                                third_bravais_vector);
+    Double3 absolute_position =
+        double3_calculation::LinearTransform(relative_position,
+                                             first_bravais_vector,
+                                             second_bravais_vector,
+                                             third_bravais_vector);
     atom.SetAbsolutePosition(absolute_position);
   }
 }
@@ -57,10 +57,11 @@ void Config::ConvertAbsoluteToRelative() {
   for (auto &atom:atom_list_) {
     Double3 absolute_position =
         atom.GetAbsolutePosition();
-    Double3 relative_position = LinearTransform(absolute_position,
-                                                first_inverse_bravais_vector,
-                                                second_inverse_bravais_vector,
-                                                third_inverse_bravais_vector);
+    Double3 relative_position =
+        double3_calculation::LinearTransform(absolute_position,
+                                             first_inverse_bravais_vector,
+                                             second_inverse_bravais_vector,
+                                             third_inverse_bravais_vector);
     atom.SetRelativePosition(relative_position);
   }
 }
@@ -104,17 +105,24 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
           relative_distance_vector_element += 1;
       }
 
-      Double3
-          absolute_distance_vector = LinearTransform(relative_distance_vector,
-                                                     first_bravais_vector,
-                                                     second_bravais_vector,
-                                                     third_bravais_vector);
-      if (absolute_distance_vector[kXDim] > second_r_cutoff_square
-          || absolute_distance_vector[kYDim] > second_r_cutoff_square
-          || absolute_distance_vector[kZDim] > second_r_cutoff_square)
+      Double3 absolute_distance_vector =
+          double3_calculation::LinearTransform(relative_distance_vector,
+                                               first_bravais_vector,
+                                               second_bravais_vector,
+                                               third_bravais_vector);
+      // if (absolute_distance_vector[kXDim] > second_r_cutoff_square
+      //     || absolute_distance_vector[kYDim] > second_r_cutoff_square
+      //     || absolute_distance_vector[kZDim] > second_r_cutoff_square)
+      //   continue;
+      if (absolute_distance_vector[kXDim] > second_r_cutoff_square)
         continue;
-      double absolute_distance_square =
-          DotProduct(absolute_distance_vector, absolute_distance_vector);
+      if (absolute_distance_vector[kYDim] > second_r_cutoff_square)
+        continue;
+      if (absolute_distance_vector[kZDim] > second_r_cutoff_square)
+        continue;
+      double absolute_distance_square = double3_calculation::DotProduct(
+          absolute_distance_vector,
+          absolute_distance_vector);
       if (absolute_distance_square <= second_r_cutoff_square) {
         if (absolute_distance_square <= first_r_cutoff_square) {
           atom_list_[i].first_nearest_neighbor_list_.emplace_back(j);
@@ -125,6 +133,5 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
       }
     }
   }
-
 }
 

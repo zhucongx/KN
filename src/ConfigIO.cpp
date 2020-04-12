@@ -133,18 +133,17 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   box_.SetThirdBravaisVector(third_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
-  std::vector<std::string> elem_names;
-  std::string elem;
-  std::istringstream ele_iss(line);
-  while (ele_iss >> elem) {
-    elem_names.push_back(elem);
-  }
+  std::string element;
+  std::istringstream name_iss(line);
   if (!getline(ifs, line)) { return false; }
-  std::vector<int> elem_counts;
   int count;
   std::istringstream count_iss(line);
-  while (count_iss >> count) { elem_counts.push_back(count); }
-  num_atoms_ = accumulate(elem_counts.begin(), elem_counts.end(), 0);
+
+  std::vector<std::pair<std::string, int>> names_counts;
+  while (name_iss >> element && count_iss >> count) {
+    num_atoms_ += count;
+    names_counts.emplace_back(element, count);
+  }
 
   if (!getline(ifs, line)) { return false; }
   bool relOpt;
@@ -157,14 +156,14 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   }
 
   int id_count = 0;
-  for (int i = 0; i < elem_names.size(); ++i) {
-    double mass = elem_info::FindMass(elem_names[i]);
-    for (int j = 0; j < elem_counts[i]; ++j) {
+  for (const auto&[name, count]:names_counts) {
+    double mass = elem_info::FindMass(name);
+    for (int j = 0; j < count; ++j) {
       double position_X, position_Y, position_Z;
       if (!getline(ifs, line)) { return false; }
       iss = std::istringstream(line);
       if (!(iss >> position_X >> position_Y >> position_Z)) { return false; }
-      atom_list_.emplace_back(id_count++, mass, elem_names[i],
+      atom_list_.emplace_back(id_count++, mass, name,
                               position_X, position_Y, position_Z);
     }
   }
