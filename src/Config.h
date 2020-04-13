@@ -10,20 +10,20 @@
 #include "armadillo"
 
 #include "Atom.h"
+#include "Cell.h"
+#include "Utility.h"
+
+namespace box {
 
 class Config {
  public:
   /*
   Config.cpp
   */
-  void ConvertRelativeToAbsolute();
-  void ConvertAbsoluteToRelative();
   Config();
-  virtual ~Config();
   bool operator<(const Config &rhs) const;
-  void Initialize();
-  // void ConvertBravisLatticeToReciprocal();
   void Perturb();
+  virtual void UpdateNeighbors(double firrst_r_cutoff, double second_r_cutoff);
   /*
   ConfigIO.cpp
   */
@@ -35,36 +35,21 @@ class Config {
   // ignored for VASP calculation.
   void WritePOSCAR(const std::string &file_name = "POSCAR",
                    const bool &show_vacancy_option = false) const;
+
+ protected:
   /*
-  ConfigGenerate.cpp
+  Config.cpp
   */
-  void GenerateFCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const std::array<int, kDimension> &factors);
-  void GenerateBCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const std::array<int, kDimension> &factors);
-  void GenerateHCP(const double &lattice_constant_a,
-                   const double &lattice_constant_c,
-                   const std::string &element,
-                   const std::array<int, kDimension> &factors);
- private:
+  void Initialize();
+  void ConvertRelativeToAbsolute();
+  void ConvertAbsoluteToRelative();
   int num_atoms_{};
-  double scale_{};
   double energy_{};
-  // lowx, lowy, lowz, highx, highy, highz, xy xz yz
-  // std::array<double, 9> cell;
-  // length of three edges
-  // std::array<double, 3> length;
-  // This three vectors form a matrix matching the matrix in Config and POSCAR file
-  // representing three Bravais lattice vector
-  std::array<double, kDimension> first_bravais_vector_{},
-      second_bravais_vector_{}, third_bravais_vector_{};
-  // Three translational Bravais lattice vector
-  // std::array<double, kDimension> first_reciprocal_vector_{},
-  //     second_reciprocal_vector_{}, third_reciprocal_vector_{};
+  Cell cell_;
   std::vector<Atom> atom_list_;
   std::vector<int> vacancy_list_;
 };
+
+}// namespace box
 
 #endif //KN_SRC_CONFIG_H_

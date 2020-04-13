@@ -1,20 +1,19 @@
-//
-// Created by Zhucong Xi on 1/31/20.
-//
-#include "Config.h"
-
+#include "FCCConfig.h"
+#include "HCPConfig.h"
+using namespace box;
 int main(int argc, char *argv[]) {
-  Config test;
-  // test.generateFCC(16.184,"Al",std::vector<int>(3,10));
-  // test.readPOSCAR("test.pos");
-  // test.cnvPrl2Pst();
-  // test.cnvPst2Prl();
+  FCCConfig test;
+  // test.GenerateFCC(16.184,"Al",{1,1,1});
+
+  // test.GenerateHCP(3.209,5.211,"Mg",{50,50,50});
 
   // if(!test.ReadPOSCAR("test.pos")) { return 5;}
+
+  // test.Perturb();
+  test.ReadConfig("0.cfg");
   // test.ConvertAbsoluteToRelative();
   // test.ConvertRelativeToAbsolute();
-  test.GenerateHCP(3.209,5.211,"Mg",{2,2,2});
-  test.Perturb();
+  test.UpdateNeighbors(3.5,4.5);
   test.WriteConfig();
   test.WritePOSCAR();
 
