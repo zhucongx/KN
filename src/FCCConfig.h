@@ -3,6 +3,8 @@
 
 #include "Config.h"
 
+namespace box {
+
 class FCCConfig : public Config {
  public:
   void GenerateFCC(const double &lattice_constant_a,
@@ -11,5 +13,7 @@ class FCCConfig : public Config {
   void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
 
 };
+
+}// namespace box
 
 #endif //KN_SRC_FCCCONFIG_H_

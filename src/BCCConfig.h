@@ -3,6 +3,8 @@
 
 #include "Config.h"
 
+namespace box {
+
 class BCCConfig : public Config {
  public:
   void GenerateBCC(const double &lattice_constant_a,
@@ -10,5 +12,7 @@ class BCCConfig : public Config {
                    const Int3 &factors);
   void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) override;
 };
+
+}// namespace box
 
 #endif //KN_SRC_BCCCONFIG_H_

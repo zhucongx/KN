@@ -1,13 +1,15 @@
-#ifndef KN_SRC_BOX_H_
-#define KN_SRC_BOX_H_
+#ifndef KN_SRC_CELL_H_
+#define KN_SRC_CELL_H_
 
 #include <array>
 
 #include "constants.h"
 
-class Box {
+namespace box {
+
+class Cell {
  public:
-  Box();
+  Cell();
   [[nodiscard]] double GetScale() const;
   void SetScale(double scale);
   [[nodiscard]] const Double3 &GetFirstBravaisVector() const;
@@ -34,4 +36,6 @@ class Box {
 
 };
 
-#endif //KN_SRC_BOX_H_
+}// namespace box
+
+#endif //KN_SRC_CELL_H_

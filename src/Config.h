@@ -10,8 +10,10 @@
 #include "armadillo"
 
 #include "Atom.h"
-#include "Box.h"
+#include "Cell.h"
 #include "Utility.h"
+
+namespace box {
 
 class Config {
  public:
@@ -44,10 +46,11 @@ class Config {
   [[nodiscard]] Double3 GetRelativeDistanceVector(int first, int second) const;
   int num_atoms_{};
   double energy_{};
-  Box box_;
+  Cell box_;
   std::vector<Atom> atom_list_;
   std::vector<int> vacancy_list_;
-
 };
+
+}// namespace box
 
 #endif //KN_SRC_CONFIG_H_

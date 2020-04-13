@@ -1,7 +1,10 @@
 #include"Config.h"
+
+namespace box {
+
 const double kMean = 0;
 const double kStandardDeviation = 0.15;
-const double kCutOff = 0.4;
+const double kPerturbCutOff = 0.4;
 
 Config::Config() = default;
 
@@ -39,29 +42,31 @@ void Config::ConvertAbsoluteToRelative() {
   auto third_bravais_vector = box_.GetThirdBravaisVector();
 
   arma::mat bravais_matrix =
-      {{first_bravais_vector[kXDim], first_bravais_vector[kYDim],
-        first_bravais_vector[kZDim]},
-       {second_bravais_vector[kXDim], second_bravais_vector[kYDim],
-        second_bravais_vector[kZDim]},
-       {third_bravais_vector[kXDim], third_bravais_vector[kYDim],
-        third_bravais_vector[kZDim]}};
-  arma::mat inverse_bravais_matrix = arma::inv(bravais_matrix);
-  Double3 first_inverse_bravais_vector, second_inverse_bravais_vector,
-      third_inverse_bravais_vector;
-  for (const auto &i : {kXDim, kYDim, kZDim}) {
-    first_inverse_bravais_vector[i] = inverse_bravais_matrix(kXDim, i);
-    second_inverse_bravais_vector[i] = inverse_bravais_matrix(kYDim, i);
-    third_inverse_bravais_vector[i] = inverse_bravais_matrix(kZDim, i);
-  }
+      {{first_bravais_vector.x, first_bravais_vector.y,
+        first_bravais_vector.z},
+       {second_bravais_vector.x, second_bravais_vector.y,
+        second_bravais_vector.z},
+       {third_bravais_vector.x, third_bravais_vector.y,
+        third_bravais_vector.z}};
+  arma::mat inverse_matrix = arma::inv(bravais_matrix);
 
+  Double3 first_inverse_vector = {inverse_matrix(kXDim, kXDim),
+                                  inverse_matrix(kXDim, kYDim),
+                                  inverse_matrix(kXDim, kZDim)};
+  Double3 second_inverse_vector = {inverse_matrix(kYDim, kXDim),
+                                   inverse_matrix(kYDim, kYDim),
+                                   inverse_matrix(kYDim, kZDim)};
+  Double3 third_inverse_vector = {inverse_matrix(kZDim, kXDim),
+                                  inverse_matrix(kZDim, kYDim),
+                                  inverse_matrix(kZDim, kZDim)};
   for (auto &atom:atom_list_) {
     Double3 absolute_position =
         atom.GetAbsolutePosition();
     Double3 relative_position =
         double3_calc::LinearTransform(absolute_position,
-                                      first_inverse_bravais_vector,
-                                      second_inverse_bravais_vector,
-                                      third_inverse_bravais_vector);
+                                      first_inverse_vector,
+                                      second_inverse_vector,
+                                      third_inverse_vector);
     atom.SetRelativePosition(relative_position);
   }
 }
@@ -70,15 +75,18 @@ void Config::Perturb() {
   auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::mt19937_64 generator(seed);
   std::normal_distribution<double> distribution(kMean, kStandardDeviation);
+  auto add_displacement = [&generator, &distribution](double &coordinate) {
+    double displacement = distribution(generator);
+    while (abs(displacement) > kPerturbCutOff) {
+      displacement = distribution(generator);
+    }
+    coordinate += displacement;
+  };
   for (auto &atom : atom_list_) {
     auto absolute_position = atom.GetAbsolutePosition();
-    for (const auto &i : {kXDim, kYDim, kZDim}) {
-      double displacement = distribution(generator);
-      while (abs(displacement) > kCutOff) {
-        displacement = distribution(generator);
-      }
-      absolute_position[i] += displacement;
-    }
+    add_displacement(absolute_position.x);
+    add_displacement(absolute_position.y);
+    add_displacement(absolute_position.z);
     atom.SetAbsolutePosition(absolute_position);
   }
   ConvertAbsoluteToRelative();
@@ -96,11 +104,11 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
                                         first_bravais_vector,
                                         second_bravais_vector,
                                         third_bravais_vector);
-      if (absolute_distance_vector[kXDim] > second_r_cutoff_square)
+      if (absolute_distance_vector.x > second_r_cutoff_square)
         continue;
-      if (absolute_distance_vector[kYDim] > second_r_cutoff_square)
+      if (absolute_distance_vector.y > second_r_cutoff_square)
         continue;
-      if (absolute_distance_vector[kZDim] > second_r_cutoff_square)
+      if (absolute_distance_vector.z > second_r_cutoff_square)
         continue;
       double absolute_distance_square =
           double3_calc::InnerProduct(absolute_distance_vector);
@@ -109,29 +117,15 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
           atom_list_[i].first_nearest_neighbor_list_.emplace_back(j);
           atom_list_[j].first_nearest_neighbor_list_.emplace_back(i);
         }
-        atom_list_[i].second_near_neighbor_list_.emplace_back(j);
-        atom_list_[j].second_near_neighbor_list_.emplace_back(i);
+        atom_list_[i].second_nearest_neighbor_list_.emplace_back(j);
+        atom_list_[j].second_nearest_neighbor_list_.emplace_back(i);
       }
     }
   }
 }
 
 Double3 Config::GetRelativeDistanceVector(int first, int second) const {
-  auto atom1_relative_position = atom_list_[first].GetRelativePosition();
-  auto atom2_relative_position = atom_list_[second].GetRelativePosition();
-  Double3 relative_distance_vector =
-      {atom2_relative_position[kXDim] - atom1_relative_position[kXDim],
-       atom2_relative_position[kYDim] - atom1_relative_position[kYDim],
-       atom2_relative_position[kZDim] - atom1_relative_position[kZDim]};
-
-  // periodic boundary conditions
-  for (auto &relative_distance_vector_element:relative_distance_vector) {
-    if (relative_distance_vector_element >= 0.5)
-      relative_distance_vector_element -= 1;
-    else if (relative_distance_vector_element < -0.5)
-      relative_distance_vector_element += 1;
-  }
-  return relative_distance_vector;
+  return box::GetRelativeDistanceVector(atom_list_[first], atom_list_[second]);
 }
 
-
+}// namespace box

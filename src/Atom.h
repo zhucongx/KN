@@ -7,13 +7,13 @@
 
 #include "constants.h"
 
+namespace box {
+
 class Atom {
  public:
   Atom(int id);
-  Atom(int id, double mass, std::string type);
   // Set both relative and absolute position, but will be corrected later
   Atom(int id, double mass, std::string type, double x, double y, double z);
-  virtual ~Atom();
   void SetId(int id);
   [[nodiscard]] int GetId() const;
   void SetMass(double mass);
@@ -26,7 +26,7 @@ class Atom {
   [[nodiscard]] const Double3 &GetRelativePosition() const;
 
   // First and second nearest neighbor list
-  std::vector<Atom> second_near_neighbor_list_;
+  std::vector<Atom> second_nearest_neighbor_list_;
   // First nearest neighbor list
   std::vector<Atom> first_nearest_neighbor_list_;
  private:
@@ -39,4 +39,8 @@ class Atom {
   // relative position in the box
   Double3 relative_position_{};
 };
+
+Double3 GetRelativeDistanceVector(Atom first, Atom second);
+
+}// namespace box
 #endif //KN_SRC_ATOM_H_

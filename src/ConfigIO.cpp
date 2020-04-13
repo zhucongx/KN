@@ -1,5 +1,7 @@
 #include"Config.h"
 
+namespace box {
+
 bool Config::ReadConfig(const std::string &file_name) {
   Initialize();
   std::ifstream ifs(file_name, std::ifstream::in);
@@ -25,51 +27,51 @@ bool Config::ReadConfig(const std::string &file_name) {
   // "H0(1,1) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> first_bravais_vector[kXDim])) { return false; }
+  if (!(iss >> first_bravais_vector.x)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(1,2) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> first_bravais_vector[kYDim])) { return false; }
+  if (!(iss >> first_bravais_vector.y)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(1,3) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> first_bravais_vector[kZDim])) { return false; }
+  if (!(iss >> first_bravais_vector.z)) { return false; }
   box_.SetFirstBravaisVector(first_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   // "H0(2,1) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> second_bravais_vector[kXDim])) { return false; }
+  if (!(iss >> second_bravais_vector.x)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(2,2) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> second_bravais_vector[kYDim])) { return false; }
+  if (!(iss >> second_bravais_vector.y)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(2,3) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> second_bravais_vector[kZDim])) { return false; }
+  if (!(iss >> second_bravais_vector.z)) { return false; }
   box_.SetSecondBravaisVector(second_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   // "H0(3,1) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> third_bravais_vector[kXDim])) { return false; }
+  if (!(iss >> third_bravais_vector.x)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(3,2) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> third_bravais_vector[kYDim])) { return false; }
+  if (!(iss >> third_bravais_vector.y)) { return false; }
   if (!getline(ifs, line)) { return false; }
   // "H0(3,3) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> third_bravais_vector[kZDim])) { return false; }
+  if (!(iss >> third_bravais_vector.z)) { return false; }
   box_.SetThirdBravaisVector(third_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
@@ -116,20 +118,20 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
 
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
-  if (!(iss >> first_bravais_vector[kXDim] >> first_bravais_vector[kYDim]
-            >> first_bravais_vector[kZDim])) { return false; }
+  if (!(iss >> first_bravais_vector.x >> first_bravais_vector.y
+            >> first_bravais_vector.z)) { return false; }
   box_.SetFirstBravaisVector(first_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
-  if (!(iss >> second_bravais_vector[kXDim] >> second_bravais_vector[kYDim]
-            >> second_bravais_vector[kZDim])) { return false; }
+  if (!(iss >> second_bravais_vector.x >> second_bravais_vector.y
+            >> second_bravais_vector.z)) { return false; }
   box_.SetSecondBravaisVector(second_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
-  if (!(iss >> third_bravais_vector[kXDim] >> third_bravais_vector[kYDim]
-            >> third_bravais_vector[kZDim])) { return false; }
+  if (!(iss >> third_bravais_vector.x >> third_bravais_vector.y
+            >> third_bravais_vector.z)) { return false; }
   box_.SetThirdBravaisVector(third_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
@@ -182,15 +184,15 @@ void Config::WriteConfig(const std::string &file_name) const {
   std::ofstream ofs(file_name, std::ofstream::out);
   ofs << "Number of particles = " << num_atoms_ << "\n";
   ofs << "A = " << box_.GetScale() << " Angstrom (basic length-scale)\n";
-  ofs << "H0(1,1) = " << first_bravais_vector[kXDim] << " A\n";
-  ofs << "H0(1,2) = " << first_bravais_vector[kYDim] << " A\n";
-  ofs << "H0(1,3) = " << first_bravais_vector[kZDim] << " A\n";
-  ofs << "H0(2,1) = " << second_bravais_vector[kXDim] << " A\n";
-  ofs << "H0(2,2) = " << second_bravais_vector[kYDim] << " A\n";
-  ofs << "H0(2,3) = " << second_bravais_vector[kZDim] << " A\n";
-  ofs << "H0(3,1) = " << third_bravais_vector[kXDim] << " A\n";
-  ofs << "H0(3,2) = " << third_bravais_vector[kYDim] << " A\n";
-  ofs << "H0(3,3) = " << third_bravais_vector[kZDim] << " A\n";
+  ofs << "H0(1,1) = " << first_bravais_vector.x << " A\n";
+  ofs << "H0(1,2) = " << first_bravais_vector.y << " A\n";
+  ofs << "H0(1,3) = " << first_bravais_vector.z << " A\n";
+  ofs << "H0(2,1) = " << second_bravais_vector.x << " A\n";
+  ofs << "H0(2,2) = " << second_bravais_vector.y << " A\n";
+  ofs << "H0(2,3) = " << second_bravais_vector.z << " A\n";
+  ofs << "H0(3,1) = " << third_bravais_vector.x << " A\n";
+  ofs << "H0(3,2) = " << third_bravais_vector.y << " A\n";
+  ofs << "H0(3,3) = " << third_bravais_vector.z << " A\n";
   ofs << ".NO_VELOCITY.\n";
   ofs << "entry_count = 3\n";
   for (const auto &atom : atom_list_) {
@@ -199,9 +201,9 @@ void Config::WriteConfig(const std::string &file_name) const {
     auto relative_position = atom.GetRelativePosition();
     ofs << mass << "\n"
         << type << "\n"
-        << relative_position[kXDim] << " "
-        << relative_position[kYDim] << " "
-        << relative_position[kZDim] << "\n";
+        << relative_position.x << " "
+        << relative_position.y << " "
+        << relative_position.z << "\n";
   }
   ofs.close();
 }
@@ -212,15 +214,15 @@ void Config::WritePOSCAR(const std::string &file_name,
   auto third_bravais_vector = box_.GetThirdBravaisVector();
   std::ofstream ofs(file_name, std::ofstream::out);
   ofs << "#comment\n" << box_.GetScale() << "\n";
-  ofs << first_bravais_vector[kXDim] << " "
-      << first_bravais_vector[kYDim] << " "
-      << first_bravais_vector[kZDim] << "\n";
-  ofs << second_bravais_vector[kXDim] << " "
-      << second_bravais_vector[kYDim] << " "
-      << second_bravais_vector[kZDim] << "\n";
-  ofs << third_bravais_vector[kXDim] << " "
-      << third_bravais_vector[kYDim] << " "
-      << third_bravais_vector[kZDim] << "\n";
+  ofs << first_bravais_vector.x << " "
+      << first_bravais_vector.y << " "
+      << first_bravais_vector.z << "\n";
+  ofs << second_bravais_vector.x << " "
+      << second_bravais_vector.y << " "
+      << second_bravais_vector.z << "\n";
+  ofs << third_bravais_vector.x << " "
+      << third_bravais_vector.y << " "
+      << third_bravais_vector.z << "\n";
   std::map<std::string, int> elem_counts;
   for (const auto &atm : atom_list_) {
     elem_counts[atm.GetType()]++;
@@ -233,15 +235,16 @@ void Config::WritePOSCAR(const std::string &file_name,
     }
   }
   ofs << ele_oss.str() << "\n" << count_oss.str() << "\n";
-  ofs << "Direct\n";;
+  ofs << "Direct\n";
   for (const auto &atom : atom_list_) {
     if (!show_vacancy_option || atom.GetType() != "Vac") {
       auto relative_position = atom.GetRelativePosition();
-      ofs << relative_position[kXDim] << " "
-          << relative_position[kYDim] << " "
-          << relative_position[kZDim] << "\n";
+      ofs << relative_position.x << " "
+          << relative_position.y << " "
+          << relative_position.z << "\n";
     }
   }
   ofs.close();
 }
 
+}// namespace box

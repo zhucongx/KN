@@ -3,6 +3,8 @@
 
 #include "Config.h"
 
+namespace box {
+
 class HCPConfig : public Config {
  public:
   void GenerateHCP(const double &lattice_constant_a,
@@ -10,5 +12,7 @@ class HCPConfig : public Config {
                    const std::string &element,
                    const Int3 &factors);
 };
+
+}// namespace box
 
 #endif //KN_SRC_HCPCONFIG_H_
