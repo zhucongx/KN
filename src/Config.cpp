@@ -124,8 +124,8 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   }
 }
 
-Double3 Config::GetRelativeDistanceVector(int first, int second) const {
-  return box::GetRelativeDistanceVector(atom_list_[first], atom_list_[second]);
-}
+// Double3 Config::GetRelativeDistanceVector(int first, int second) const {
+//   return box::GetRelativeDistanceVector(atom_list_[first], atom_list_[second]);
+// }
 
 }// namespace box

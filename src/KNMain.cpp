@@ -2,7 +2,7 @@
 #include "HCPConfig.h"
 using namespace box;
 int main(int argc, char *argv[]) {
-  Config test;
+  FCCConfig test;
   // test.GenerateFCC(16.184,"Al",{1,1,1});
 
   // test.GenerateHCP(3.209,5.211,"Mg",{50,50,50});

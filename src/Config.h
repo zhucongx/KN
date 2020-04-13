@@ -43,7 +43,7 @@ class Config {
   void Initialize();
   void ConvertRelativeToAbsolute();
   void ConvertAbsoluteToRelative();
-  [[nodiscard]] Double3 GetRelativeDistanceVector(int first, int second) const;
+  // [[nodiscard]] Double3 GetRelativeDistanceVector(int first, int second) const;
   int num_atoms_{};
   double energy_{};
   Cell box_;
