@@ -2,7 +2,6 @@
 
 #include <utility>
 namespace box {
-Atom::Atom(int id) : id_(id), mass_(0), type_("Vac") {}
 Atom::Atom(int id, double mass, std::string type, double x, double y, double z)
     : id_(id), mass_(mass), type_(std::move(type)) {
   // Set both relative and absolute position, but will be corrected later
@@ -48,7 +47,7 @@ const Double3 &Atom::GetRelativePosition() const {
   return relative_position_;
 }
 
-Double3 GetRelativeDistanceVector(Atom first, Atom second){
+Double3 GetRelativeDistanceVector(const Atom& first, const Atom& second){
   auto atom1_relative_position = first.GetRelativePosition();
   auto atom2_relative_position = second.GetRelativePosition();
   Double3 relative_distance_vector =

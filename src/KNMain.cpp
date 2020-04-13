@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
   test.ReadConfig("0.cfg");
   // test.ConvertAbsoluteToRelative();
   // test.ConvertRelativeToAbsolute();
-  // test.UpdateNeighbors(3.5,4.5);
+  test.UpdateNeighbors(3.5,4.5);
   test.WriteConfig();
   test.WritePOSCAR();
 

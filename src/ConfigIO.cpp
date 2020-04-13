@@ -21,7 +21,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> scale)) { return false; }
-  box_.SetScale(scale);
+  cell_.SetScale(scale);
 
   if (!getline(ifs, line)) { return false; }
   // "H0(1,1) = %lf A"
@@ -38,7 +38,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> first_bravais_vector.z)) { return false; }
-  box_.SetFirstBravaisVector(first_bravais_vector);
+  cell_.SetFirstBravaisVector(first_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   // "H0(2,1) = %lf A"
@@ -55,7 +55,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> second_bravais_vector.z)) { return false; }
-  box_.SetSecondBravaisVector(second_bravais_vector);
+  cell_.SetSecondBravaisVector(second_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   // "H0(3,1) = %lf A"
@@ -72,7 +72,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> third_bravais_vector.z)) { return false; }
-  box_.SetThirdBravaisVector(third_bravais_vector);
+  cell_.SetThirdBravaisVector(third_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   // .NO_VELOCITY.
@@ -114,25 +114,25 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   // scale factor, usually which is 1
   iss = std::istringstream(line);
   if (!(iss >> scale)) { return false; }
-  box_.SetScale(scale);
+  cell_.SetScale(scale);
 
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
   if (!(iss >> first_bravais_vector.x >> first_bravais_vector.y
             >> first_bravais_vector.z)) { return false; }
-  box_.SetFirstBravaisVector(first_bravais_vector);
+  cell_.SetFirstBravaisVector(first_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
   if (!(iss >> second_bravais_vector.x >> second_bravais_vector.y
             >> second_bravais_vector.z)) { return false; }
-  box_.SetSecondBravaisVector(second_bravais_vector);
+  cell_.SetSecondBravaisVector(second_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   iss = std::istringstream(line);
   if (!(iss >> third_bravais_vector.x >> third_bravais_vector.y
             >> third_bravais_vector.z)) { return false; }
-  box_.SetThirdBravaisVector(third_bravais_vector);
+  cell_.SetThirdBravaisVector(third_bravais_vector);
 
   if (!getline(ifs, line)) { return false; }
   std::string element;
@@ -178,12 +178,12 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   return true;
 }
 void Config::WriteConfig(const std::string &file_name) const {
-  auto first_bravais_vector = box_.GetFirstBravaisVector();
-  auto second_bravais_vector = box_.GetSecondBravaisVector();
-  auto third_bravais_vector = box_.GetThirdBravaisVector();
+  auto first_bravais_vector = cell_.GetFirstBravaisVector();
+  auto second_bravais_vector = cell_.GetSecondBravaisVector();
+  auto third_bravais_vector = cell_.GetThirdBravaisVector();
   std::ofstream ofs(file_name, std::ofstream::out);
   ofs << "Number of particles = " << num_atoms_ << "\n";
-  ofs << "A = " << box_.GetScale() << " Angstrom (basic length-scale)\n";
+  ofs << "A = " << cell_.GetScale() << " Angstrom (basic length-scale)\n";
   ofs << "H0(1,1) = " << first_bravais_vector.x << " A\n";
   ofs << "H0(1,2) = " << first_bravais_vector.y << " A\n";
   ofs << "H0(1,3) = " << first_bravais_vector.z << " A\n";
@@ -209,11 +209,11 @@ void Config::WriteConfig(const std::string &file_name) const {
 }
 void Config::WritePOSCAR(const std::string &file_name,
                          const bool &show_vacancy_option) const {
-  auto first_bravais_vector = box_.GetFirstBravaisVector();
-  auto second_bravais_vector = box_.GetSecondBravaisVector();
-  auto third_bravais_vector = box_.GetThirdBravaisVector();
+  auto first_bravais_vector = cell_.GetFirstBravaisVector();
+  auto second_bravais_vector = cell_.GetSecondBravaisVector();
+  auto third_bravais_vector = cell_.GetThirdBravaisVector();
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "#comment\n" << box_.GetScale() << "\n";
+  ofs << "#comment\n" << cell_.GetScale() << "\n";
   ofs << first_bravais_vector.x << " "
       << first_bravais_vector.y << " "
       << first_bravais_vector.z << "\n";

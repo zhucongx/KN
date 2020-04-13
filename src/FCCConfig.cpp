@@ -7,10 +7,10 @@ void FCCConfig::GenerateFCC(const double &lattice_constant_a,
                             const Int3 &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  box_.SetFirstBravaisVector({lattice_constant_a * factors.x, 0, 0});
-  box_.SetSecondBravaisVector({0, lattice_constant_a * factors.y, 0});
-  box_.SetThirdBravaisVector({0, 0, lattice_constant_a * factors.z});
-  box_.SetScale(1.0);
+  cell_.SetFirstBravaisVector({lattice_constant_a * factors.x, 0, 0});
+  cell_.SetSecondBravaisVector({0, lattice_constant_a * factors.y, 0});
+  cell_.SetThirdBravaisVector({0, 0, lattice_constant_a * factors.z});
+  cell_.SetScale(1.0);
   num_atoms_ = 0;
   auto x_length = static_cast<double>(factors.x);
   auto y_length = static_cast<double>(factors.y);
@@ -45,11 +45,11 @@ void FCCConfig::GenerateFCC(const double &lattice_constant_a,
 
 void FCCConfig::UpdateNeighbors(double first_r_cutoff,
                                 double second_r_cutoff) {
-  Double3 length = {box_.GetFirstBravaisVector().x,
-                    box_.GetSecondBravaisVector().y,
-                    box_.GetThirdBravaisVector().z};
+  Double3 length = {cell_.GetFirstBravaisVector().x,
+                    cell_.GetSecondBravaisVector().y,
+                    cell_.GetThirdBravaisVector().z};
   // if the box is a cubic box, we just need to compare relative distance
-  const bool cubic_status = box_.IsCubic();
+  const bool cubic_status = cell_.IsCubic();
   if (cubic_status) {
     first_r_cutoff /= length.x;
     second_r_cutoff /= length.x;
@@ -57,13 +57,12 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
   double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
 
-  for (int i = 0; i < num_atoms_; i++) {
-    for (int j = 0; j < i; j++) {
-      Double3 distance_vector = GetRelativeDistanceVector(i, j);
+  for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
+    for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
+      Double3 distance_vector = GetRelativeDistanceVector(*it1, *it2);
       // if the box is not a cubic box, compare absolute distance
       if (!cubic_status) {
-        distance_vector =
-            double3_calc::StarProduct(GetRelativeDistanceVector(i, j), length);
+        distance_vector = double3_calc::StarProduct(distance_vector, length);
       }
       if (distance_vector.x > second_r_cutoff_square)
         continue;
@@ -75,11 +74,11 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
           double3_calc::InnerProduct(distance_vector);
       if (distance_square < second_r_cutoff_square) {
         if (distance_square < first_r_cutoff_square) {
-          atom_list_[i].first_nearest_neighbor_list_.emplace_back(j);
-          atom_list_[j].first_nearest_neighbor_list_.emplace_back(i);
+          it1->first_nearest_neighbor_list_.emplace_back(it2->GetId());
+          it2->first_nearest_neighbor_list_.emplace_back(it1->GetId());
         }
-        atom_list_[i].second_nearest_neighbor_list_.emplace_back(j);
-        atom_list_[j].second_nearest_neighbor_list_.emplace_back(i);
+        it1->second_nearest_neighbor_list_.emplace_back(it2->GetId());
+        it2->second_nearest_neighbor_list_.emplace_back(it1->GetId());
       }
     }
   }

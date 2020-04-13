@@ -11,7 +11,6 @@ namespace box {
 
 class Atom {
  public:
-  Atom(int id);
   // Set both relative and absolute position, but will be corrected later
   Atom(int id, double mass, std::string type, double x, double y, double z);
   void SetId(int id);
@@ -26,9 +25,9 @@ class Atom {
   [[nodiscard]] const Double3 &GetRelativePosition() const;
 
   // First and second nearest neighbor list
-  std::vector<Atom> second_nearest_neighbor_list_;
+  std::vector<int> second_nearest_neighbor_list_;
   // First nearest neighbor list
-  std::vector<Atom> first_nearest_neighbor_list_;
+  std::vector<int> first_nearest_neighbor_list_;
  private:
   // atom id which is an unique int for every atom indexed form 0
   int id_;
@@ -40,7 +39,7 @@ class Atom {
   Double3 relative_position_{};
 };
 
-Double3 GetRelativeDistanceVector(Atom first, Atom second);
+Double3 GetRelativeDistanceVector(const Atom& first, const Atom& second);
 
 }// namespace box
 #endif //KN_SRC_ATOM_H_

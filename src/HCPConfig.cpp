@@ -8,12 +8,12 @@ void HCPConfig::GenerateHCP(const double &lattice_constant_a,
                             const Int3 &factors) {
   Initialize();
   double mass = elem_info::FindMass(element);
-  box_.SetFirstBravaisVector({lattice_constant_a * factors.x, 0, 0});
-  box_.SetSecondBravaisVector({-0.5 * lattice_constant_a * factors.y,
-                               0.5 * sqrt(3) * lattice_constant_a * factors.y,
-                               0});
-  box_.SetThirdBravaisVector({0, 0, lattice_constant_c * factors.z});
-  box_.SetScale(1.0);
+  cell_.SetFirstBravaisVector({lattice_constant_a * factors.x, 0, 0});
+  cell_.SetSecondBravaisVector({-0.5 * lattice_constant_a * factors.y,
+                                0.5 * sqrt(3) * lattice_constant_a * factors.y,
+                                0});
+  cell_.SetThirdBravaisVector({0, 0, lattice_constant_c * factors.z});
+  cell_.SetScale(1.0);
   num_atoms_ = 0;
 
   auto x_length = static_cast<double>(factors.x);
