@@ -91,29 +91,11 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
   for (int i = 0; i < num_atoms_; i++) {
     for (int j = 0; j < i; j++) {
-      auto atom1_relative_position = atom_list_[i].GetRelativePosition();
-      auto atom2_relative_position = atom_list_[j].GetRelativePosition();
-      Double3 relative_distance_vector =
-          {atom2_relative_position[kXDim] - atom1_relative_position[kXDim],
-           atom2_relative_position[kYDim] - atom1_relative_position[kYDim],
-           atom2_relative_position[kZDim] - atom1_relative_position[kZDim]};
-      // periodic boundary conditions
-      for (auto &relative_distance_vector_element:relative_distance_vector) {
-        if (relative_distance_vector_element >= 0.5)
-          relative_distance_vector_element -= 1;
-        else if (relative_distance_vector_element < -0.5)
-          relative_distance_vector_element += 1;
-      }
-
       Double3 absolute_distance_vector =
-          double3_calc::LinearTransform(relative_distance_vector,
+          double3_calc::LinearTransform(GetRelativeDistanceVector(i, j),
                                         first_bravais_vector,
                                         second_bravais_vector,
                                         third_bravais_vector);
-      // if (absolute_distance_vector[kXDim] > second_r_cutoff_square
-      //     || absolute_distance_vector[kYDim] > second_r_cutoff_square
-      //     || absolute_distance_vector[kZDim] > second_r_cutoff_square)
-      //   continue;
       if (absolute_distance_vector[kXDim] > second_r_cutoff_square)
         continue;
       if (absolute_distance_vector[kYDim] > second_r_cutoff_square)
@@ -121,17 +103,35 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
       if (absolute_distance_vector[kZDim] > second_r_cutoff_square)
         continue;
       double absolute_distance_square =
-          double3_calc::DotProduct(absolute_distance_vector,
-                                   absolute_distance_vector);
+          double3_calc::InnerProduct(absolute_distance_vector);
       if (absolute_distance_square <= second_r_cutoff_square) {
         if (absolute_distance_square <= first_r_cutoff_square) {
           atom_list_[i].first_nearest_neighbor_list_.emplace_back(j);
           atom_list_[j].first_nearest_neighbor_list_.emplace_back(i);
         }
-        atom_list_[i].near_neighbor_list_.emplace_back(j);
-        atom_list_[j].near_neighbor_list_.emplace_back(i);
+        atom_list_[i].second_near_neighbor_list_.emplace_back(j);
+        atom_list_[j].second_near_neighbor_list_.emplace_back(i);
       }
     }
   }
 }
+
+Double3 Config::GetRelativeDistanceVector(int first, int second) const {
+  auto atom1_relative_position = atom_list_[first].GetRelativePosition();
+  auto atom2_relative_position = atom_list_[second].GetRelativePosition();
+  Double3 relative_distance_vector =
+      {atom2_relative_position[kXDim] - atom1_relative_position[kXDim],
+       atom2_relative_position[kYDim] - atom1_relative_position[kYDim],
+       atom2_relative_position[kZDim] - atom1_relative_position[kZDim]};
+
+  // periodic boundary conditions
+  for (auto &relative_distance_vector_element:relative_distance_vector) {
+    if (relative_distance_vector_element >= 0.5)
+      relative_distance_vector_element -= 1;
+    else if (relative_distance_vector_element < -0.5)
+      relative_distance_vector_element += 1;
+  }
+  return relative_distance_vector;
+}
+
 

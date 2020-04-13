@@ -26,7 +26,7 @@ class Atom {
   [[nodiscard]] const Double3 &GetRelativePosition() const;
 
   // First and second nearest neighbor list
-  std::vector<Atom> near_neighbor_list_;
+  std::vector<Atom> second_near_neighbor_list_;
   // First nearest neighbor list
   std::vector<Atom> first_nearest_neighbor_list_;
  private:

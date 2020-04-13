@@ -34,3 +34,13 @@ void Box::Initialize() {
   second_bravais_vector_.fill(0);
   third_bravais_vector_.fill(0);
 }
+bool Box::IsCubic() const {
+  return first_bravais_vector_[kXDim] == second_bravais_vector_[kYDim] &&
+      second_bravais_vector_[kYDim] == third_bravais_vector_[kZDim] &&
+      first_bravais_vector_[kYDim] == 0 &&
+      first_bravais_vector_[kZDim] == 0 &&
+      second_bravais_vector_[kXDim] == 0 &&
+      second_bravais_vector_[kZDim] == 0 &&
+      third_bravais_vector_[kXDim] == 0 &&
+      third_bravais_vector_[kYDim] == 0;
+}

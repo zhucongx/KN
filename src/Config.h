@@ -21,7 +21,7 @@ class Config {
   Config();
   bool operator<(const Config &rhs) const;
   void Perturb();
-  void UpdateNeighbors(double firrst_r_cutoff, double second_r_cutoff);
+  virtual void UpdateNeighbors(double firrst_r_cutoff, double second_r_cutoff);
   /*
   ConfigIO.cpp
   */
@@ -33,26 +33,15 @@ class Config {
   // ignored for VASP calculation.
   void WritePOSCAR(const std::string &file_name = "POSCAR",
                    const bool &show_vacancy_option = false) const;
-  /*
-  ConfigGenerate.cpp
-  */
-  void GenerateFCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const Int3 &factors);
-  void GenerateBCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const Int3 &factors);
-  void GenerateHCP(const double &lattice_constant_a,
-                   const double &lattice_constant_c,
-                   const std::string &element,
-                   const Int3 &factors);
- private:
+
+ protected:
   /*
   Config.cpp
   */
   void Initialize();
   void ConvertRelativeToAbsolute();
   void ConvertAbsoluteToRelative();
+  [[nodiscard]] Double3 GetRelativeDistanceVector(int first, int second) const;
   int num_atoms_{};
   double energy_{};
   Box box_;

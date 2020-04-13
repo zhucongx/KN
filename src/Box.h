@@ -8,15 +8,16 @@
 class Box {
  public:
   Box();
-  [[nodiscard]] const Double3 &GetFirstBravaisVector() const;
-  double GetScale() const;
+  [[nodiscard]] double GetScale() const;
   void SetScale(double scale);
+  [[nodiscard]] const Double3 &GetFirstBravaisVector() const;
   void SetFirstBravaisVector(const Double3 &first_bravais_vector);
   [[nodiscard]] const Double3 &GetSecondBravaisVector() const;
   void SetSecondBravaisVector(const Double3 &second_bravais_vector);
   [[nodiscard]] const Double3 &GetThirdBravaisVector() const;
   void SetThirdBravaisVector(const Double3 &third_bravais_vector);
   void Initialize();
+  [[nodiscard]] bool IsCubic() const;
  private:
   double scale_{};
   // lowx, lowy, lowz, highx, highy, highz, xy xz yz
