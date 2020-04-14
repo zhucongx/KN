@@ -15,39 +15,40 @@ bool Config::operator<(const Config &rhs) const {
 void Config::Initialize() {
   num_atoms_ = 0;
   energy_ = 0.0;
-  cell_.Initialize();
+  scale_ = 1.0;
+  first_bravais_vector_ = {0, 0, 0};
+  second_bravais_vector_ = {0, 0, 0};
+  third_bravais_vector_ = {0, 0, 0};
   atom_list_.clear();
   vacancy_list_.clear();
 }
-
+bool Config::IsCubic() const {
+  return first_bravais_vector_.x == second_bravais_vector_.y &&
+      second_bravais_vector_.y == third_bravais_vector_.z &&
+      first_bravais_vector_.y == 0 &&
+      first_bravais_vector_.z == 0 &&
+      second_bravais_vector_.x == 0 &&
+      second_bravais_vector_.z == 0 &&
+      third_bravais_vector_.x == 0 &&
+      third_bravais_vector_.y == 0;
+}
 void Config::ConvertRelativeToAbsolute() {
-  auto first_bravais_vector = cell_.GetFirstBravaisVector();
-  auto second_bravais_vector = cell_.GetSecondBravaisVector();
-  auto third_bravais_vector = cell_.GetThirdBravaisVector();
-
   for (auto &atom:atom_list_) {
+    double3_calc::LinearTransform(atom.relative_position_,
+                                  first_bravais_vector_,
+                                  second_bravais_vector_,
+                                  third_bravais_vector_);
 
-    auto relative_position = atom.GetRelativePosition();
-    Double3 absolute_position =
-        double3_calc::LinearTransform(relative_position,
-                                      first_bravais_vector,
-                                      second_bravais_vector,
-                                      third_bravais_vector);
-    atom.SetAbsolutePosition(absolute_position);
   }
 }
 void Config::ConvertAbsoluteToRelative() {
-  auto first_bravais_vector = cell_.GetFirstBravaisVector();
-  auto second_bravais_vector = cell_.GetSecondBravaisVector();
-  auto third_bravais_vector = cell_.GetThirdBravaisVector();
-
   arma::mat bravais_matrix =
-      {{first_bravais_vector.x, first_bravais_vector.y,
-        first_bravais_vector.z},
-       {second_bravais_vector.x, second_bravais_vector.y,
-        second_bravais_vector.z},
-       {third_bravais_vector.x, third_bravais_vector.y,
-        third_bravais_vector.z}};
+      {{first_bravais_vector_.x, first_bravais_vector_.y,
+        first_bravais_vector_.z},
+       {second_bravais_vector_.x, second_bravais_vector_.y,
+        second_bravais_vector_.z},
+       {third_bravais_vector_.x, third_bravais_vector_.y,
+        third_bravais_vector_.z}};
   arma::mat inverse_matrix = arma::inv(bravais_matrix);
 
   Double3 first_inverse_vector = {inverse_matrix(kXDim, kXDim),
@@ -60,14 +61,11 @@ void Config::ConvertAbsoluteToRelative() {
                                   inverse_matrix(kZDim, kYDim),
                                   inverse_matrix(kZDim, kZDim)};
   for (auto &atom:atom_list_) {
-    Double3 absolute_position =
-        atom.GetAbsolutePosition();
-    Double3 relative_position =
-        double3_calc::LinearTransform(absolute_position,
+    atom.relative_position_ =
+        double3_calc::LinearTransform(atom.absolute_position_,
                                       first_inverse_vector,
                                       second_inverse_vector,
                                       third_inverse_vector);
-    atom.SetRelativePosition(relative_position);
   }
 }
 
@@ -83,27 +81,22 @@ void Config::Perturb() {
     coordinate += displacement;
   };
   for (auto &atom : atom_list_) {
-    auto absolute_position = atom.GetAbsolutePosition();
-    add_displacement(absolute_position.x);
-    add_displacement(absolute_position.y);
-    add_displacement(absolute_position.z);
-    atom.SetAbsolutePosition(absolute_position);
+    add_displacement(atom.absolute_position_.x);
+    add_displacement(atom.absolute_position_.y);
+    add_displacement(atom.absolute_position_.z);
   }
   ConvertAbsoluteToRelative();
 }
 void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
-  auto first_bravais_vector = cell_.GetFirstBravaisVector();
-  auto second_bravais_vector = cell_.GetSecondBravaisVector();
-  auto third_bravais_vector = cell_.GetThirdBravaisVector();
   double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
   for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
       Double3 absolute_distance_vector =
           double3_calc::LinearTransform(GetRelativeDistanceVector(*it1, *it2),
-                                        first_bravais_vector,
-                                        second_bravais_vector,
-                                        third_bravais_vector);
+                                        first_bravais_vector_,
+                                        second_bravais_vector_,
+                                        third_bravais_vector_);
       if (absolute_distance_vector.x > second_r_cutoff_square)
         continue;
       if (absolute_distance_vector.y > second_r_cutoff_square)
@@ -121,6 +114,14 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
         it2->second_nearest_neighbor_list_.emplace_back(it1->GetId());
       }
     }
+  }
+}
+
+void Config::ShiftAtomToCentral(const Rank &id) {
+  Double3 criterionDistance = atom_list_[id].relative_position_;
+  for (auto &atom:atom_list_) {
+    atom.relative_position_ = double3_calc::Subtract(atom.relative_position_,
+                                                     criterionDistance);
   }
 }
 

@@ -82,6 +82,18 @@ inline double FindMass(const int &atomicNum) {
 
 namespace double3_calc {
 
+inline Double3 Subtract(const Double3 &minuend, const Double3 &subtracted) {
+  return {minuend.x - subtracted.x,
+          minuend.y - subtracted.y,
+          minuend.z - subtracted.z};
+}
+
+inline Double3 Add(const Double3 &first, const Double3 &second) {
+  return {first.x + second.x,
+          first.y + second.y,
+          first.z + second.z};
+}
+
 inline Double3 CrossProduct(const Double3 &first, const Double3 &second) {
   return {first.y * second.z - first.z * second.y,
           first.z * second.x - first.x * second.z,
@@ -89,18 +101,15 @@ inline Double3 CrossProduct(const Double3 &first, const Double3 &second) {
 }
 
 inline double DotProduct(const Double3 &first, const Double3 &second) {
-  return first.x * second.x + first.y * second.y
-      + first.z * second.z;
+  return first.x * second.x + first.y * second.y + first.z * second.z;
 }
 
 inline double InnerProduct(const Double3 &vector) {
-  return vector.x * vector.x + vector.y * vector.y
-      + vector.z * vector.z;
+  return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
 inline Double3 StarProduct(const Double3 &first, const Double3 &second) {
-  return {first.x * second.x, first.y * second.y,
-          first.z * second.z};
+  return {first.x * second.x, first.y * second.y, first.z * second.z};
 }
 
 // first(1*3) * right(3*3)
@@ -108,12 +117,9 @@ inline Double3 LinearTransform(const Double3 &first,
                                const Double3 &second1,
                                const Double3 &second2,
                                const Double3 &second3) {
-  return {first.x * second1.x + first.y * second2.x
-              + first.z * second3.x,
-          first.x * second1.y + first.y * second2.y
-              + first.z * second3.y,
-          first.x * second1.z + first.y * second2.z
-              + first.z * second3.z};
+  return {first.x * second1.x + first.y * second2.x + first.z * second3.x,
+          first.x * second1.y + first.y * second2.y + first.z * second3.y,
+          first.x * second1.z + first.y * second2.z + first.z * second3.z};
 }
 
 } // namespace double3_calc

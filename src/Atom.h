@@ -6,37 +6,35 @@
 #include <vector>
 
 #include "constants.h"
-
+#include "Utility.h"
 namespace box {
-
+typedef int Rank;
 class Atom {
  public:
+  Atom();
   // Set both relative and absolute position, but will be corrected later
-  Atom(int id, double mass, std::string type, double x, double y, double z);
-  void SetId(int id);
-  [[nodiscard]] int GetId() const;
+  Atom(Rank id, double mass, std::string type, double x, double y, double z);
+  void SetId(Rank id);
+  [[nodiscard]] Rank GetId() const;
   void SetMass(double mass);
   [[nodiscard]] double GetMass() const;
   void SetType(const std::string &type);
   [[nodiscard]] const std::string &GetType() const;
-  void SetAbsolutePosition(const Double3 &absolute_position);
-  [[nodiscard]] const Double3 &GetAbsolutePosition() const;
-  void SetRelativePosition(const Double3 &relative_position);
-  [[nodiscard]] const Double3 &GetRelativePosition() const;
 
-  // First and second nearest neighbor list
-  std::vector<int> second_nearest_neighbor_list_;
-  // First nearest neighbor list
-  std::vector<int> first_nearest_neighbor_list_;
- private:
-  // atom id which is an unique int for every atom indexed form 0
-  int id_;
-  double mass_;
-  std::string type_;
   // absolute position
   Double3 absolute_position_{};
   // relative position in the box
   Double3 relative_position_{};
+  // First and second nearest neighbor list
+  std::vector<Rank> second_nearest_neighbor_list_;
+  // First nearest neighbor list
+  std::vector<Rank> first_nearest_neighbor_list_;
+ private:
+  // atom id which is an unique Rank for every atom indexed form 0
+  Rank id_{};
+  double mass_{};
+  std::string type_;
+
 };
 
 Double3 GetRelativeDistanceVector(const Atom& first, const Atom& second);
