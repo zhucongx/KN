@@ -1,6 +1,5 @@
 #include "Atom.h"
 
-#include <utility>
 namespace box {
 Atom::Atom() = default;
 Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
@@ -14,7 +13,7 @@ Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
   absolute_position_.y = y;
   absolute_position_.z = z;
 }
-Rank Atom::GetId() const {
+Atom::Rank Atom::GetId() const {
   return id_;
 }
 void Atom::SetId(Rank id) {
@@ -33,10 +32,10 @@ void Atom::SetType(const std::string &type) {
   type_ = type;
 }
 
-Double3 GetRelativeDistanceVector(const Atom &first, const Atom &second) {
-  Double3 relative_distance_vector =
-      double3_calc::StarProduct(first.relative_position_,
-                                second.relative_position_);
+Vector3<double> GetRelativeDistanceVector(const Atom &first, const Atom &second) {
+  Vector3<double>
+      relative_distance_vector = StarProduct(first.relative_position_,
+                                             second.relative_position_);
   auto check_periodic = [](double &distance) {
     if (distance >= 0.5)
       distance -= 1;

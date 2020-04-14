@@ -71,7 +71,7 @@ bool Config::ReadConfig(const std::string &file_name) {
   // .NO_VELOCITY.
   if (!getline(ifs, line)) { return false; }
   // "entry_count = 3"
-  for (Rank i = 0; i < num_atoms_; ++i) {
+  for (Atom::Rank i = 0; i < num_atoms_; ++i) {
     double mass, relative_position_X, relative_position_Y, relative_position_Z;
     std::string type;
     if (!getline(ifs, line)) { return false; }
@@ -87,6 +87,7 @@ bool Config::ReadConfig(const std::string &file_name) {
                             relative_position_X,
                             relative_position_Y,
                             relative_position_Z);
+    element_list_set_[type].emplace_back(i);
   }
   ifs.close();
   ConvertRelativeToAbsolute();
@@ -127,10 +128,10 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   int count;
   std::istringstream count_iss(line);
 
-  std::vector<std::pair<std::string, int>> names_counts;
+  std::vector<std::pair<std::string, int>> elements_counts;
   while (name_iss >> element && count_iss >> count) {
     num_atoms_ += count;
-    names_counts.emplace_back(element, count);
+    elements_counts.emplace_back(element, count);
   }
 
   if (!getline(ifs, line)) { return false; }
@@ -143,16 +144,18 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
     return false;
   }
 
-  Rank id_count = 0;
-  for (const auto&[name, count]:names_counts) {
-    double mass = elem_info::FindMass(name);
+  Atom::Rank id_count = 0;
+  for (const auto&[element_name, count]:elements_counts) {
+    double mass = elem_info::FindMass(element_name);
     for (int j = 0; j < count; ++j) {
       double position_X, position_Y, position_Z;
       if (!getline(ifs, line)) { return false; }
       iss = std::istringstream(line);
       if (!(iss >> position_X >> position_Y >> position_Z)) { return false; }
-      atom_list_.emplace_back(id_count++, mass, name,
+      atom_list_.emplace_back(id_count, mass, element_name,
                               position_X, position_Y, position_Z);
+      element_list_set_[element_name].emplace_back(id_count);
+      ++id_count;
     }
   }
   if (relOpt) {
@@ -178,7 +181,7 @@ void Config::WriteConfig(const std::string &file_name) const {
   ofs << "H0(3,3) = " << third_bravais_vector_.z << " A\n";
   ofs << ".NO_VELOCITY.\n";
   ofs << "entry_count = 3\n";
-  for (const auto &atom : atom_list_) {
+  for (const auto &atom:atom_list_) {
     double mass = atom.GetMass();
     const std::string &type = atom.GetType();
     ofs << mass << "\n"
@@ -202,20 +205,16 @@ void Config::WritePOSCAR(const std::string &file_name,
   ofs << third_bravais_vector_.x << " "
       << third_bravais_vector_.y << " "
       << third_bravais_vector_.z << "\n";
-  std::map<std::string, int> elem_counts;
-  for (const auto &atm : atom_list_) {
-    elem_counts[atm.GetType()]++;
-  }
   std::ostringstream ele_oss, count_oss;
-  for (const auto &elem_count:elem_counts) {
-    if (!show_vacancy_option || elem_count.first != "Vac") {
-      ele_oss << elem_count.first << " ";
-      count_oss << elem_count.second << " ";
+  for (const auto &[element, element_list]:element_list_set_) {
+    if (!show_vacancy_option || element != "Vac") {
+      ele_oss << element << " ";
+      count_oss << element_list.size() << " ";
     }
   }
   ofs << ele_oss.str() << "\n" << count_oss.str() << "\n";
   ofs << "Direct\n";
-  for (const auto &atom : atom_list_) {
+  for (const auto &atom:atom_list_) {
     if (!show_vacancy_option || atom.GetType() != "Vac") {
       ofs << atom.relative_position_.x << " "
           << atom.relative_position_.y << " "
@@ -224,6 +223,5 @@ void Config::WritePOSCAR(const std::string &file_name,
   }
   ofs.close();
 }
-
 
 }// namespace box

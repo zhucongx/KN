@@ -5,12 +5,14 @@
 #include <array>
 #include <vector>
 
-#include "constants.h"
-#include "Utility.h"
+#include "Constants.h"
+#include "Vector3.h"
+
 namespace box {
-typedef int Rank;
 class Atom {
  public:
+  typedef int Rank;
+
   Atom();
   // Set both relative and absolute position, but will be corrected later
   Atom(Rank id, double mass, std::string type, double x, double y, double z);
@@ -22,9 +24,9 @@ class Atom {
   [[nodiscard]] const std::string &GetType() const;
 
   // absolute position
-  Double3 absolute_position_{};
+  Vector3<double> absolute_position_{};
   // relative position in the box
-  Double3 relative_position_{};
+  Vector3<double> relative_position_{};
   // First and second nearest neighbor list
   std::vector<Rank> second_nearest_neighbor_list_;
   // First nearest neighbor list
@@ -34,10 +36,10 @@ class Atom {
   Rank id_{};
   double mass_{};
   std::string type_;
-
 };
 
-Double3 GetRelativeDistanceVector(const Atom& first, const Atom& second);
+Vector3<double> GetRelativeDistanceVector(const Atom &first,
+                                          const Atom &second);
 
 }// namespace box
 #endif //KN_SRC_ATOM_H_

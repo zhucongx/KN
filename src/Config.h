@@ -10,7 +10,6 @@
 #include "armadillo"
 
 #include "Atom.h"
-#include "Utility.h"
 
 namespace box {
 
@@ -27,8 +26,13 @@ class Config {
   void ConvertRelativeToAbsolute();
   void ConvertAbsoluteToRelative();
   void Perturb();
-  virtual void UpdateNeighbors(double firrst_r_cutoff, double second_r_cutoff);
-  virtual void ShiftAtomToCentral(const Rank &id);
+  virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
+  // update both atoms' relative and absolute positions according to periodic
+  // boundary condition
+  void WrapPeriodicAtomPosition();
+  void ShiftAtomToCentral(const Atom::Rank &id);
+  void MoveAbsoluteDistance(const Vector3<double> &distance_vector);
+  std::map<std::string, int> CountAllBonds(double r_cutoff);
   /*
   ConfigIO.cpp
   */
@@ -44,28 +48,24 @@ class Config {
   /*
   ConfigGenerate.cpp
   */
-  void GenerateUnitCell(std::vector<std::pair<std::string, Double3>> type_position);
-  void GenerateBCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const Int3 &factors);
   void GenerateFCC(const double &lattice_constant_a,
                    const std::string &element,
-                   const Int3 &factors);
+                   const Vector3<int> &factors);
   void GenerateHCP(const double &lattice_constant_a,
                    const double &lattice_constant_c,
                    const std::string &element,
-                   const Int3 &factors);
+                   const Vector3<int> &factors);
  protected:
   double scale_{};
   // lowx, lowy, lowz, highx, highy, highz, xy xz yz
   // std::array<double, 9> cell;
   // length of three edges
-  // Double3 length;
+  // Vector3<double> length;
   // This three vectors form a matrix matching the matrix in Config and POSCAR file
   // representing three Bravais lattice vector
-  Double3 first_bravais_vector_{};
-  Double3 second_bravais_vector_{};
-  Double3 third_bravais_vector_{};
+  Vector3<double> first_bravais_vector_{};
+  Vector3<double> second_bravais_vector_{};
+  Vector3<double> third_bravais_vector_{};
   // Three translational Bravais lattice vector
   // DoubleVecfirst_reciprocal_vector_{},
   //     second_reciprocal_vector_{}, third_reciprocal_vector_{};
@@ -73,7 +73,9 @@ class Config {
   double energy_{};
   // The index of atom in the vector is always same as of the id of the atom
   std::vector<Atom> atom_list_;
-  std::vector<Rank> vacancy_list_;
+  // indicate if the Config has found Atoms' neighbor list
+  bool neighborFound;
+  std::map<std::string, std::vector<Atom::Rank>> element_list_set_;
 };
 
 }// namespace box
