@@ -34,10 +34,11 @@ bool Config::IsCubic() const {
 }
 void Config::ConvertRelativeToAbsolute() {
   for (auto &atom:atom_list_) {
-    double3_calc::LinearTransform(atom.relative_position_,
-                                  first_bravais_vector_,
-                                  second_bravais_vector_,
-                                  third_bravais_vector_);
+    atom.absolute_position_ =
+        double3_calc::LinearTransform(atom.relative_position_,
+                                      first_bravais_vector_,
+                                      second_bravais_vector_,
+                                      third_bravais_vector_);
 
   }
 }
