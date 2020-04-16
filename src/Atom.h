@@ -9,6 +9,7 @@
 #include "VectorMatrix.h"
 
 namespace box {
+
 class Atom {
  public:
   typedef int Rank;

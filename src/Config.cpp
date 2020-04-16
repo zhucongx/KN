@@ -21,7 +21,7 @@ void Config::Initialize() {
   scale_ = 1.0;
   atom_list_.clear();
   element_list_set_.clear();
-  neighborFound = false;
+  b_neighbor_found_ = false;
 }
 
 bool Config::IsCubic() const {
@@ -93,7 +93,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
       }
     }
   }
-  neighborFound = true;
+  b_neighbor_found_ = true;
 }
 
 void Config::WrapRelativePosition() {
@@ -134,7 +134,7 @@ void Config::MoveAbsoluteDistance(const Vector3<double> &distance_vector) {
 }
 
 std::map<std::string, int> Config::CountAllBonds(double r_cutoff) {
-  if (!neighborFound)
+  if (!b_neighbor_found_)
     UpdateNeighbors(r_cutoff, r_cutoff);
 
   std::map<std::string, int> bonds_count_map;

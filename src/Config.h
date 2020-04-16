@@ -68,7 +68,7 @@ class Config {
   // The index of atom in the vector is always same as of the id of the atom
   std::vector<Atom> atom_list_;
   // indicate if the Config has found Atoms' neighbor list
-  bool neighborFound{};
+  bool b_neighbor_found_{};
   std::map<std::string, std::vector<Atom::Rank>> element_list_set_;
 };
 
