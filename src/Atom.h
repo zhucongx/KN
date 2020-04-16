@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Constants.h"
-#include "Vector3.h"
+#include "VectorMatrix.h"
 
 namespace box {
 class Atom {

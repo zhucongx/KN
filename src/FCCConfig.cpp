@@ -4,9 +4,9 @@ namespace box {
 
 void FCCConfig::UpdateNeighbors(double first_r_cutoff,
                                 double second_r_cutoff) {
-  Vector3<double> length = {first_bravais_vector_.x,
-                    second_bravais_vector_.y,
-                    third_bravais_vector_.z};
+  Vector3<double> length = {bravais_matrix_.row1.x,
+                            bravais_matrix_.row2.y,
+                            bravais_matrix_.row3.z};
   // if the box is a cubic box, we just need to compare relative distance
   const bool cubic_status = IsCubic();
   if (cubic_status) {

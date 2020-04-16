@@ -1,4 +1,4 @@
-#include "FCCConfig.h"
+#include "ConfigModifier.h"
 using namespace box;
 using namespace std;
 int main(int argc, char *argv[]) {
@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   // if (!test.ReadPOSCAR("test.pos")) { return 5; }
 
   // test.Perturb();
-  // test.ReadConfig("0.cfg");
+  test.ReadConfig("0.cfg");
 
 
   // test.ConvertRelativeToAbsolute();
