@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
   //                               {{"Mg", "Mg"}, {-0.21746198}},
   //                               {{"Mg", "Zn"}, {-0.23373609}},
   //                               {{"Zn", "Zn"}, {-0.17651597}}};
-  map<Bond,map<int,int>> bond_store;
+  map<Bond, map<long long, int>> bond_store;
   std::ofstream ofs("COUTPUT.txt", std::ofstream::out);
   for (long long i = start; i <= end; i += interval) {
     double energy = 0;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     ofs << "#" << fname << endl;
     for (const auto&[key, count] : bonds_changed) {
       ofs << "#" << key << " " << count << '\n';
-      bond_store[key][i]=count;
+      bond_store[key][i] = count;
       // energy += static_cast<double>(count) * bond_energy[key];
     }
 
@@ -33,15 +33,15 @@ int main(int argc, char *argv[]) {
 
     for (const auto&[key, map_count] : bond_store) {
       ofs << key << ": ";
-      for (const auto&[index, count] : map_count){
-        ofs << count <<" ";
+      for (long long j = start; j <= i; i += interval) {
+        auto it = map_count.find(j);
+        ofs << (it == map_count.end() ? 0 : it->second) << " ";
       }
       ofs << '\n';
       // energy += static_cast<double>(count) * bond_energy[key];
     }
     // ofs << energy << '\n';
   }
-
 
   ofs.close();
   // Config test;
