@@ -1,16 +1,64 @@
 #ifndef KN_SRC_VECTORMATRIX_H_
 #define KN_SRC_VECTORMATRIX_H_
+#include <ostream>
 #include "armadillo"
 // By default, it is always a 1 by 3 vector
 template <class NumberType>
 struct Vector3 {
   NumberType x, y, z;
+  Vector3 &operator+=(const Vector3 &rhs) {
+    x += rhs.x;
+    y += rhs.y;
+    z += rhs.z;
+    return *this;
+  }
+  Vector3 &operator-=(const Vector3 &rhs) {
+    x -= rhs.x;
+    y -= rhs.y;
+    z -= rhs.z;
+    return *this;
+  }
+  friend std::ostream &operator<<(std::ostream &os, const Vector3 &vector_3) {
+    os << vector_3.x << " " << vector_3.y << " " << vector_3.z;
+    return os;
+  }
+  bool operator<(const Vector3 &rhs) const {
+    if (x < rhs.x)
+      return true;
+    if (rhs.x < x)
+      return false;
+    if (y < rhs.y)
+      return true;
+    if (rhs.y < y)
+      return false;
+    return z < rhs.z;
+  }
 };
+
 
 template <class NumberType>
 struct Matrix33 {
   Vector3<NumberType> row1, row2, row3;
 };
+template <class NumberType>
+inline NumberType Max(const Vector3<NumberType> &vector) {
+  return std::max(std::max(vector.x, vector.y), vector.z);
+}
+
+template <class NumberType>
+inline NumberType Min(const Vector3<NumberType> &vector) {
+  return std::min(std::min(vector.x, vector.y), vector.z);
+}
+
+template <class NumberType>
+inline NumberType Sum(const Vector3<NumberType> &vector) {
+  return vector.x + vector.y + vector.z;
+}
+
+template <class NumberType>
+inline Vector3<NumberType> Floor(const Vector3<NumberType> &vector) {
+  return {floor(vector.x), floor(vector.y), floor(vector.z)};
+}
 
 template <class NumberType>
 inline bool operator==(const Vector3<NumberType> &lhs,
@@ -63,7 +111,12 @@ inline Vector3<NumberType> StarProduct(const Vector3<NumberType> &first,
                                        const Vector3<NumberType> &second) {
   return {first.x * second.x, first.y * second.y, first.z * second.z};
 }
-
+template <class NumberType>
+inline Vector3<NumberType> StarDivide(const Vector3<NumberType> &dividend,
+                                      const Vector3<NumberType> &divisor) {
+  return {dividend.x / divisor.x, dividend.y / divisor.y,
+          dividend.z / divisor.z};
+}
 template <class NumberType>
 inline bool operator==(const Matrix33<NumberType> &lhs,
                        const Matrix33<NumberType> &rhs) {

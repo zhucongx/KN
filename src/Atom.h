@@ -41,6 +41,5 @@ class Atom {
 
 Vector3<double> GetRelativeDistanceVector(const Atom &first,
                                           const Atom &second);
-
 }// namespace box
 #endif //KN_SRC_ATOM_H_

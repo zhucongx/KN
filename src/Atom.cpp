@@ -32,10 +32,10 @@ void Atom::SetType(const std::string &type) {
   type_ = type;
 }
 
-Vector3<double> GetRelativeDistanceVector(const Atom &first, const Atom &second) {
-  Vector3<double>
-      relative_distance_vector = StarProduct(first.relative_position_,
-                                             second.relative_position_);
+Vector3<double> GetRelativeDistanceVector(const Atom &first,
+                                          const Atom &second) {
+  Vector3<double> relative_distance_vector =
+      first.relative_position_ - second.relative_position_;
   auto check_periodic = [](double &distance) {
     if (distance >= 0.5)
       distance -= 1;
@@ -48,4 +48,5 @@ Vector3<double> GetRelativeDistanceVector(const Atom &first, const Atom &second)
   check_periodic(relative_distance_vector.z);
   return relative_distance_vector;
 }
+
 }// namespace box

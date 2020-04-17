@@ -40,7 +40,7 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
       }
     }
   }
-  b_neighbor_found_ = true;
+  neighbor_found_ = true;
 }
 
 }// namespace box

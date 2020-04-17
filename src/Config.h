@@ -5,15 +5,14 @@
 #include <iostream>
 #include <sstream>
 #include <array>
+#include <utility>
 #include <vector>
 
 #include "Atom.h"
-
+#include "Bond.h"
 namespace box {
-
 class Config {
   // Todo finsih GenerateUnitCell
-
  public:
   Config();
   bool operator<(const Config &rhs) const;
@@ -26,11 +25,15 @@ class Config {
   // update both atoms' relative and absolute positions according to periodic
   // boundary condition
   void WrapRelativePosition();
-  void WrapAbsolutePosition();
-  void ShiftAtomToCentral(const Atom::Rank &id);
+  // void WrapAbsolutePosition();
+  // void ShiftAtomToCentral(const Atom::Rank &id);
+
   void MoveRelativeDistance(const Vector3<double> &distance_vector);
-  void MoveAbsoluteDistance(const Vector3<double> &distance_vector);
-  std::map<std::string, int> CountAllBonds(double r_cutoff);
+  void MoveOneAtomRelativeDistance(const Atom::Rank &index,
+                                   const Vector3<double> &distance_vector);
+
+  // void MoveAbsoluteDistance(const Vector3<double> &distance_vector);
+  std::map<Bond, int> CountAllBonds(double r_cutoff);
   bool ReadConfig(const std::string &file_name);
   bool ReadPOSCAR(const std::string &file_name);
   void WriteConfig(const std::string &file_name = "config") const;
@@ -46,6 +49,11 @@ class Config {
                    const double &lattice_constant_c,
                    const std::string &element,
                    const Vector3<int> &factors);
+  [[nodiscard]] const Matrix33<double> &GetBravaisMatrix() const;
+  [[nodiscard]] const Matrix33<double> &GetInverseBravaisMatrix() const;
+  [[nodiscard]] const Atom &GetAtom(const Atom::Rank &index) const;
+  [[nodiscard]] int GetNumAtoms() const;
+
  protected:
   double scale_{};
   // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
@@ -60,7 +68,6 @@ class Config {
   // absolute to relative position
   Matrix33<double> inverse_bravais_matrix_{};
 
-
   // Three translational Bravais lattice vector
   // Matrix33<double> reciprocal_matrix_{},
   int num_atoms_{};
@@ -68,7 +75,7 @@ class Config {
   // The index of atom in the vector is always same as of the id of the atom
   std::vector<Atom> atom_list_;
   // indicate if the Config has found Atoms' neighbor list
-  bool b_neighbor_found_{};
+  bool neighbor_found_{};
   std::map<std::string, std::vector<Atom::Rank>> element_list_set_;
 };
 

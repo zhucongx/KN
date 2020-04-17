@@ -1,5 +1,6 @@
 #include"Config.h"
 
+#include <utility>
 namespace box {
 
 const double kMean = 0;
@@ -21,7 +22,7 @@ void Config::Initialize() {
   scale_ = 1.0;
   atom_list_.clear();
   element_list_set_.clear();
-  b_neighbor_found_ = false;
+  neighbor_found_ = false;
 }
 
 bool Config::IsCubic() const {
@@ -37,15 +38,13 @@ bool Config::IsCubic() const {
 
 void Config::ConvertRelativeToAbsolute() {
   for (auto &atom:atom_list_) {
-    atom.absolute_position_ =
-        atom.relative_position_ * bravais_matrix_;
+    atom.absolute_position_ = atom.relative_position_ * bravais_matrix_;
   }
 }
 
 void Config::ConvertAbsoluteToRelative() {
   for (auto &atom:atom_list_) {
-    atom.relative_position_ =
-        atom.absolute_position_ * inverse_bravais_matrix_;
+    atom.relative_position_ = atom.absolute_position_ * inverse_bravais_matrix_;
   }
 }
 
@@ -93,7 +92,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
       }
     }
   }
-  b_neighbor_found_ = true;
+  neighbor_found_ = true;
 }
 
 void Config::WrapRelativePosition() {
@@ -101,58 +100,61 @@ void Config::WrapRelativePosition() {
     atom.relative_position_.x -= floor(atom.relative_position_.x);
     atom.relative_position_.y -= floor(atom.relative_position_.y);
     atom.relative_position_.z -= floor(atom.relative_position_.z);
+
+    atom.absolute_position_ = atom.relative_position_ * bravais_matrix_;
   }
-  ConvertRelativeToAbsolute();
 }
 
-void Config::WrapAbsolutePosition() {
-  ConvertAbsoluteToRelative();
-  WrapRelativePosition();
-}
+// void Config::WrapAbsolutePosition() {
+//   ConvertAbsoluteToRelative();
+//   WrapRelativePosition();
+// }
 
-void Config::ShiftAtomToCentral(const Atom::Rank &id) {
-  Vector3<double> criterionDistance =
-      atom_list_[id].relative_position_ - Vector3<double>{0.5, 0.5, 0.5};
-  for (auto &atom:atom_list_) {
-    atom.relative_position_ = atom.relative_position_ - criterionDistance;
-  }
-  WrapRelativePosition();
-}
-
+// void Config::ShiftAtomToCentral(const Atom::Rank &id) {
+//   Vector3<double> criterionDistance =
+//       atom_list_[id].relative_position_ - Vector3<double>{0.5, 0.5, 0.5};
+//   for (auto &atom:atom_list_) {
+//     atom.relative_position_ = atom.relative_position_ - criterionDistance;
+//   }
+//   WrapRelativePosition();
+// }
+// for better performance, shouldn't call Wrap function
 void Config::MoveRelativeDistance(const Vector3<double> &distance_vector) {
   for (auto &atom:atom_list_) {
-    atom.relative_position_ = atom.relative_position_ + distance_vector;
-  }
-  WrapRelativePosition();
-}
+    atom.relative_position_ += distance_vector;
 
-void Config::MoveAbsoluteDistance(const Vector3<double> &distance_vector) {
-  for (auto &atom:atom_list_) {
-    atom.absolute_position_ = atom.absolute_position_ + distance_vector;
-  }
-  WrapAbsolutePosition();
-}
+    atom.relative_position_ -= Floor(atom.relative_position_);
 
-std::map<std::string, int> Config::CountAllBonds(double r_cutoff) {
-  if (!b_neighbor_found_)
+    atom.absolute_position_ = atom.relative_position_ * bravais_matrix_;
+  }
+}
+void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
+                                         const Vector3<double> &distance_vector) {
+  atom_list_[index].relative_position_ += distance_vector;
+  atom_list_[index].relative_position_ -=
+      Floor(atom_list_[index].relative_position_);
+
+  atom_list_[index].absolute_position_ =
+      atom_list_[index].relative_position_ * bravais_matrix_;
+}
+// void Config::MoveAbsoluteDistance(const Vector3<double> &distance_vector) {
+//   for (auto &atom:atom_list_) {
+//     atom.absolute_position_ = atom.absolute_position_ + distance_vector;
+//   }
+//   WrapAbsolutePosition();
+// }
+
+std::map<Bond, int> Config::CountAllBonds(double r_cutoff) {
+  if (!neighbor_found_)
     UpdateNeighbors(r_cutoff, r_cutoff);
 
-  std::map<std::string, int> bonds_count_map;
-  std::string type1, type2, bond;
+  std::map<Bond, int> bonds_count_map;
+  std::string type1, type2;
   for (const auto &atom:atom_list_) {
     type1 = atom.GetType();
     for (const auto &atom2_id:atom.first_nearest_neighbor_list_) {
       type2 = atom_list_[atom2_id].GetType();
-      if (type1.compare(type2) < 0) {
-        bond = type1;
-        bond += "-";
-        bond += type2;
-      } else {
-        bond = type2;
-        bond += "-";
-        bond += type1;
-      }
-      bonds_count_map[bond]++;
+      bonds_count_map[Bond{type1, type2}]++;
     }
   }
   for (auto &[bond, count]:bonds_count_map) {
@@ -370,7 +372,7 @@ void Config::WritePOSCAR(const std::string &file_name,
       << bravais_matrix_.row3.z << "\n";
   std::ostringstream ele_oss, count_oss;
   for (const auto &[element, element_list]:element_list_set_) {
-    if (!show_vacancy_option || element != "Vac") {
+    if (!show_vacancy_option || element != "X") {
       ele_oss << element << " ";
       count_oss << element_list.size() << " ";
     }
@@ -378,7 +380,7 @@ void Config::WritePOSCAR(const std::string &file_name,
   ofs << ele_oss.str() << "\n" << count_oss.str() << "\n";
   ofs << "Direct\n";
   for (const auto &atom:atom_list_) {
-    if (!show_vacancy_option || atom.GetType() != "Vac") {
+    if (!show_vacancy_option || atom.GetType() != "X") {
       ofs << atom.relative_position_.x << " "
           << atom.relative_position_.y << " "
           << atom.relative_position_.z << "\n";
@@ -471,6 +473,17 @@ void Config::GenerateHCP(const double &lattice_constant_a,
   }
   ConvertRelativeToAbsolute();
 }
-
+const Matrix33<double> &Config::GetBravaisMatrix() const {
+  return bravais_matrix_;
+}
+const Matrix33<double> &Config::GetInverseBravaisMatrix() const {
+  return inverse_bravais_matrix_;
+}
+const Atom &Config::GetAtom(const Atom::Rank &index) const {
+  return atom_list_[index];
+}
+int Config::GetNumAtoms() const {
+  return num_atoms_;
+}
 
 }// namespace box

@@ -6,7 +6,7 @@
 #include <algorithm>
 
 namespace FCC_const {
-const double kRCutoff = 3.5;
+const double kFirstNearestNeighborCutoff = 3.5;
 // For FCC the first nearest neighbor is 12
 const int kNumFirstNearestNeighbors = 12;
 // For FCC the first and second nearest neighbor is 18
@@ -46,7 +46,7 @@ const std::vector<double> mass_list = {
     272.,        285.                                                // Rg - Cn
 };
 const std::vector<std::string> element_list = {
-    "Vac",
+    "X",
     "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne",
     "Na", "Mg", "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca",
     "Sc", "Ti", "V", "Cr",  "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
