@@ -84,12 +84,6 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
         for (const auto&[key, count] : bonds_map_before) {
           bonds_changed[key] -= count;
         }
-
-
-        for (const auto&[key, count] : bonds_changed) {
-          std::cout << key << " " << count << "\n";
-        }
-        std::cout << "\n";
       }
     }
   }

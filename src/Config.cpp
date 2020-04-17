@@ -332,7 +332,7 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
 
 void Config::WriteConfig(const std::string &file_name) const {
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "Number of particles = " << num_atoms_ << "\n";
+  ofs << "Number of particles = " << num_atoms_ << '\n';
   ofs << "A = " << scale_ << " Angstrom (basic length-scale)\n";
   ofs << "H0(1,1) = " << bravais_matrix_.row1.x << " A\n";
   ofs << "H0(1,2) = " << bravais_matrix_.row1.y << " A\n";
@@ -348,11 +348,11 @@ void Config::WriteConfig(const std::string &file_name) const {
   for (const auto &atom:atom_list_) {
     double mass = atom.GetMass();
     const std::string &type = atom.GetType();
-    ofs << mass << "\n"
-        << type << "\n"
+    ofs << mass << '\n'
+        << type << '\n'
         << atom.relative_position_.x << " "
         << atom.relative_position_.y << " "
-        << atom.relative_position_.z << "\n";
+        << atom.relative_position_.z << '\n';
   }
   ofs.close();
 }
@@ -360,16 +360,16 @@ void Config::WriteConfig(const std::string &file_name) const {
 void Config::WritePOSCAR(const std::string &file_name,
                          const bool &show_vacancy_option) const {
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "#comment\n" << scale_ << "\n";
+  ofs << "#comment\n" << scale_ << '\n';
   ofs << bravais_matrix_.row1.x << " "
       << bravais_matrix_.row1.y << " "
-      << bravais_matrix_.row1.z << "\n";
+      << bravais_matrix_.row1.z << '\n';
   ofs << bravais_matrix_.row2.x << " "
       << bravais_matrix_.row2.y << " "
-      << bravais_matrix_.row2.z << "\n";
+      << bravais_matrix_.row2.z << '\n';
   ofs << bravais_matrix_.row3.x << " "
       << bravais_matrix_.row3.y << " "
-      << bravais_matrix_.row3.z << "\n";
+      << bravais_matrix_.row3.z << '\n';
   std::ostringstream ele_oss, count_oss;
   for (const auto &[element, element_list]:element_list_set_) {
     if (!show_vacancy_option || element != "X") {
@@ -377,13 +377,13 @@ void Config::WritePOSCAR(const std::string &file_name,
       count_oss << element_list.size() << " ";
     }
   }
-  ofs << ele_oss.str() << "\n" << count_oss.str() << "\n";
+  ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
   ofs << "Direct\n";
   for (const auto &atom:atom_list_) {
     if (!show_vacancy_option || atom.GetType() != "X") {
       ofs << atom.relative_position_.x << " "
           << atom.relative_position_.y << " "
-          << atom.relative_position_.z << "\n";
+          << atom.relative_position_.z << '\n';
     }
   }
   ofs.close();
