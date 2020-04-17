@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
     for (const auto&[key, map_count] : bond_store) {
       ofs << key << ": ";
-      for (long long j = start; j <= i; i += interval) {
+      for (long long j = start; j <= i; j += interval) {
         auto it = map_count.find(j);
         ofs << (it == map_count.end() ? 0 : it->second) << " ";
       }
