@@ -157,8 +157,8 @@ std::map<Bond, int> Config::CountAllBonds(double r_cutoff) {
       bonds_count_map[Bond{type1, type2}]++;
     }
   }
-  for (auto &[bond, count]:bonds_count_map) {
-    count /= 2;
+  for (auto &bond_count:bonds_count_map) {
+    bond_count.second /= 2;
   }
   return bonds_count_map;
 }
