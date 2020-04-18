@@ -35,7 +35,6 @@ struct Vector3 {
   }
 };
 
-
 template <class NumberType>
 struct Matrix33 {
   Vector3<NumberType> row1, row2, row3;

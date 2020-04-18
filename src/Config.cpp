@@ -250,7 +250,6 @@ bool Config::ReadConfig(const std::string &file_name) {
                             relative_position_Z);
     element_list_set_[type].emplace_back(i);
   }
-  ifs.close();
   ConvertRelativeToAbsolute();
   return true;
 }
@@ -326,7 +325,6 @@ bool Config::ReadPOSCAR(const std::string &file_name) {
   } else {
     ConvertAbsoluteToRelative();
   }
-  ifs.close();
   return true;
 }
 
@@ -354,7 +352,6 @@ void Config::WriteConfig(const std::string &file_name) const {
         << atom.relative_position_.y << " "
         << atom.relative_position_.z << '\n';
   }
-  ofs.close();
 }
 
 void Config::WritePOSCAR(const std::string &file_name,
@@ -386,7 +383,6 @@ void Config::WritePOSCAR(const std::string &file_name,
           << atom.relative_position_.z << '\n';
     }
   }
-  ofs.close();
 }
 
 void Config::GenerateFCC(const double &lattice_constant_a,
