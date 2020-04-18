@@ -15,7 +15,6 @@ int main(int argc, char *argv[]) {
   map<Bond, map<long long, int>> bond_store;
   std::ofstream ofs("COUTPUT.txt", std::ofstream::out);
   for (long long i = start; i <= end; i += interval) {
-    double energy = 0;
     string fname = to_string(i);
     fname += ".cfg";
     BondCounter test({30, 30, 30}, {1, 1, 1}, {0.5, 0.5, 0});
@@ -40,6 +39,8 @@ int main(int argc, char *argv[]) {
       ofs << '\n';
       // energy += static_cast<double>(count) * bond_energy[key];
     }
+
+    ofs << '\n';
     // ofs << energy << '\n';
   }
 
