@@ -14,3 +14,4 @@ find_library(ARMADILLO_LIBRARIES
         NAMES armadillo
         PATH_SUFFIXES lib lib64
         HINTS ${FIND_ARMADILLO_PATHS} ENV var)
+message(${ARMADILLO_LIBRARIES})
