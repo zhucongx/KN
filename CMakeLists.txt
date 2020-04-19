@@ -90,7 +90,7 @@ target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     message("Intel flags")
     target_compile_options(${PROJECT_NAME} INTERFACE
-            "-ARMA_ALLOW_FAKE_GCC -ARMA_DONT_USE_WRAPPER")
+            "-ARMA_ALLOW_FAKE_GCC")
 endif ()
 
 ## Lib keras2cpp
