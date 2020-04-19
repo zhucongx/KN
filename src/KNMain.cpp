@@ -41,11 +41,9 @@ int main(int argc, char *argv[]) {
     }
 
     ofs << '\n';
-    // ofs << energy << '\n';
   }
 
-  // Config test;
-  // test.GenerateFCC(4.046,"Al",{2,2,2});
+
   // test.MoveRelativeDistance({1./6.,1/6.,1./6.});
   // test.WriteConfig();
 
