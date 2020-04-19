@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.9)
 
+#SET(CMAKE_C_COMPILER icc)
+#SET(CMAKE_CXX_COMPILER icpc)
+
 project(KN)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -44,6 +47,10 @@ add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
 #include(FindPkgConfig)
+find_package(ARMADILLO REQUIRED)
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES})
+
 find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
 target_link_libraries(${PROJECT_NAME} ${MPI_LIBRARIES})
@@ -59,10 +66,6 @@ target_link_libraries(${PROJECT_NAME} ${OpenMP_C_LIBRARIES})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-
-find_package(ARMADILLO REQUIRED)
-include_directories(${ARMADILLO_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES})
 
 ## Lib keras2cpp
 #add_subdirectory(external/keras2cpp)
