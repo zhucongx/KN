@@ -2,6 +2,7 @@
 #define KN_SRC_VECTORMATRIX_H_
 #include <ostream>
 #include <numeric>
+// #define ARMA_ALLOW_FAKE_GCC
 #include "armadillo"
 // By default, it is always a 1 by 3 vector
 template <class NumberType>
