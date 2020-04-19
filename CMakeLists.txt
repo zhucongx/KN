@@ -22,7 +22,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     message("Intel flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ARMA_DONT_USE_WRAPPER -ARMA_ALLOW_FAKE_GCC"
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ARMA_ALLOW_FAKE_GCC"
             CACHE INTERNAL ""
             )
 endif ()
@@ -61,8 +61,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 
 find_package(ARMADILLO REQUIRED)
-include_directories(${LIBARMADILLO_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${LIBARMADILLO_LIBRARY})
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES})
 
 ## Lib keras2cpp
 #add_subdirectory(external/keras2cpp)
