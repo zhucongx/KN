@@ -22,7 +22,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     message("Intel flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ARMA_ALLOW_FAKE_GCC"
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
             CACHE INTERNAL ""
             )
 endif ()
