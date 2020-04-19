@@ -10,6 +10,6 @@ find_path(LIBARMADILLO_INCLUDE_DIR armadillo
         PATH_SUFFIXES include
         PATHS ${FIND_ARMADILLO_PATHS})
 find_library(LIBARMADILLO_LIBRARY
-        NAMES armadillo
-        PATH_SUFFIXES lib
+        NAMES libarmadillo.so
+        PATH_SUFFIXES lib64
         PATHS ${FIND_ARMADILLO_PATHS})
