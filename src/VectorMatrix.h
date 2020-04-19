@@ -3,6 +3,7 @@
 #include <ostream>
 #include <numeric>
 // #define ARMA_ALLOW_FAKE_GCC
+// Uncomment this line if there is a compilation error
 #include "armadillo"
 // By default, it is always a 1 by 3 vector
 template <class NumberType>
