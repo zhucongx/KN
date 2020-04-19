@@ -3,7 +3,7 @@ if (APPLE)
     set(FIND_ARMADILLO_PATHS /usr/ /usr/local)
 elseif (UNIX)
     message("-- Looking for armadillo on Linux")
-    set(FIND_ARMADILLO_PATHS /usr/ ~/armadillo/)
+    set(FIND_ARMADILLO_PATHS ~/armadillo/ /usr/)
 endif()
 
 find_path(ARMADILLO_INCLUDE_DIRS
