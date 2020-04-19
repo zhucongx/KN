@@ -12,5 +12,5 @@ find_path(ARMADILLO_INCLUDE_DIRS
         PATHS ${FIND_ARMADILLO_PATHS})
 find_library(ARMADILLO_LIBRARIES
         NAMES armadillo
-        PATH_SUFFIXES lib64 lib
-        PATHS ${FIND_ARMADILLO_PATHS})
+        PATH_SUFFIXES lib lib64
+        HINTS ${FIND_ARMADILLO_PATHS} ENV var)
