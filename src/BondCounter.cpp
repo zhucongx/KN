@@ -23,11 +23,11 @@ void BondCounter::SetPlane(Vector3<double> miller_index) {
   }
 }
 void BondCounter::SetBurgersVector(Vector3<double> miller_index) {
-  for (const double &i :{-1.0, 1.0}) {
-    for (const double &j :{-1.0, 1.0}) {
-      for (const double &k :{-1.0, 1.0}) {
-        for (int l = 0; l < 3; l++) {
-          miller_index = {miller_index.y, miller_index.z, miller_index.x};
+  for (int l = 0; l < 3; l++) {
+    miller_index = {miller_index.y, miller_index.z, miller_index.x};
+    for (const double &i :{-1.0, 1.0}) {
+      for (const double &j :{-1.0, 1.0}) {
+        for (const double &k :{-1.0, 1.0}) {
           burgers_vector_set_.insert(StarProduct(miller_index, {i, j, k}));
         }
       }
@@ -43,13 +43,26 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
         plane_distance_vector = GetPlaneDistanceVector(plane_index);
     /// {1/90, 1/90, 1/90}
     unsliped_config.MoveRelativeDistance(0.5 * plane_distance_vector);
-    // actually should be the least common multiple
-    int iteration_time = static_cast<int>(1.0 / Min(plane_distance_vector));
+    // How many space in a unit cell does a plane divide
+    // {100}1 {110}2 {111}3 {200}4 {220}4 {222}6
+    // d_spacing is d=1/sqrt(h^2+k^2+l^2)
+    // the length along that direction is L=h'^2+k'^2+l'2
+    // where (h',k',l') is (h,k,l)/GCD(hkl)
+    // if n is the number of space divided in one cubic
+    // n = L/d_spacing = (h^2+k^2+l^2)/GCD(hkl)
+    // so because of periodic boundary condition. We only need to iterate
+    // LCM(1/n*factor) times
+    /// 30 here for FCC
+    int iteration_time = 30;
+
     const double d1 = 1.5;
     const double d2 = d1 - Sum(plane_distance_vector);
     const double d3 = d1 + Sum(plane_distance_vector);
     for (int i = 0; i < iteration_time; i++) {
       unsliped_config.MoveRelativeDistance(plane_distance_vector);
+      // We select four planes, and we move two plan by the burgers vector and
+      // calculate the bonds change between the these two planes and the
+      // other two.
       std::vector<Atom::Rank>
           atoms_on_plane1 = GetAtomListBetweenPlanesHelper(unsliped_config,
                                                            plane_index,
@@ -84,12 +97,6 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
         for (const auto&[key, count] : bonds_map_before) {
           bonds_changed[key] -= count;
         }
-
-
-        for (const auto&[key, count] : bonds_changed) {
-          std::cout << key << " " << count << "\n";
-        }
-        std::cout << "\n";
       }
     }
   }

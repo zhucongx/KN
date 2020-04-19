@@ -1,27 +1,30 @@
 #ifndef KN_SRC_VECTORMATRIX_H_
 #define KN_SRC_VECTORMATRIX_H_
 #include <ostream>
+#include <numeric>
 #include "armadillo"
 // By default, it is always a 1 by 3 vector
 template <class NumberType>
 struct Vector3 {
   NumberType x, y, z;
+  Vector3() = default;;
+  Vector3(NumberType x, NumberType y, NumberType z) : x(x), y(y), z(z) {};
   Vector3 &operator+=(const Vector3 &rhs) {
     x += rhs.x;
     y += rhs.y;
     z += rhs.z;
     return *this;
-  }
+  };
   Vector3 &operator-=(const Vector3 &rhs) {
     x -= rhs.x;
     y -= rhs.y;
     z -= rhs.z;
     return *this;
-  }
+  };
   friend std::ostream &operator<<(std::ostream &os, const Vector3 &vector_3) {
     os << vector_3.x << " " << vector_3.y << " " << vector_3.z;
     return os;
-  }
+  };
   bool operator<(const Vector3 &rhs) const {
     if (x < rhs.x)
       return true;
@@ -32,9 +35,19 @@ struct Vector3 {
     if (rhs.y < y)
       return false;
     return z < rhs.z;
-  }
-};
+  };
 
+  [[nodiscard]] Vector3<int> ConvertToInt() const {
+    return {(static_cast<int>(x)),
+            (static_cast<int>(y)),
+            (static_cast<int>(z))};
+  };
+  [[nodiscard]] Vector3<double> ConvertToDouble() const {
+    return {(static_cast<double>(x)),
+            (static_cast<double>(y)),
+            (static_cast<double>(z))};
+  };
+};
 
 template <class NumberType>
 struct Matrix33 {
@@ -55,9 +68,12 @@ inline NumberType Sum(const Vector3<NumberType> &vector) {
   return vector.x + vector.y + vector.z;
 }
 
-template <class NumberType>
-inline Vector3<NumberType> Floor(const Vector3<NumberType> &vector) {
+inline Vector3<double> Floor(const Vector3<double> &vector) {
   return {floor(vector.x), floor(vector.y), floor(vector.z)};
+}
+
+inline int GCD(const Vector3<int> &vector) {
+  return std::gcd(vector.x, std::gcd(vector.y, vector.z));
 }
 
 template <class NumberType>
@@ -143,5 +159,10 @@ inline Matrix33<NumberType> InverseMatrix33(const Matrix33<NumberType> &input) {
   return {{inverse_matrix(0, 0), inverse_matrix(0, 1), inverse_matrix(0, 2)},
           {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
           {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
+  //
+  // return {{inverse_matrix(0, 0), inverse_matrix(0, 1), inverse_matrix(0, 2)},
+  //         {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
+  //         {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
+
 }
 #endif //KN_SRC_VECTORMATRIX_H_
