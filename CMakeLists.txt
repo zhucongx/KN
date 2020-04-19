@@ -85,9 +85,13 @@ target_compile_options(${PROJECT_NAME} INTERFACE
 
 
 find_package(ARMADILLO REQUIRED)
-include_directories(${PROJECT_NAME} INTERFACE${ARMADILLO_INCLUDE_DIRS})
+include_directories(${PROJECT_NAME} INTERFACE ${ARMADILLO_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
-
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    message("Intel flags")
+    target_compile_options(${PROJECT_NAME} INTERFACE
+            "-ARMA_ALLOW_FAKE_GCC")
+endif ()
 
 ## Lib keras2cpp
 #add_subdirectory(external/keras2cpp)
