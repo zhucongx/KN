@@ -85,9 +85,8 @@ target_compile_options(${PROJECT_NAME} INTERFACE
 
 
 find_package(ARMADILLO REQUIRED)
-include_directories(${PROJECT_NAME} INTERFACE${LIBARMADILLO_INCLUDE_DIRS})
+include_directories(${PROJECT_NAME} INTERFACE${ARMADILLO_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
-
 
 
 ## Lib keras2cpp
