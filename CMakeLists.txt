@@ -62,7 +62,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 find_package(ARMADILLO REQUIRED)
 include_directories(${ARMADILLO_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES}) ## Lib keras2cpp
+target_link_libraries(${PROJECT_NAME} ${ARMADILLO_LIBRARIES})
+
+## Lib keras2cpp
 #add_subdirectory(external/keras2cpp)
 #include_directories(external/keras2cpp)
 #target_link_libraries(${PROJECT_NAME} Keras2cpp)
