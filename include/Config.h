@@ -7,6 +7,7 @@
 #include <array>
 #include <utility>
 #include <vector>
+#include <map>
 
 #include "Atom.h"
 #include "Bond.h"

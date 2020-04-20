@@ -1,8 +1,8 @@
 #ifndef KN_INCLUDE_CONFIGMODIFIER_H_
 #define KN_INCLUDE_CONFIGMODIFIER_H_
+
 #include "Config.h"
 #include "FCCConfig.h"
-#include "mpi.h"
 class ConfigModifier {
  public:
 

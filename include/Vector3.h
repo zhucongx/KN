@@ -1,13 +1,13 @@
-#ifndef KN_INCLUDE_VECTORMATRIX_H_
-#define KN_INCLUDE_VECTORMATRIX_H_
+#ifndef KN_INCLUDE_VECTOR3_H_
+#define KN_INCLUDE_VECTOR3_H_
+
+
 #include <ostream>
 #include <numeric>
 // By default, it is always a 1 by 3 vector
 template <class NumberType>
 struct Vector3 {
   NumberType x, y, z;
-  Vector3() = default;;
-  Vector3(NumberType x, NumberType y, NumberType z) : x(x), y(y), z(z) {};
   Vector3 &operator+=(const Vector3 &rhs) {
     x += rhs.x;
     y += rhs.y;
@@ -48,8 +48,6 @@ struct Vector3 {
   };
 };
 
-#include <Vector3.h>
-
 template <class NumberType>
 inline NumberType Max(const Vector3<NumberType> &vector) {
   return std::max(std::max(vector.x, vector.y), vector.z);
@@ -69,7 +67,7 @@ inline Vector3<double> Floor(const Vector3<double> &vector) {
   return {floor(vector.x), floor(vector.y), floor(vector.z)};
 }
 
-int GCD(const Vector3<int> &vector) {
+inline int GCD(const Vector3<int> &vector) {
   return std::gcd(vector.x, std::gcd(vector.y, vector.z));
 }
 
@@ -103,6 +101,12 @@ inline Vector3<NumberType> operator*(const NumberType &factor,
                                      const Vector3<NumberType> &vector) {
   return operator*(vector, factor);
 }
+
+inline Vector3<double> operator/(const Vector3<double> &vector,
+                                 const double &factor) {
+  return {vector.x / factor, vector.y / factor, vector.z / factor};
+}
+
 template <class NumberType>
 inline Vector3<NumberType> CrossProduct(const Vector3<NumberType> &first,
                                         const Vector3<NumberType> &second) {
@@ -131,4 +135,6 @@ inline Vector3<NumberType> StarDivide(const Vector3<NumberType> &dividend,
           dividend.z / divisor.z};
 }
 
-#endif //KN_INCLUDE_VECTORMATRIX_H_
+
+
+#endif //KN_INCLUDE_VECTOR3_H_
