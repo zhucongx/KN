@@ -1,5 +1,5 @@
-#ifndef KN_SRC_BONDCOUNTER_H_
-#define KN_SRC_BONDCOUNTER_H_
+#ifndef KN_INCLUDE_BONDCOUNTER_H_
+#define KN_INCLUDE_BONDCOUNTER_H_
 
 #include <set>
 #include "Config.h"
@@ -37,4 +37,4 @@ class BondCounter {
 };
 
 }// namespace box
-#endif //KN_SRC_BONDCOUNTER_H_
+#endif //KN_INCLUDE_BONDCOUNTER_H_

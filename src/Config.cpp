@@ -1,6 +1,7 @@
 #include"Config.h"
 
 #include <utility>
+
 namespace box {
 
 const double kMean = 0;

@@ -1,5 +1,5 @@
-#ifndef KN_SRC_FCCCONFIG_H_
-#define KN_SRC_FCCCONFIG_H_
+#ifndef KN_INCLUDE_FCCCONFIG_H_
+#define KN_INCLUDE_FCCCONFIG_H_
 
 #include "Config.h"
 
@@ -12,4 +12,4 @@ class FCCConfig : public Config {
 
 }// namespace box
 
-#endif //KN_SRC_FCCCONFIG_H_
+#endif //KN_INCLUDE_FCCCONFIG_H_

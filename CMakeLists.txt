@@ -38,13 +38,15 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -ggdb"
 set(CMAKE_CXX_FLAGS_RELEASE "-O3"
         CACHE INTERNAL "")
 
-
 file(GLOB KN_SRC
-        ${PROJECT_SOURCE_DIR}/src/*.cpp
-        src/include/*.h)
+        ${PROJECT_SOURCE_DIR}/include/*.h
+        ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${PROJECT_SOURCE_DIR}/include)
 
 #include(FindPkgConfig)
 

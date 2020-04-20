@@ -1,5 +1,5 @@
-#ifndef KN_SRC_CONFIG_H_
-#define KN_SRC_CONFIG_H_
+#ifndef KN_INCLUDE_CONFIG_H_
+#define KN_INCLUDE_CONFIG_H_
 
 #include <string>
 #include <iostream>
@@ -81,4 +81,4 @@ class Config {
 
 }// namespace box
 
-#endif //KN_SRC_CONFIG_H_
+#endif //KN_INCLUDE_CONFIG_H_
