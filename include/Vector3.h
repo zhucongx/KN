@@ -1,6 +1,7 @@
 #ifndef KN_INCLUDE_VECTOR3_H_
 #define KN_INCLUDE_VECTOR3_H_
 
+#include <cmath>
 
 #include <ostream>
 #include <numeric>
