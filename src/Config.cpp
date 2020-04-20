@@ -1,9 +1,8 @@
 #include"Config.h"
 
-#include <ctime>
-
 #include <utility>
 #include <random>
+#include <chrono>
 
 namespace box {
 
