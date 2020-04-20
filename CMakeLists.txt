@@ -83,13 +83,13 @@ target_compile_options(${PROJECT_NAME} INTERFACE
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 
-find_package(ARMADILLO REQUIRED)
-target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${ARMADILLO_LIBRARIES})
-
-## Lib keras2cpp
-add_subdirectory(external/keras2cpp)
-target_include_directories(${PROJECT_NAME} INTERFACE external/keras2cpp)
-target_link_libraries(${PROJECT_NAME} INTERFACE Keras2cpp)
+#find_package(ARMADILLO REQUIRED)
+#target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
+#
+### Lib keras2cpp
+#add_subdirectory(external/keras2cpp)
+#target_include_directories(${PROJECT_NAME} INTERFACE external/keras2cpp)
+#target_link_libraries(${PROJECT_NAME} INTERFACE Keras2cpp)
 
 
