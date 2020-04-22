@@ -64,6 +64,11 @@ inline NumberType Sum(const Vector3<NumberType> &vector) {
   return vector.x + vector.y + vector.z;
 }
 
+template <class NumberType>
+inline Vector3<NumberType> Abs(const Vector3<NumberType> &vector) {
+  return {std::abs(vector.x), std::abs(vector.y), std::abs(vector.z)};
+}
+
 inline Vector3<double> Floor(const Vector3<double> &vector) {
   return {floor(vector.x), floor(vector.y), floor(vector.z)};
 }
@@ -120,6 +125,7 @@ inline NumberType DotProduct(const Vector3<NumberType> &first,
                              const Vector3<NumberType> &second) {
   return first.x * second.x + first.y * second.y + first.z * second.z;
 }
+
 template <class NumberType>
 inline NumberType InnerProduct(const Vector3<NumberType> &vector) {
   return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
