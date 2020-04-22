@@ -34,7 +34,7 @@ endif ()
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -ggdb -DMY_DEBUG"
         CACHE INTERNAL "")
 
-set(CMAKE_CXX_FLAGS_RELEASE "-O3"
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DMY_RELEASE"
         CACHE INTERNAL "")
 
 include_directories(${PROJECT_SOURCE_DIR}/include)

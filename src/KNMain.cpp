@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
   long long start = 0;
   long long interval = 1000000;
   long long end = 350000000;
-  end = 0;
+  // end = 0;
   // map<Bond, double> bond_energy{{{"Al", "Al"}, {-0.60648589}},
   //                               {{"Al", "Mg"}, {-0.41880444}},
   //                               {{"Al", "Zn"}, {-0.38473348}},
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     BondCounter test({30, 30, 30}, {1, 1, 1}, {0.5, 0.5, 0});
     // BondCounter test;
     // test.factor_ = {30, 30, 30};
-    // test.plane_set_.insert({-1, -1, 1});
+    // test.plane_set_.insert({-1, -1, -1});
     // test.SetBurgersVector({0.5, 0.5, 0});
     test.config_.ReadConfig(fname);
     std::map<Bond, int> bonds_changed = test.GetBondChange();

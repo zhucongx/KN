@@ -109,11 +109,11 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
             check_if_in_between(d_checked, d3_lower, d3_upper))
           slipped_atoms_group.push_back(j);
       }
-      // #ifdef MY_DEBUG
-      std::cout << plane_index << std::endl;
-      std::cout << unslipped_atoms_group.size() << std::endl
-                << slipped_atoms_group.size() << std::endl << std::endl;
-      // #endif
+#ifdef MY_DEBUG
+      // std::cout << plane_index << std::endl;
+      // std::cout << unslipped_atoms_group.size() << std::endl
+      //           << slipped_atoms_group.size() << std::endl << std::endl;
+#endif
       std::map<Bond, int>
           bonds_map_before = CountBondsBetweenTwoGroupHelper(unsliped_config,
                                                              unslipped_atoms_group,
@@ -124,16 +124,31 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
           continue;
         auto burger_distance_vector = GetBurgerDistanceVector(burgers_vector);
         Config sliped_config = unsliped_config;
+        // #ifdef MY_DEBUG
+        //         if (i == 0)
+        //           unsliped_config.WritePOSCAR("corner_1");
+        // #endif
         for (const auto &index:slipped_atoms_group) {
           sliped_config
               .MoveOneAtomRelativeDistance(index, burger_distance_vector);
         }
+        // #ifdef MY_DEBUG
+        //         if (i == 0)
+        //           sliped_config.WritePOSCAR("corner_2");
+        // #endif
         std::map<Bond, int>
             bonds_map_after = CountBondsBetweenTwoGroupHelper(sliped_config,
                                                               unslipped_atoms_group,
                                                               slipped_atoms_group);
-        // bonds_map_temp = bonds_map_after - bonds_map_before;
 #ifdef MY_DEBUG
+        auto bonds_map_temp = bonds_map_after;
+        for (const auto&[key, count] : bonds_map_before) {
+          bonds_map_temp[key] -= count;
+        }
+        for (const auto&[key, count] : bonds_map_temp) {
+          std::cout << "#" << key << " " << count << '\n';
+        }
+        std::cout << '\n';
 
 #endif
         for (const auto&[key, count] : bonds_map_after) {
@@ -145,6 +160,13 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
       }
     }
   }
+
+#ifdef MY_RELEASE
+  for (const auto&[key, count] : bonds_changed) {
+    std::cout << "#" << key << " " << count << '\n';
+  }
+  std::cout << '\n';
+#endif
   return bonds_changed;
 }
 
