@@ -1,5 +1,5 @@
-#ifndef KN_SRC_CONSTANTS_H_
-#define KN_SRC_CONSTANTS_H_
+#ifndef KN_INCLUDE_CONSTANTS_H_
+#define KN_INCLUDE_CONSTANTS_H_
 
 #include <string>
 #include <vector>
@@ -87,5 +87,5 @@ inline double FindMass(const int &atomicNum) {
 }
 } // namespace elem_info
 
-#endif //KN_SRC_CONSTANTS_H_
+#endif //KN_INCLUDE_CONSTANTS_H_
 

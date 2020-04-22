@@ -1,6 +1,9 @@
 #include"Config.h"
 
 #include <utility>
+#include <random>
+#include <chrono>
+
 namespace box {
 
 const double kMean = 0;
@@ -54,7 +57,7 @@ void Config::Perturb() {
   std::normal_distribution<double> distribution(kMean, kStandardDeviation);
   auto add_displacement = [&generator, &distribution](double &coordinate) {
     double displacement = distribution(generator);
-    while (abs(displacement) > kPerturbCutOff) {
+    while (std::abs(displacement) > kPerturbCutOff) {
       displacement = distribution(generator);
     }
     coordinate += displacement;

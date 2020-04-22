@@ -1,8 +1,8 @@
-#ifndef KN_SRC_CONFIGMODIFIER_H_
-#define KN_SRC_CONFIGMODIFIER_H_
+#ifndef KN_INCLUDE_CONFIGMODIFIER_H_
+#define KN_INCLUDE_CONFIGMODIFIER_H_
+
 #include "Config.h"
 #include "FCCConfig.h"
-#include "mpi.h"
 class ConfigModifier {
  public:
 
@@ -45,4 +45,4 @@ int ConfigModifier::GetNumConfig() {
 ConfigModifier::ConfigModifier() {
 }
 
-#endif //KN_SRC_CONFIGMODIFIER_H_
+#endif //KN_INCLUDE_CONFIGMODIFIER_H_
