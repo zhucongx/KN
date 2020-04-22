@@ -161,7 +161,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
     }
   }
 
-#ifdef MY_RELEASE
+#ifdef MY_DEBUG
   for (const auto&[key, count] : bonds_changed) {
     std::cout << "#" << key << " " << count << '\n';
   }
