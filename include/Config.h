@@ -11,8 +11,10 @@
 
 #include "Atom.h"
 #include "Bond.h"
-namespace box {
-class Config {
+namespace box
+{
+class Config
+{
   // Todo finsih GenerateUnitCell
  public:
   Config();
@@ -43,6 +45,11 @@ class Config {
   // ignored for VASP calculation.
   void WritePOSCAR(const std::string &file_name = "POSCAR",
                    const bool &show_vacancy_option = false) const;
+
+  void GenerateUnitCell(const Matrix33<double> &bravais_matrix,
+                        const std::vector<std::pair<std::string,
+                                              Vector3<double>>>& type_position_list);
+  void Duplicate(const Vector3<int> &factors);
   void GenerateFCC(const double &lattice_constant_a,
                    const std::string &element,
                    const Vector3<int> &factors);

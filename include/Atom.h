@@ -17,6 +17,7 @@ class Atom {
   Atom();
   // Set both relative and absolute position, but will be corrected later
   Atom(Rank id, double mass, std::string type, double x, double y, double z);
+  Atom(Rank id, double mass, std::string type, Vector3<double> position);
   void SetId(Rank id);
   [[nodiscard]] Rank GetId() const;
   void SetMass(double mass);

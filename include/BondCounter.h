@@ -22,13 +22,6 @@ class BondCounter {
   static double FindD3Helper(const Vector3<double> &plane_index,
                       const Vector3<double> &box_low_bound,
                       const Vector3<double> &box_high_bound);
-  // make sure d1 < d2
-  [[maybe_unused]] void GetAtomListBetweenPlanesHelper(
-      std::vector<Atom::Rank> &rank_list,
-      const Config &config,
-      const Vector3<double> &abc,
-      const double &d1,
-      const double &d2) const;
   static std::map<Bond, int> CountBondsBetweenTwoGroupHelper(
       const Config &config,
       const std::vector<Atom::Rank> &group1,

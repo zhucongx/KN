@@ -103,11 +103,12 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
             check_if_in_between(d_checked, d3_unslip_lower, d3_unslip_upper)) {
           unslipped_atoms_group.push_back(j);
         }
-        if (check_if_in_between(d_checked, d0_lower, d0_upper) ||
+        else if (check_if_in_between(d_checked, d0_lower, d0_upper) ||
             check_if_in_between(d_checked, d1_lower, d1_upper) ||
             check_if_in_between(d_checked, d2_lower, d2_upper) ||
-            check_if_in_between(d_checked, d3_lower, d3_upper))
+            check_if_in_between(d_checked, d3_lower, d3_upper)){
           slipped_atoms_group.push_back(j);
+        }
       }
 #ifdef MY_DEBUG
       // std::cout << plane_index << std::endl;
@@ -193,21 +194,6 @@ double BondCounter::FindD3Helper(const Vector3<double> &plane_index,
                  plane_index.z * box_high_bound.z);
 }
 
-[[maybe_unused]] void BondCounter::GetAtomListBetweenPlanesHelper(
-    std::vector<Atom::Rank> &rank_list,
-    const Config &config,
-    const Vector3<double> &abc,
-    const double &d1,
-    const double &d2) const {
-  double larger = std::max(d1, d2);
-  double smaller = std::min(d1, d2);
-  for (Atom::Rank i = 0; i < config.GetNumAtoms(); ++i) {
-    double d_checked = DotProduct(config.GetAtom(i).relative_position_, abc);
-    if (d_checked > larger || d_checked < smaller)
-      continue;
-    rank_list.push_back(i);
-  }
-}
 std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
     const Config &config,
     const std::vector<Atom::Rank> &group1,
