@@ -21,6 +21,12 @@ struct Vector3 {
     z -= rhs.z;
     return *this;
   };
+  Vector3 &operator*=(const NumberType &factor) {
+    x *= factor;
+    y *= factor;
+    z *= factor;
+    return *this;
+  };
   friend std::ostream &operator<<(std::ostream &os, const Vector3 &vector_3) {
     os << vector_3.x << " " << vector_3.y << " " << vector_3.z;
     return os;

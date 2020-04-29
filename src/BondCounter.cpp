@@ -1,20 +1,28 @@
 #include "BondCounter.h"
-namespace box {
+namespace box
+{
 BondCounter::BondCounter() = default;
 BondCounter::BondCounter(Vector3<double> factor,
                          Vector3<double> plane,
-                         Vector3<double> burger_vector) : factor_(factor) {
+                         Vector3<double> burger_vector) : factor_(factor)
+{
   SetPlane(plane);
   SetBurgersVector(burger_vector);
 }
-void BondCounter::SetFactor(const Vector3<double> &factor) {
+void BondCounter::SetFactor(const Vector3<double> &factor)
+{
   factor_ = factor;
 }
-void BondCounter::SetPlane(Vector3<double> miller_index) {
-  for (const double &i :{-1.0, 1.0}) {
-    for (const double &j :{-1.0, 1.0}) {
-      for (const double &k :{-1.0, 1.0}) {
-        for (int l = 0; l < 3; l++) {
+void BondCounter::SetPlane(Vector3<double> miller_index)
+{
+  for (const double &i :{-1.0, 1.0})
+  {
+    for (const double &j :{-1.0, 1.0})
+    {
+      for (const double &k :{-1.0, 1.0})
+      {
+        for (int l = 0; l < 3; l++)
+        {
           miller_index = {miller_index.y, miller_index.z, miller_index.x};
           plane_set_.insert(StarProduct(miller_index, {i, j, k}));
         }
@@ -22,12 +30,17 @@ void BondCounter::SetPlane(Vector3<double> miller_index) {
     }
   }
 }
-void BondCounter::SetBurgersVector(Vector3<double> miller_index) {
-  for (int l = 0; l < 3; l++) {
+void BondCounter::SetBurgersVector(Vector3<double> miller_index)
+{
+  for (int l = 0; l < 3; l++)
+  {
     miller_index = {miller_index.y, miller_index.z, miller_index.x};
-    for (const double &i :{-1.0, 1.0}) {
-      for (const double &j :{-1.0, 1.0}) {
-        for (const double &k :{-1.0, 1.0}) {
+    for (const double &i :{-1.0, 1.0})
+    {
+      for (const double &j :{-1.0, 1.0})
+      {
+        for (const double &k :{-1.0, 1.0})
+        {
           burgers_vector_set_.insert(StarProduct(miller_index, {i, j, k}));
         }
       }
@@ -35,8 +48,8 @@ void BondCounter::SetBurgersVector(Vector3<double> miller_index) {
   }
 }
 
-std::map<Bond, int> BondCounter::GetBondChange() const {
-  /// {1/90, 1/90, 1/90}
+std::map<Bond, int> BondCounter::GetBondChange() const
+{
   // How many space in a unit cell does a plane divide
   // {100}1 {110}2 {111}3 {200}4 {220}4 {222}6
   // d_spacing is d=1/sqrt(h^2+k^2+l^2)
@@ -52,9 +65,14 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
   /// slip plane should be d1 = 1/3(length_x+length_y+length_z) = 1, d2 = 2
   /// d1 ± 1/2Sum(plane_distance_vector) should help select one plane
   std::map<Bond, int> bonds_changed;
-  for (const auto &plane_index:plane_set_) {
+  // int iii = -1;
+
+  std::set<std::pair<int, Vector3<double>>> slip_direction_set;
+  for (const auto &plane_index:plane_set_)
+  {
     auto unsliped_config = config_;
     Vector3<double> plane_distance_vector = GetPlaneDistanceVector(plane_index);
+    /// {1/90, 1/90, 1/90}
 
     const double delta = 0.5 * Sum(Abs(plane_distance_vector));
     double d3 = FindD3Helper(plane_index, {0.0, 0.0, 0.0}, {1.0, 1.0, 1.0});
@@ -82,31 +100,37 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
     const double d0_unslip_upper = d0 - delta;
     const double d0_unslip_lower = d0 - 3 * delta;
 
-    for (int i = 0; i < iteration_time; i++) {
+    for (int i = 0; i < iteration_time; i++)
+    {
       unsliped_config.MoveRelativeDistance(plane_distance_vector);
+      // unsliped_config.WritePOSCAR((std::to_string(++iii) + ".poscar"));
+      // int jjj = 0;
       // We select four planes, and we move two plan by the burgers vector and
       // calculate the bonds change between the these two planes and the
       // other two.
       std::vector<Atom::Rank> unslipped_atoms_group;
       std::vector<Atom::Rank> slipped_atoms_group;
 
-      for (Atom::Rank j = 0; j < unsliped_config.GetNumAtoms(); ++j) {
+      for (Atom::Rank j = 0; j < unsliped_config.GetNumAtoms(); ++j)
+      {
         double d_checked =
             DotProduct(unsliped_config.GetAtom(j).relative_position_,
                        plane_index);
-        auto check_if_in_between = [](double value, double v_1, double v_2) {
+        auto check_if_in_between = [](double value, double v_1, double v_2)
+        {
           return (value > std::min(v_1, v_2) && value < std::max(v_1, v_2));
         };
         if (check_if_in_between(d_checked, d0_unslip_lower, d0_unslip_upper) ||
             check_if_in_between(d_checked, d1_unslip_lower, d1_unslip_upper) ||
             check_if_in_between(d_checked, d2_unslip_lower, d2_unslip_upper) ||
-            check_if_in_between(d_checked, d3_unslip_lower, d3_unslip_upper)) {
+            check_if_in_between(d_checked, d3_unslip_lower, d3_unslip_upper))
+        {
           unslipped_atoms_group.push_back(j);
-        }
-        else if (check_if_in_between(d_checked, d0_lower, d0_upper) ||
+        } else if (check_if_in_between(d_checked, d0_lower, d0_upper) ||
             check_if_in_between(d_checked, d1_lower, d1_upper) ||
             check_if_in_between(d_checked, d2_lower, d2_upper) ||
-            check_if_in_between(d_checked, d3_lower, d3_upper)){
+            check_if_in_between(d_checked, d3_lower, d3_upper))
+        {
           slipped_atoms_group.push_back(j);
         }
       }
@@ -120,71 +144,71 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
                                                              unslipped_atoms_group,
                                                              slipped_atoms_group);
       //  move atoms
-      for (const auto &burgers_vector:burgers_vector_set_) {
+      for (const auto &burgers_vector:burgers_vector_set_)
+      {
         if (DotProduct(plane_index, burgers_vector) != 0)
           continue;
+        auto slip_direction = CrossProduct(plane_index, burgers_vector);
+
+        std::pair<int, Vector3<double>>
+            slip_direction_check = std::make_pair(i, slip_direction);
+
+        auto it = slip_direction_set.find(slip_direction_check);
+        if (it == slip_direction_set.end())
+        {
+          slip_direction_set.insert(slip_direction_check);
+        } else
+        {
+          continue;
+        }
+
         auto burger_distance_vector = GetBurgerDistanceVector(burgers_vector);
         Config sliped_config = unsliped_config;
-        // #ifdef MY_DEBUG
-        //         if (i == 0)
-        //           unsliped_config.WritePOSCAR("corner_1");
-        // #endif
-        for (const auto &index:slipped_atoms_group) {
+        // sliped_config
+        //     .WritePOSCAR((std::to_string(iii) + "_" + std::to_string(jjj++)
+        //         + ".poscar"));
+
+        for (const auto &index:slipped_atoms_group)
+        {
           sliped_config
               .MoveOneAtomRelativeDistance(index, burger_distance_vector);
         }
-        // #ifdef MY_DEBUG
-        //         if (i == 0)
-        //           sliped_config.WritePOSCAR("corner_2");
-        // #endif
         std::map<Bond, int>
             bonds_map_after = CountBondsBetweenTwoGroupHelper(sliped_config,
                                                               unslipped_atoms_group,
                                                               slipped_atoms_group);
-#ifdef MY_DEBUG
-        auto bonds_map_temp = bonds_map_after;
-        for (const auto&[key, count] : bonds_map_before) {
-          bonds_map_temp[key] -= count;
-        }
-        for (const auto&[key, count] : bonds_map_temp) {
-          std::cout << "#" << key << " " << count << '\n';
-        }
-        std::cout << '\n';
 
-#endif
-        for (const auto&[key, count] : bonds_map_after) {
+        for (const auto&[key, count] : bonds_map_after)
+        {
           bonds_changed[key] += count;
         }
-        for (const auto&[key, count] : bonds_map_before) {
+        for (const auto&[key, count] : bonds_map_before)
+        {
           bonds_changed[key] -= count;
         }
       }
     }
   }
-
-#ifdef MY_DEBUG
-  for (const auto&[key, count] : bonds_changed) {
-    std::cout << "#" << key << " " << count << '\n';
-  }
-  std::cout << '\n';
-#endif
   return bonds_changed;
 }
 
 // relative distance
-Vector3<double> BondCounter::GetPlaneDistanceVector(const Vector3<double> &plane_index) const {
+Vector3<double> BondCounter::GetPlaneDistanceVector(const Vector3<double> &plane_index) const
+{
   double inner = InnerProduct(plane_index);
   Vector3<double> distance_index = (1.0 / inner * plane_index);
   return StarDivide(distance_index, factor_);
 }
 
-Vector3<double> BondCounter::GetBurgerDistanceVector(const Vector3<double> &burger_vector) const {
+Vector3<double> BondCounter::GetBurgerDistanceVector(const Vector3<double> &burger_vector) const
+{
   return StarDivide(burger_vector, factor_);
 }
 
 double BondCounter::FindD3Helper(const Vector3<double> &plane_index,
                                  const Vector3<double> &box_low_bound,
-                                 const Vector3<double> &box_high_bound) {
+                                 const Vector3<double> &box_high_bound)
+{
 
   return std::max(plane_index.x * box_low_bound.x,
                   plane_index.x * box_high_bound.x)
@@ -197,17 +221,21 @@ double BondCounter::FindD3Helper(const Vector3<double> &plane_index,
 std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
     const Config &config,
     const std::vector<Atom::Rank> &group1,
-    const std::vector<Atom::Rank> &group2) {
+    const std::vector<Atom::Rank> &group2)
+{
   std::map<Bond, int> map_out;
-  for (const auto &index1:group1) {
-    for (const auto &index2:group2) {
+  for (const auto &index1:group1)
+  {
+    for (const auto &index2:group2)
+    {
       Vector3<double> relative_distance_vector =
           GetRelativeDistanceVector(config.GetAtom(index1),
                                     config.GetAtom(index2));
       double absolute_distance_squared = (InnerProduct(
           relative_distance_vector * config.GetBravaisMatrix()));
 
-      if (absolute_distance_squared < 9) {
+      if (absolute_distance_squared < 9)
+      {
         map_out[{config.GetAtom(index1).GetType(),
                  config.GetAtom(index2).GetType()}]++;
       }
