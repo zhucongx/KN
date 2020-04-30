@@ -164,19 +164,24 @@ std::map<Bond, int> BondCounter::GetBondChange() const
 
         auto burger_distance_vector = GetBurgerDistanceVector(burgers_vector);
         Config sliped_config = unsliped_config;
-        // sliped_config
-        //     .WritePOSCAR((std::to_string(iii) + "_" + std::to_string(jjj++)
-        //         + ".poscar"));
 
         for (const auto &index:slipped_atoms_group)
         {
           sliped_config
               .MoveOneAtomRelativeDistance(index, burger_distance_vector);
         }
+        // sliped_config
+        //     .WritePOSCAR((std::to_string(iii) + "_" + std::to_string(jjj++)
+        //         + ".poscar"));
+
         std::map<Bond, int>
             bonds_map_after = CountBondsBetweenTwoGroupHelper(sliped_config,
                                                               unslipped_atoms_group,
                                                               slipped_atoms_group);
+        if (bonds_map_after.empty())
+        {
+          continue;
+        }
 
         for (const auto&[key, count] : bonds_map_after)
         {
@@ -234,8 +239,9 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
       double absolute_distance_squared = (InnerProduct(
           relative_distance_vector * config.GetBravaisMatrix()));
 
-      if (absolute_distance_squared < 9)
+      if (absolute_distance_squared > 8 && absolute_distance_squared < 9)
       {
+        // std::cout << absolute_distance_squared<<'\n';
         map_out[{config.GetAtom(index1).GetType(),
                  config.GetAtom(index2).GetType()}]++;
       }
