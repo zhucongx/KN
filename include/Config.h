@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 #include <map>
-
 #include "Atom.h"
 #include "Bond.h"
 namespace box
@@ -53,6 +52,9 @@ class Config
   void GenerateFCC(const double &lattice_constant_a,
                    const std::string &element,
                    const Vector3<int> &factors);
+  void GenerateBCC(const double &lattice_constant_a,
+                   const std::string &element,
+                   const Vector3<int> &factors);
   void GenerateHCP(const double &lattice_constant_a,
                    const double &lattice_constant_c,
                    const std::string &element,
@@ -61,7 +63,6 @@ class Config
   [[nodiscard]] const Matrix33<double> &GetInverseBravaisMatrix() const;
   [[nodiscard]] const Atom &GetAtom(const Atom::Rank &index) const;
   [[nodiscard]] int GetNumAtoms() const;
-
  protected:
   double scale_{};
   // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;

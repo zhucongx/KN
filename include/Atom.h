@@ -26,7 +26,7 @@ class Atom {
   [[nodiscard]] const std::string &GetType() const;
 
   // absolute position
-  Vector3<double> absolute_position_{};
+  Vector3<double> cartesian_position_{};
   // relative position in the box
   Vector3<double> relative_position_{};
   // First and second nearest neighbor list

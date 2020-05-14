@@ -11,9 +11,9 @@ Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
   relative_position_.y = y;
   relative_position_.z = z;
 
-  absolute_position_.x = x;
-  absolute_position_.y = y;
-  absolute_position_.z = z;
+  cartesian_position_.x = x;
+  cartesian_position_.y = y;
+  cartesian_position_.z = z;
 }
 Atom::Atom(Atom::Rank id,
            double mass,
@@ -23,7 +23,7 @@ Atom::Atom(Atom::Rank id,
       mass_(mass),
       type_(std::move(type)),
       relative_position_(position),
-      absolute_position_(position)
+      cartesian_position_(position)
 {
 }
 

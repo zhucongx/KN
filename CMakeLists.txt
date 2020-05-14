@@ -36,30 +36,26 @@ set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3 -ggdb -DMY_DEBUG"
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DMY_RELEASE"
         CACHE INTERNAL "")
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/src)
-
 file(GLOB KN_SRC
-        ${PROJECT_SOURCE_DIR}/src/*.cpp
-        ${PROJECT_SOURCE_DIR}/include/*.h)
+        ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-#find_package(MPI REQUIRED)
-## include directories
-#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-## link libraries
-#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-## set interface target compile options
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
-#
+find_package(MPI REQUIRED)
+# include directories
+target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+# link libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+# set interface target compile options
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+
 #find_package(OpenMP REQUIRED)
 ## include directories
 #target_include_directories(${PROJECT_NAME} INTERFACE ${OpenMP_C_INCLUDE_DIRS} ${OpenMP_CXX_INCLUDE_DIRS})
@@ -74,9 +70,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 #target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 #target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
 #
-### Lib keras2cpp
-#add_subdirectory(external/keras2cpp)
-#target_include_directories(${PROJECT_NAME} INTERFACE external/keras2cpp)
-#target_link_libraries(${PROJECT_NAME} INTERFACE Keras2cpp)
+## Lib keras2cpp
+add_subdirectory(external/keras2cpp)
+target_include_directories(${PROJECT_NAME} INTERFACE external/keras2cpp)
+target_link_libraries(${PROJECT_NAME} INTERFACE keras2cpp)
 
 

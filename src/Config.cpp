@@ -47,7 +47,7 @@ void Config::ConvertRelativeToAbsolute()
 {
   for (auto &atom:atom_list_)
   {
-    atom.absolute_position_ = atom.relative_position_ * bravais_matrix_;
+    atom.cartesian_position_ = atom.relative_position_ * bravais_matrix_;
   }
 }
 
@@ -55,7 +55,7 @@ void Config::ConvertAbsoluteToRelative()
 {
   for (auto &atom:atom_list_)
   {
-    atom.relative_position_ = atom.absolute_position_ * inverse_bravais_matrix_;
+    atom.relative_position_ = atom.cartesian_position_ * inverse_bravais_matrix_;
   }
 }
 
@@ -75,9 +75,9 @@ void Config::Perturb()
   };
   for (auto &atom:atom_list_)
   {
-    add_displacement(atom.absolute_position_.x);
-    add_displacement(atom.absolute_position_.y);
-    add_displacement(atom.absolute_position_.z);
+    add_displacement(atom.cartesian_position_.x);
+    add_displacement(atom.cartesian_position_.y);
+    add_displacement(atom.cartesian_position_.z);
   }
   ConvertAbsoluteToRelative();
 }
@@ -123,7 +123,7 @@ void Config::WrapRelativePosition()
     atom.relative_position_.y -= floor(atom.relative_position_.y);
     atom.relative_position_.z -= floor(atom.relative_position_.z);
 
-    atom.absolute_position_ = atom.relative_position_ * bravais_matrix_;
+    atom.cartesian_position_ = atom.relative_position_ * bravais_matrix_;
   }
 }
 
@@ -149,7 +149,7 @@ void Config::MoveRelativeDistance(const Vector3<double> &distance_vector)
 
     atom.relative_position_ -= Floor(atom.relative_position_);
 
-    atom.absolute_position_ = atom.relative_position_ * bravais_matrix_;
+    atom.cartesian_position_ = atom.relative_position_ * bravais_matrix_;
   }
 }
 void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
@@ -159,12 +159,12 @@ void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
   atom_list_[index].relative_position_ -=
       Floor(atom_list_[index].relative_position_);
 
-  atom_list_[index].absolute_position_ =
+  atom_list_[index].cartesian_position_ =
       atom_list_[index].relative_position_ * bravais_matrix_;
 }
 // void Config::MoveAbsoluteDistance(const Vector3<double> &distance_vector) {
 //   for (auto &atom:atom_list_) {
-//     atom.absolute_position_ = atom.absolute_position_ + distance_vector;
+//     atom.cartesian_position_ = atom.cartesian_position_ + distance_vector;
 //   }
 //   WrapAbsolutePosition();
 // }
@@ -675,7 +675,45 @@ void Config::GenerateFCC(const double &lattice_constant_a,
   }
   ConvertRelativeToAbsolute();
 }
-
+void Config::GenerateBCC(const double &lattice_constant_a,
+                         const std::string &element,
+                         const Vector3<int> &factors)
+{
+  Initialize();
+  double mass = elem_info::FindMass(element);
+  bravais_matrix_ = {{lattice_constant_a * factors.x, 0, 0},
+                     {0, lattice_constant_a * factors.y, 0},
+                     {0, 0, lattice_constant_a * factors.z}};
+  inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
+  scale_ = 1.0;
+  num_atoms_ = 0;
+  auto x_length = static_cast<double>(factors.x);
+  auto y_length = static_cast<double>(factors.y);
+  auto z_length = static_cast<double>(factors.z);
+  for (int k = 0; k < factors.z; ++k)
+  {
+    for (int j = 0; j < factors.y; ++j)
+    {
+      for (int i = 0; i < factors.x; ++i)
+      {
+        auto x_reference = static_cast<double>(i);
+        auto y_reference = static_cast<double>(j);
+        auto z_reference = static_cast<double>(k);
+        atom_list_.emplace_back(num_atoms_, mass, element,
+                                x_reference / x_length,
+                                y_reference / y_length,
+                                z_reference / z_length);
+        element_list_set_[element].emplace_back(num_atoms_++);
+        atom_list_.emplace_back(num_atoms_, mass, element,
+                                (x_reference + 0.5) / x_length,
+                                (y_reference + 0.5) / y_length,
+                                (z_reference + 0.5) / z_length);
+        element_list_set_[element].emplace_back(num_atoms_++);
+      }
+    }
+  }
+  ConvertRelativeToAbsolute();
+}
 void Config::GenerateHCP(const double &lattice_constant_a,
                          const double &lattice_constant_c,
                          const std::string &element,

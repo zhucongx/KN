@@ -17,4 +17,4 @@ set(LIBKERAS2CPP_SRCS
         ${CMAKE_CURRENT_SOURCE_DIR}/layers/batchNormalization.cc
         )
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-add_library(Keras2cpp STATIC ${LIBKERAS2CPP_SRCS})
+add_library(keras2cpp STATIC ${LIBKERAS2CPP_SRCS})
