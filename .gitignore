@@ -4,5 +4,6 @@ obj/
 lib/
 cmake-build-*/
 .idea/
+.vs/
 .DS_Store
 
