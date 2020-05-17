@@ -1,25 +1,10 @@
 ---
 Language: Cpp
-BasedOnStyle: Google
-AccessModifierOffset: -2
-AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
+BasedOnStyle: LLVM
+AccessModifierOffset: 0
 AlignOperands: false
 AlignTrailingComments: false
-AllowAllArgumentsOnNextLine: false
-AllowAllConstructorInitializersOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: Always
-AllowShortCaseLabelsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: Always
-AllowShortLambdasOnASingleLine: All
-AllowShortLoopsOnASingleLine: true
-AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: Yes
-BinPackArguments: true
-BinPackParameters: true
 BraceWrapping: 
   AfterCaseLabel: true
   AfterClass: true
@@ -29,23 +14,16 @@ BraceWrapping:
   AfterNamespace: true
   AfterStruct: true
   AfterUnion: true
-  AfterExternBlock: false
+  AfterExternBlock: true
   BeforeCatch: true
-  BeforeElse: true
+  BeforeElse: false
+  IndentBraces: false
   SplitEmptyFunction: true
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
-BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
-BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
-BreakConstructorInitializersBeforeComma: false
-BreakInheritanceList: BeforeColon
 ColumnLimit: 120
-CompactNamespaces: false
-ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ContinuationIndentWidth: 2
-IncludeBlocks: Preserve
 IncludeCategories: 
   - Regex: '^<.*'
     Priority: 1
@@ -54,33 +32,7 @@ IncludeCategories:
   - Regex: '.*'
     Priority: 3
 IncludeIsMainRegex: '([-_](test|unittest))?$'
-IndentCaseLabels: false
-IndentPPDirectives: None
-IndentWidth: 2
-IndentWrappedFunctionNames: false
-KeepEmptyLinesAtTheStartOfBlocks: true
+IndentCaseLabels: true
 MaxEmptyLinesToKeep: 2
-NamespaceIndentation: All
-ObjCSpaceAfterProperty: false
-ObjCSpaceBeforeProtocolList: false
-PointerAlignment: Right
-ReflowComments: false
-SpaceAfterCStyleCast: false
-SpaceAfterLogicalNot: false
-SpaceAfterTemplateKeyword: true
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCpp11BracedList: false
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-SpaceBeforeParens: ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
-SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 1
-SpacesInAngles: false
-SpacesInContainerLiterals: false
-SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
 TabWidth: 4
-UseTab: Never
 ...

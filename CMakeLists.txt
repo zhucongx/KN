@@ -43,18 +43,18 @@ add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-find_package(MPI REQUIRED)
-# include directories
-target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-# link libraries
-target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-# set interface target compile options
-target_compile_options(${PROJECT_NAME} INTERFACE
-        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-target_compile_options(${PROJECT_NAME} INTERFACE
-        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+#find_package(MPI REQUIRED)
+## include directories
+#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+## link libraries
+#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+## set interface target compile options
+#target_compile_options(${PROJECT_NAME} INTERFACE
+#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+#target_compile_options(${PROJECT_NAME} INTERFACE
+#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+#set_target_properties(${PROJECT_NAME} PROPERTIES
+#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 
 #find_package(OpenMP REQUIRED)
 ## include directories
@@ -71,8 +71,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 #target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
 #
 ## Lib keras2cpp
-add_subdirectory(external/keras2cpp)
-target_include_directories(${PROJECT_NAME} INTERFACE external/keras2cpp)
-target_link_libraries(${PROJECT_NAME} INTERFACE keras2cpp)
+#add_subdirectory(external/keras2cpp)
+#target_include_directories(${PROJECT_NAME} INTERFACE external/keras2cpp)
+#target_link_libraries(${PROJECT_NAME} INTERFACE keras2cpp)
 
 
