@@ -31,8 +31,7 @@ class Config
   // void ShiftAtomToCentral(const Atom::Rank &id);
 
   void MoveRelativeDistance(const Vector3<double> &distance_vector);
-  void MoveOneAtomRelativeDistance(const Atom::Rank &index,
-                                   const Vector3<double> &distance_vector);
+  void MoveOneAtomRelativeDistance(const Atom::Rank &index, const Vector3<double> &distance_vector);
 
   // void MoveAbsoluteDistance(const Vector3<double> &distance_vector);
   std::map<Bond, int> CountAllBonds(double r_cutoff);
@@ -46,15 +45,10 @@ class Config
                    const bool &show_vacancy_option = false) const;
 
   void GenerateUnitCell(const Matrix33<double> &bravais_matrix,
-                        const std::vector<std::pair<std::string,
-                                              Vector3<double>>>& type_position_list);
+                        const std::vector<std::pair<std::string, Vector3<double>>> &type_position_list);
   void Duplicate(const Vector3<int> &factors);
-  void GenerateFCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const Vector3<int> &factors);
-  void GenerateBCC(const double &lattice_constant_a,
-                   const std::string &element,
-                   const Vector3<int> &factors);
+  void GenerateFCC(const double &lattice_constant_a, const std::string &element, const Vector3<int> &factors);
+  void GenerateBCC(const double &lattice_constant_a, const std::string &element, const Vector3<int> &factors);
   void GenerateHCP(const double &lattice_constant_a,
                    const double &lattice_constant_c,
                    const std::string &element,

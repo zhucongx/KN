@@ -7,25 +7,25 @@
 // #include <armadillo>
 
 #include "Vector3.h"
-template <class NumberType>
+template<class NumberType>
 struct Matrix33
 {
   Vector3<NumberType> row1, row2, row3;
 };
 
-template <class NumberType>
+template<class NumberType>
 inline bool operator==(const Matrix33<NumberType> &lhs,
                        const Matrix33<NumberType> &rhs)
 {
   return lhs.row1 == rhs.row1 && lhs.row2 == rhs.row2 && lhs.row3 == rhs.row3;
 }
-template <class NumberType>
+template<class NumberType>
 inline bool operator!=(const Matrix33<NumberType> &lhs,
                        const Matrix33<NumberType> &rhs)
 {
   return !(rhs == lhs);
 }
-template <class NumberType>
+template<class NumberType>
 inline Vector3<NumberType> operator*(const Vector3<NumberType> &lhs,
                                      const Matrix33<NumberType> &rhs)
 {
@@ -34,20 +34,20 @@ inline Vector3<NumberType> operator*(const Vector3<NumberType> &lhs,
           lhs.x * rhs.row1.z + lhs.y * rhs.row2.z + lhs.z * rhs.row3.z};
 }
 
-template <class NumberType>
+template<class NumberType>
 inline Matrix33<NumberType> operator*(const Matrix33<NumberType> &lhs,
                                       const Matrix33<NumberType> &rhs)
 {
   return {lhs.row1 * rhs, lhs.row2 * rhs, lhs.row3 * rhs};
 }
 
-template <class NumberType>
+template<class NumberType>
 inline Matrix33<NumberType> operator*(const Matrix33<NumberType> &matrix,
                                       const NumberType &factor)
 {
   return {matrix.row1 * factor, matrix.row2 * factor, matrix.row3 * factor};
 }
-template <class NumberType>
+template<class NumberType>
 inline Matrix33<NumberType> operator*(const NumberType &factor,
                                       const Matrix33<NumberType> &matrix)
 {

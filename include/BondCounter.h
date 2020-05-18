@@ -10,9 +10,7 @@ class BondCounter {
  public:
 
   BondCounter();
-  BondCounter(Vector3<double> factor,
-              Vector3<double> plane,
-              Vector3<double> burger_vector);
+  BondCounter(Vector3<double> factor,Vector3<double> plane,Vector3<double> burger_vector);
   void SetFactor(const Vector3<double> &factor);
   void SetPlane(Vector3<double> miller_index);
   void SetBurgersVector(Vector3<double> miller_index);

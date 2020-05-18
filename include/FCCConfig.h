@@ -3,9 +3,11 @@
 
 #include "Config.h"
 
-namespace box {
+namespace box
+{
 
-class FCCConfig : public Config {
+class FCCConfig : public Config
+{
  public:
   void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) override;
 };
