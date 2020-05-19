@@ -95,49 +95,49 @@ inline Vector3 operator/(const Vector3 &vector, const double &divisor)
   return (temp /= divisor);
 }
 
-inline static double Max(const Vector3 &vector)
+inline double Max(const Vector3 &vector)
 {
   return std::max(std::max(vector[kXDimension], vector[kYDimension]), vector[kZDimension]);
 }
-inline static double Min(const Vector3 &vector)
+inline double Min(const Vector3 &vector)
 {
   return std::min(std::min(vector[kXDimension], vector[kYDimension]), vector[kZDimension]);
 }
-inline static double Sum(const Vector3 &vector)
+inline double Sum(const Vector3 &vector)
 {
   return vector[kXDimension] + vector[kYDimension] + vector[kZDimension];
 }
-inline static Vector3 Abs(const Vector3 &vector)
+inline Vector3 Abs(const Vector3 &vector)
 {
   return {std::abs(vector[kXDimension]), std::abs(vector[kYDimension]),
           std::abs(vector[kZDimension])};
 }
-inline static Vector3 Floor(const Vector3 &vector)
+inline Vector3 Floor(const Vector3 &vector)
 {
   return {floor(vector[kXDimension]), floor(vector[kYDimension]), floor(vector[kZDimension])};
 }
-inline static Vector3 CrossProduct(const Vector3 &first, const Vector3 &second)
+inline Vector3 CrossProduct(const Vector3 &first, const Vector3 &second)
 {
   return {first[kYDimension] * second[kZDimension] - first[kZDimension] * second[kYDimension],
           first[kZDimension] * second[kXDimension] - first[kXDimension] * second[kZDimension],
           first[kXDimension] * second[kYDimension] - first[kYDimension] * second[kXDimension]};
 }
-inline static double DotProduct(const Vector3 &first, const Vector3 &second)
+inline double DotProduct(const Vector3 &first, const Vector3 &second)
 {
   return first[kXDimension] * second[kXDimension] + first[kYDimension] * second[kYDimension]
       + first[kZDimension] * second[kZDimension];
 }
-inline static double InnerProduct(const Vector3 &vector)
+inline double InnerProduct(const Vector3 &vector)
 {
   return vector[kXDimension] * vector[kXDimension] + vector[kYDimension] * vector[kYDimension]
       + vector[kZDimension] * vector[kZDimension];
 }
-inline static Vector3 StarProduct(const Vector3 &first, const Vector3 &second)
+inline Vector3 StarProduct(const Vector3 &first, const Vector3 &second)
 {
   return {first[kXDimension] * second[kXDimension], first[kYDimension] * second[kYDimension],
           first[kZDimension] * second[kZDimension]};
 }
-inline static Vector3 StarDivide(const Vector3 &dividend, const Vector3 &divisor)
+inline Vector3 StarDivide(const Vector3 &dividend, const Vector3 &divisor)
 {
   return {dividend[kXDimension] / divisor[kXDimension],
           dividend[kYDimension] / divisor[kYDimension],
