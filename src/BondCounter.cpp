@@ -2,18 +2,18 @@
 namespace box
 {
 BondCounter::BondCounter() = default;
-BondCounter::BondCounter(Vector3<double> factor,
-                         Vector3<double> plane,
-                         Vector3<double> burger_vector) : factor_(factor)
+BondCounter::BondCounter(Vector3 factor,
+                         Vector3 plane,
+                         Vector3 burger_vector) : factor_(factor)
 {
   SetPlane(plane);
   SetBurgersVector(burger_vector);
 }
-void BondCounter::SetFactor(const Vector3<double> &factor)
+void BondCounter::SetFactor(const Vector3 &factor)
 {
   factor_ = factor;
 }
-void BondCounter::SetPlane(Vector3<double> miller_index)
+void BondCounter::SetPlane(Vector3 miller_index)
 {
   for (const double &i :{-1.0, 1.0})
   {
@@ -23,18 +23,20 @@ void BondCounter::SetPlane(Vector3<double> miller_index)
       {
         for (int l = 0; l < 3; l++)
         {
-          miller_index = {miller_index.y, miller_index.z, miller_index.x};
+          miller_index =
+              {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
           plane_set_.insert(StarProduct(miller_index, {i, j, k}));
         }
       }
     }
   }
 }
-void BondCounter::SetBurgersVector(Vector3<double> miller_index)
+void BondCounter::SetBurgersVector(Vector3 miller_index)
 {
   for (int l = 0; l < 3; l++)
   {
-    miller_index = {miller_index.y, miller_index.z, miller_index.x};
+    miller_index =
+        {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
     for (const double &i :{-1.0, 1.0})
     {
       for (const double &j :{-1.0, 1.0})
@@ -67,11 +69,11 @@ std::map<Bond, int> BondCounter::GetBondChange() const
   std::map<Bond, int> bonds_changed;
   // int iii = -1;
 
-  std::set<std::pair<int, Vector3<double>>> slip_direction_set;
+  std::set<std::pair<int, Vector3>> slip_direction_set;
   for (const auto &plane_index:plane_set_)
   {
     auto unsliped_config = config_;
-    Vector3<double> plane_distance_vector = GetPlaneDistanceVector(plane_index);
+    Vector3 plane_distance_vector = GetPlaneDistanceVector(plane_index);
     /// {1/90, 1/90, 1/90}
 
     const double delta = 0.5 * Sum(Abs(plane_distance_vector));
@@ -114,8 +116,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const
       for (Atom::Rank j = 0; j < unsliped_config.GetNumAtoms(); ++j)
       {
         double d_checked =
-            DotProduct(unsliped_config.GetAtom(j).relative_position_,
-                       plane_index);
+            DotProduct(unsliped_config.GetAtom(j).relative_position_, plane_index);
         auto check_if_in_between = [](double value, double v_1, double v_2)
         {
           return (value > std::min(v_1, v_2) && value < std::max(v_1, v_2));
@@ -150,7 +151,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const
           continue;
         auto slip_direction = CrossProduct(plane_index, burgers_vector);
 
-        std::pair<int, Vector3<double>>
+        std::pair<int, Vector3>
             slip_direction_check = std::make_pair(i, slip_direction);
 
         auto it = slip_direction_set.find(slip_direction_check);
@@ -198,29 +199,29 @@ std::map<Bond, int> BondCounter::GetBondChange() const
 }
 
 // relative distance
-Vector3<double> BondCounter::GetPlaneDistanceVector(const Vector3<double> &plane_index) const
+Vector3 BondCounter::GetPlaneDistanceVector(const Vector3 &plane_index) const
 {
   double inner = InnerProduct(plane_index);
-  Vector3<double> distance_index = (1.0 / inner * plane_index);
+  Vector3 distance_index = (1.0 / inner * plane_index);
   return StarDivide(distance_index, factor_);
 }
 
-Vector3<double> BondCounter::GetBurgerDistanceVector(const Vector3<double> &burger_vector) const
+Vector3 BondCounter::GetBurgerDistanceVector(const Vector3 &burger_vector) const
 {
   return StarDivide(burger_vector, factor_);
 }
 
-double BondCounter::FindD3Helper(const Vector3<double> &plane_index,
-                                 const Vector3<double> &box_low_bound,
-                                 const Vector3<double> &box_high_bound)
+double BondCounter::FindD3Helper(const Vector3 &plane_index,
+                                 const Vector3 &box_low_bound,
+                                 const Vector3 &box_high_bound)
 {
 
-  return std::max(plane_index.x * box_low_bound.x,
-                  plane_index.x * box_high_bound.x)
-      + std::max(plane_index.y * box_low_bound.y,
-                 plane_index.y * box_high_bound.y)
-      + std::max(plane_index.z * box_low_bound.z,
-                 plane_index.z * box_high_bound.z);
+  return std::max(plane_index[kXDimension] * box_low_bound[kXDimension],
+                  plane_index[kXDimension] * box_high_bound[kXDimension])
+      + std::max(plane_index[kYDimension] * box_low_bound[kYDimension],
+                 plane_index[kYDimension] * box_high_bound[kYDimension])
+      + std::max(plane_index[kZDimension] * box_low_bound[kZDimension],
+                 plane_index[kZDimension] * box_high_bound[kZDimension]);
 }
 
 std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
@@ -233,11 +234,11 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
   {
     for (const auto &index2:group2)
     {
-      Vector3<double> relative_distance_vector =
+      Vector3 relative_distance_vector =
           GetRelativeDistanceVector(config.GetAtom(index1),
                                     config.GetAtom(index2));
-      double absolute_distance_squared = (InnerProduct(
-          relative_distance_vector * config.GetBravaisMatrix()));
+      double absolute_distance_squared =
+          (InnerProduct(relative_distance_vector * config.GetBravaisMatrix()));
 
       if (absolute_distance_squared > 8 && absolute_distance_squared < 9)
       {

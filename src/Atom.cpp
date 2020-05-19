@@ -7,18 +7,18 @@ Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
     : id_(id), mass_(mass), type_(std::move(type))
 {
   // Set both relative and absolute position, but will be corrected later
-  relative_position_.x = x;
-  relative_position_.y = y;
-  relative_position_.z = z;
+  relative_position_[kXDimension] = x;
+  relative_position_[kYDimension] = y;
+  relative_position_[kZDimension] = z;
 
-  cartesian_position_.x = x;
-  cartesian_position_.y = y;
-  cartesian_position_.z = z;
+  cartesian_position_[kXDimension] = x;
+  cartesian_position_[kYDimension] = y;
+  cartesian_position_[kZDimension] = z;
 }
 Atom::Atom(Atom::Rank id,
            double mass,
            std::string type,
-           Vector3<double> position)
+           Vector3 position)
     : id_(id),
       mass_(mass),
       type_(std::move(type)),
@@ -52,11 +52,9 @@ void Atom::SetType(const std::string &type)
   type_ = type;
 }
 
-Vector3<double> GetRelativeDistanceVector(const Atom &first,
-                                          const Atom &second)
+Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second)
 {
-  Vector3<double> relative_distance_vector =
-      first.relative_position_ - second.relative_position_;
+  Vector3 relative_distance_vector = first.relative_position_ - second.relative_position_;
   auto check_periodic = [](double &distance)
   {
     if (distance >= 0.5)
@@ -65,9 +63,9 @@ Vector3<double> GetRelativeDistanceVector(const Atom &first,
       distance += 1;
   };
   // periodic boundary conditions
-  check_periodic(relative_distance_vector.x);
-  check_periodic(relative_distance_vector.y);
-  check_periodic(relative_distance_vector.z);
+  check_periodic(relative_distance_vector[kXDimension]);
+  check_periodic(relative_distance_vector[kYDimension]);
+  check_periodic(relative_distance_vector[kZDimension]);
   return relative_distance_vector;
 }
 

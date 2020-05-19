@@ -19,7 +19,7 @@ class Atom
   Atom();
   // Set both relative and absolute position, but will be corrected later
   Atom(Rank id, double mass, std::string type, double x, double y, double z);
-  Atom(Rank id, double mass, std::string type, Vector3<double> position);
+  Atom(Rank id, double mass, std::string type, Vector3 position);
   void SetId(Rank id);
   [[nodiscard]] Rank GetId() const;
   void SetMass(double mass);
@@ -28,9 +28,9 @@ class Atom
   [[nodiscard]] const std::string &GetType() const;
 
   // absolute position
-  Vector3<double> cartesian_position_{};
+  Vector3 cartesian_position_{};
   // relative position in the box
-  Vector3<double> relative_position_{};
+  Vector3 relative_position_{};
   // First and second nearest neighbor list
   std::vector<Rank> second_nearest_neighbor_list_;
   // First nearest neighbor list
@@ -42,6 +42,6 @@ class Atom
   std::string type_;
 };
 
-Vector3<double> GetRelativeDistanceVector(const Atom &first, const Atom &second);
+Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
 }// namespace box
 #endif //KN_SRC_ATOM_H_

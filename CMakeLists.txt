@@ -43,6 +43,10 @@ add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
+find_package(Boost REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
+
 #find_package(MPI REQUIRED)
 ## include directories
 #target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})

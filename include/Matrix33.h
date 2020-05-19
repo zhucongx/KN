@@ -7,82 +7,98 @@
 // #include <armadillo>
 
 #include "Vector3.h"
-template<class NumberType>
-struct Matrix33
-{
-  Vector3<NumberType> row1, row2, row3;
-};
+#include "boost/multi_array.hpp"
+#include <cassert>
 
-template<class NumberType>
-inline bool operator==(const Matrix33<NumberType> &lhs,
-                       const Matrix33<NumberType> &rhs)
+typedef std::array<Vector3 , kDimension> Matrix33;
+
+inline Matrix33 &operator*=(Matrix33 &lhs, const double &factor)
 {
-  return lhs.row1 == rhs.row1 && lhs.row2 == rhs.row2 && lhs.row3 == rhs.row3;
+  lhs[kXDimension] *= factor;
+  lhs[kYDimension] *= factor;
+  lhs[kZDimension] *= factor;
+  return lhs;
 }
-template<class NumberType>
-inline bool operator!=(const Matrix33<NumberType> &lhs,
-                       const Matrix33<NumberType> &rhs)
+inline Matrix33 &operator/=(Matrix33 &lhs, const double &divisor)
 {
-  return !(rhs == lhs);
-}
-template<class NumberType>
-inline Vector3<NumberType> operator*(const Vector3<NumberType> &lhs,
-                                     const Matrix33<NumberType> &rhs)
-{
-  return {lhs.x * rhs.row1.x + lhs.y * rhs.row2.x + lhs.z * rhs.row3.x,
-          lhs.x * rhs.row1.y + lhs.y * rhs.row2.y + lhs.z * rhs.row3.y,
-          lhs.x * rhs.row1.z + lhs.y * rhs.row2.z + lhs.z * rhs.row3.z};
+  lhs[kXDimension] /= divisor;
+  lhs[kYDimension] /= divisor;
+  lhs[kZDimension] /= divisor;
+  return lhs;
 }
 
-template<class NumberType>
-inline Matrix33<NumberType> operator*(const Matrix33<NumberType> &lhs,
-                                      const Matrix33<NumberType> &rhs)
+inline Matrix33 InverseMatrix33(const Matrix33 &input)
 {
-  return {lhs.row1 * rhs, lhs.row2 * rhs, lhs.row3 * rhs};
-}
-
-template<class NumberType>
-inline Matrix33<NumberType> operator*(const Matrix33<NumberType> &matrix,
-                                      const NumberType &factor)
-{
-  return {matrix.row1 * factor, matrix.row2 * factor, matrix.row3 * factor};
-}
-template<class NumberType>
-inline Matrix33<NumberType> operator*(const NumberType &factor,
-                                      const Matrix33<NumberType> &matrix)
-{
-  return operator*(matrix, factor);
-}
-inline Matrix33<double> operator/(const Matrix33<double> &matrix,
-                                  const double &factor)
-{
-  return {matrix.row1 / factor, matrix.row2 / factor, matrix.row3 / factor};
-}
-inline Matrix33<double> InverseMatrix33(const Matrix33<double> &input)
-{
-  // arma::mat mat_input = {{input.row1.x, input.row1.y, input.row1.z},
-  //                        {input.row2.x, input.row2.y, input.row2.z},
-  //                        {input.row3.x, input.row3.y, input.row3.z}};
+  // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
+  //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
+  //                        {input[kZDimension][kXDimension], input[kZDimension][kYDimension], input[kZDimension][kZDimension]}};
   // arma::mat inverse_matrix = arma::inv(mat_input);
   // return {{inverse_matrix(0, 0), inverse_matrix(0, 1), inverse_matrix(0, 2)},
   //         {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
   //         {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
-  double det = (input.row1.x * input.row2.y * input.row3.z
-      - input.row1.x * input.row2.z * input.row3.y
-      - input.row1.y * input.row2.x * input.row3.z
-      + input.row1.y * input.row2.z * input.row3.x
-      + input.row1.z * input.row2.x * input.row3.y
-      - input.row1.z * input.row2.y * input.row3.x);
-  return {{(input.row2.y * input.row3.z - input.row2.z * input.row3.y) / det,
-           (input.row1.z * input.row3.y - input.row1.y * input.row3.z) / det,
-           (input.row1.y * input.row2.z - input.row1.z * input.row2.y) / det},
-          {(input.row2.z * input.row3.x - input.row2.x * input.row3.z) / det,
-           (input.row1.x * input.row3.z - input.row1.z * input.row3.x) / det,
-           (input.row1.z * input.row2.x - input.row1.x * input.row2.z) / det},
-          {(input.row2.x * input.row3.y - input.row2.y * input.row3.x) / det,
-           (input.row1.y * input.row3.x - input.row1.x * input.row3.y) / det,
-           (input.row1.x * input.row2.y - input.row1.y * input.row2.x) / det}};
+  double det = (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
+      * input[kZDimension][kZDimension]
+      - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]
+          * input[kZDimension][kYDimension]
+      - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]
+          * input[kZDimension][kZDimension]
+      + input[kXDimension][kYDimension] * input[kYDimension][kZDimension]
+          * input[kZDimension][kXDimension]
+      + input[kXDimension][kZDimension] * input[kYDimension][kXDimension]
+          * input[kZDimension][kYDimension]
+      - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
+          * input[kZDimension][kXDimension]);
+  return {{(input[kYDimension][kYDimension] * input[kZDimension][kZDimension]
+      - input[kYDimension][kZDimension] * input[kZDimension][kYDimension]) / det,
+                  (input[kXDimension][kZDimension] * input[kZDimension][kYDimension]
+                      - input[kXDimension][kYDimension] * input[kZDimension][kZDimension]) / det,
+                  (input[kXDimension][kYDimension] * input[kYDimension][kZDimension]
+                      - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]) / det},
+          Vector3{(input[kYDimension][kZDimension] * input[kZDimension][kXDimension]
+              - input[kYDimension][kXDimension] * input[kZDimension][kZDimension]) / det,
+                  (input[kXDimension][kXDimension] * input[kZDimension][kZDimension]
+                      - input[kXDimension][kZDimension] * input[kZDimension][kXDimension]) / det,
+                  (input[kXDimension][kZDimension] * input[kYDimension][kXDimension]
+                      - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]) / det},
+          Vector3{(input[kYDimension][kXDimension] * input[kZDimension][kYDimension]
+              - input[kYDimension][kYDimension] * input[kZDimension][kXDimension]) / det,
+                  (input[kXDimension][kYDimension] * input[kZDimension][kXDimension]
+                      - input[kXDimension][kXDimension] * input[kZDimension][kYDimension]) / det,
+                  (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
+                      - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]) / det}};
+}
 
+inline Matrix33 operator*(const Matrix33 &matrix, const double &factor)
+{
+  Matrix33 temp(matrix);
+  return (temp *= factor);
+}
+
+inline Matrix33 operator*(const double &factor, const Matrix33 &matrix)
+{
+  return operator*(matrix, factor);
+}
+inline Matrix33 operator/(const Matrix33 &matrix, const double &divisor)
+{
+  Matrix33 temp(matrix);
+  return (temp /= divisor);
+}
+
+inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs)
+{
+  return {lhs[kXDimension] * rhs[kXDimension][kXDimension]
+              + lhs[kYDimension] * rhs[kYDimension][kXDimension]
+              + lhs[kZDimension] * rhs[kZDimension][kXDimension],
+          lhs[kXDimension] * rhs[kXDimension][kYDimension]
+              + lhs[kYDimension] * rhs[kYDimension][kYDimension]
+              + lhs[kZDimension] * rhs[kZDimension][kYDimension],
+          lhs[kXDimension] * rhs[kXDimension][kZDimension]
+              + lhs[kYDimension] * rhs[kYDimension][kZDimension]
+              + lhs[kZDimension] * rhs[kZDimension][kZDimension]};
 }
 
 #endif //KN_INCLUDE_MATRIX33_H_
+
+
+
+

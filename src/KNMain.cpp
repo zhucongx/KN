@@ -53,19 +53,19 @@ int main(int argc, char *argv[])
     ofs << '\n';
   }
 
-  BondCounter test({2, 2, 2}, {1, 1, 1}, {0.5, 0.5, 0});
-  AntiPhaseConfig L10;
-  L10.GenerateL10(4.046, {"Al", "Zn"}, {2, 2, 2});
-  test.config_ = L10;
-  L10.WritePOSCAR("0.poscar");
-
-  std::map<Bond, int> bonds_changed = test.GetBondChange();
-
-  std::cout << "#" << 0 << endl;
-  for (const auto&[key, count] : bonds_changed)
-  {
-    std::cout << "#" << key << " " << count << '\n';
-  }
+//  BondCounter test({2, 2, 2}, {1, 1, 1}, {0.5, 0.5, 0});
+//  AntiPhaseConfig L10;
+//  L10.GenerateL10(4.046, {"Al", "Zn"}, {2, 2, 2});
+//  test.config_ = L10;
+//  L10.WritePOSCAR("0.poscar");
+//
+//  std::map<Bond, int> bonds_changed = test.GetBondChange();
+//
+//  std::cout << "#" << 0 << endl;
+//  for (const auto&[key, count] : bonds_changed)
+//  {
+//    std::cout << "#" << key << " " << count << '\n';
+//  }
 
 
 

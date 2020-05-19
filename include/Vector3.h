@@ -5,173 +5,143 @@
 
 #include <ostream>
 #include <numeric>
+
+#include "Constants.h"
+
+// Todo: rewrite using Eigen
 // By default, it is always a 1 by 3 vector
-template<class NumberType>
-struct Vector3
-{
-  NumberType x, y, z;
-  Vector3 &operator+=(const Vector3 &rhs)
-  {
-    x += rhs.x;
-    y += rhs.y;
-    z += rhs.z;
-    return *this;
-  };
-  Vector3 &operator-=(const Vector3 &rhs)
-  {
-    x -= rhs.x;
-    y -= rhs.y;
-    z -= rhs.z;
-    return *this;
-  };
-  Vector3 &operator*=(const NumberType &factor)
-  {
-    x *= factor;
-    y *= factor;
-    z *= factor;
-    return *this;
-  };
-  friend std::ostream &operator<<(std::ostream &os, const Vector3 &vector_3)
-  {
-    os << vector_3.x << " " << vector_3.y << " " << vector_3.z;
-    return os;
-  };
-  bool operator<(const Vector3 &rhs) const
-  {
-    if (x < rhs.x)
-      return true;
-    if (rhs.x < x)
-      return false;
-    if (y < rhs.y)
-      return true;
-    if (rhs.y < y)
-      return false;
-    return z < rhs.z;
-  };
 
-  [[nodiscard]] Vector3<int> ConvertToInt() const
-  {
-    return {(static_cast<int>(x)),
-            (static_cast<int>(y)),
-            (static_cast<int>(z))};
-  };
-  [[nodiscard]] Vector3<double> ConvertToDouble() const
-  {
-    return {(static_cast<double>(x)),
-            (static_cast<double>(y)),
-            (static_cast<double>(z))};
-  };
-};
+typedef std::array<double, kDimension> Vector3;
 
-template<class NumberType>
-inline NumberType Max(const Vector3<NumberType> &vector)
+inline bool operator==(const Vector3 &lhs, const Vector3 &rhs)
 {
-  return std::max(std::max(vector.x, vector.y), vector.z);
+  return lhs[kXDimension] == rhs[kXDimension] &&
+      lhs[kYDimension] == rhs[kYDimension] &&
+      lhs[kZDimension] == rhs[kZDimension];
 }
 
-template<class NumberType>
-inline NumberType Min(const Vector3<NumberType> &vector)
-{
-  return std::min(std::min(vector.x, vector.y), vector.z);
-}
-
-template<class NumberType>
-inline NumberType Sum(const Vector3<NumberType> &vector)
-{
-  return vector.x + vector.y + vector.z;
-}
-
-template<class NumberType>
-inline Vector3<NumberType> Abs(const Vector3<NumberType> &vector)
-{
-  return {std::abs(vector.x), std::abs(vector.y), std::abs(vector.z)};
-}
-
-inline Vector3<double> Floor(const Vector3<double> &vector)
-{
-  return {floor(vector.x), floor(vector.y), floor(vector.z)};
-}
-
-inline int GCD(const Vector3<int> &vector)
-{
-  return std::gcd(vector.x, std::gcd(vector.y, vector.z));
-}
-
-template<class NumberType>
-inline bool operator==(const Vector3<NumberType> &lhs,
-                       const Vector3<NumberType> &rhs)
-{
-  return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
-}
-template<class NumberType>
-inline bool operator!=(const Vector3<NumberType> &lhs,
-                       const Vector3<NumberType> &rhs)
+inline bool operator!=(const Vector3 &lhs, const Vector3 &rhs)
 {
   return !(rhs == lhs);
 }
-template<class NumberType>
-inline Vector3<NumberType> operator+(const Vector3<NumberType> &lhs,
-                                     const Vector3<NumberType> &rhs)
+
+inline bool operator<(const Vector3 &lhs, const Vector3 &rhs)
 {
-  return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z};
+  if (lhs[kXDimension] < rhs[kXDimension])
+    return true;
+  if (rhs[kXDimension] < lhs[kXDimension])
+    return false;
+  if (lhs[kYDimension] < rhs[kYDimension])
+    return true;
+  if (rhs[kYDimension] < lhs[kYDimension])
+    return false;
+  return lhs[kZDimension] < rhs[kZDimension];
 }
-template<class NumberType>
-inline Vector3<NumberType> operator-(const Vector3<NumberType> &lhs,
-                                     const Vector3<NumberType> &rhs)
+
+inline Vector3 &operator+=(Vector3 &lhs, const Vector3 &rhs)
 {
-  return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
-}
-template<class NumberType>
-inline Vector3<NumberType> operator*(const Vector3<NumberType> &vector,
-                                     const NumberType &factor)
+  lhs[kXDimension] += rhs[kXDimension];
+  lhs[kYDimension] += rhs[kYDimension];
+  lhs[kZDimension] += rhs[kZDimension];
+  return lhs;
+};
+inline Vector3 &operator-=(Vector3 &lhs, const Vector3 &rhs)
 {
-  return {vector.x * factor, vector.y * factor, vector.z * factor};
+  lhs[kXDimension] -= rhs[kXDimension];
+  lhs[kYDimension] -= rhs[kYDimension];
+  lhs[kZDimension] -= rhs[kZDimension];
+  return lhs;
+};
+inline Vector3 &operator*=(Vector3 &lhs, const double &factor)
+{
+  lhs[kXDimension] *= factor;
+  lhs[kYDimension] *= factor;
+  lhs[kZDimension] *= factor;
+  return lhs;
+};
+inline Vector3 &operator/=(Vector3 &lhs, const double &divisor)
+{
+  lhs[kXDimension] /= divisor;
+  lhs[kYDimension] /= divisor;
+  lhs[kZDimension] /= divisor;
+  return lhs;
+};
+inline Vector3 operator+(const Vector3 &lhs, const Vector3 &rhs)
+{
+  Vector3 temp(lhs);
+  return (temp += rhs);
 }
-template<class NumberType>
-inline Vector3<NumberType> operator*(const NumberType &factor,
-                                     const Vector3<NumberType> &vector)
+
+inline Vector3 operator-(const Vector3 &lhs, const Vector3 &rhs)
+{
+  Vector3 temp(lhs);
+  return (temp -= rhs);
+}
+
+inline Vector3 operator*(const Vector3 &vector, const double &factor)
+{
+  Vector3 temp(vector);
+  return (temp *= factor);
+}
+
+inline Vector3 operator*(const double &factor, const Vector3 &vector)
 {
   return operator*(vector, factor);
 }
 
-inline Vector3<double> operator/(const Vector3<double> &vector,
-                                 const double &factor)
+inline Vector3 operator/(const Vector3 &vector, const double &divisor)
 {
-  return {vector.x / factor, vector.y / factor, vector.z / factor};
+  Vector3 temp(vector);
+  return (temp /= divisor);
 }
 
-template<class NumberType>
-inline Vector3<NumberType> CrossProduct(const Vector3<NumberType> &first,
-                                        const Vector3<NumberType> &second)
+inline static double Max(const Vector3 &vector)
 {
-  return {first.y * second.z - first.z * second.y,
-          first.z * second.x - first.x * second.z,
-          first.x * second.y - first.y * second.x};
-}
-template<class NumberType>
-inline NumberType DotProduct(const Vector3<NumberType> &first,
-                             const Vector3<NumberType> &second)
+  return std::max(std::max(vector[kXDimension], vector[kYDimension]), vector[kZDimension]);
+};
+inline static double Min(const Vector3 &vector)
 {
-  return first.x * second.x + first.y * second.y + first.z * second.z;
-}
-
-template<class NumberType>
-inline NumberType InnerProduct(const Vector3<NumberType> &vector)
+  return std::min(std::min(vector[kXDimension], vector[kYDimension]), vector[kZDimension]);
+};
+inline static double Sum(const Vector3 &vector)
 {
-  return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-template<class NumberType>
-inline Vector3<NumberType> StarProduct(const Vector3<NumberType> &first,
-                                       const Vector3<NumberType> &second)
+  return vector[kXDimension] + vector[kYDimension] + vector[kZDimension];
+};
+inline static Vector3 Abs(const Vector3 &vector)
 {
-  return {first.x * second.x, first.y * second.y, first.z * second.z};
-}
-template<class NumberType>
-inline Vector3<NumberType> StarDivide(const Vector3<NumberType> &dividend,
-                                      const Vector3<NumberType> &divisor)
+  return {std::abs(vector[kXDimension]), std::abs(vector[kYDimension]),
+          std::abs(vector[kZDimension])};
+};
+inline static Vector3 Floor(const Vector3 &vector)
 {
-  return {dividend.x / divisor.x, dividend.y / divisor.y,
-          dividend.z / divisor.z};
-}
+  return {floor(vector[kXDimension]), floor(vector[kYDimension]), floor(vector[kZDimension])};
+};
+inline static Vector3 CrossProduct(const Vector3 &first, const Vector3 &second)
+{
+  return {first[kYDimension] * second[kZDimension] - first[kZDimension] * second[kYDimension],
+          first[kZDimension] * second[kXDimension] - first[kXDimension] * second[kZDimension],
+          first[kXDimension] * second[kYDimension] - first[kYDimension] * second[kXDimension]};
+};
+inline static double DotProduct(const Vector3 &first, const Vector3 &second)
+{
+  return first[kXDimension] * second[kXDimension] + first[kYDimension] * second[kYDimension]
+      + first[kZDimension] * second[kZDimension];
+};
+inline static double InnerProduct(const Vector3 &vector)
+{
+  return vector[kXDimension] * vector[kXDimension] + vector[kYDimension] * vector[kYDimension]
+      + vector[kZDimension] * vector[kZDimension];
+};
+inline static Vector3 StarProduct(const Vector3 &first, const Vector3 &second)
+{
+  return {first[kXDimension] * second[kXDimension], first[kYDimension] * second[kYDimension],
+          first[kZDimension] * second[kZDimension]};
+};
+inline static Vector3 StarDivide(const Vector3 &dividend, const Vector3 &divisor)
+{
+  return {dividend[kXDimension] / divisor[kXDimension],
+          dividend[kYDimension] / divisor[kYDimension],
+          dividend[kZDimension] / divisor[kZDimension]};
+};
 
 #endif //KN_INCLUDE_VECTOR3_H_
