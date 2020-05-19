@@ -4,16 +4,13 @@ namespace box
 {
 Atom::Atom() = default;
 Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
-    : id_(id), mass_(mass), type_(std::move(type))
+    : id_(id),
+      mass_(mass),
+      type_(std::move(type)),
+      relative_position_{x, y, z},
+      cartesian_position_{x, y, z}
 {
   // Set both relative and absolute position, but will be corrected later
-  relative_position_[kXDimension] = x;
-  relative_position_[kYDimension] = y;
-  relative_position_[kZDimension] = z;
-
-  cartesian_position_[kXDimension] = x;
-  cartesian_position_[kYDimension] = y;
-  cartesian_position_[kZDimension] = z;
 }
 Atom::Atom(Atom::Rank id,
            double mass,
