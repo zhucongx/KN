@@ -7,7 +7,6 @@
 // #include <armadillo>
 
 #include "Vector3.h"
-#include <cassert>
 
 typedef std::array<Vector3, kDimension> Matrix33;
 inline Matrix33 &operator*=(Matrix33 &lhs, const double &factor)
