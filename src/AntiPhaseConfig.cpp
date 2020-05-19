@@ -9,14 +9,10 @@ void AntiPhaseConfig::GenerateL10(const double &lattice_constant_a,
                               {0, lattice_constant_a, 0},
                               {0, 0, lattice_constant_a}}};
   std::vector<std::pair<std::string, Vector3>> element_position_list;
-  element_position_list
-      .emplace_back(element_list[0], Vector3{0.0, 0.0, 0.0});
-  element_position_list
-      .emplace_back(element_list[0], Vector3{0.5, 0.5, 0.0});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.0, 0.5, 0.5});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.5, 0.0, 0.5});
+  element_position_list.emplace_back(element_list[0], Vector3{0.0, 0.0, 0.0});
+  element_position_list.emplace_back(element_list[0], Vector3{0.5, 0.5, 0.0});
+  element_position_list.emplace_back(element_list[1], Vector3{0.0, 0.5, 0.5});
+  element_position_list.emplace_back(element_list[1], Vector3{0.5, 0.0, 0.5});
 
   GenerateUnitCell(bravais_matrix, element_position_list);
   Duplicate(factors);
@@ -53,6 +49,7 @@ void AntiPhaseConfig::GenerateL10star(const double &lattice_constant_a,
   element_position_list.emplace_back(element_list[1], Vector3{0.75, 0.0, 0.5});
   element_position_list.emplace_back(element_list[1], Vector3{0.0, 0.5, 0.5});
   element_position_list.emplace_back(element_list[1], Vector3{0.5, 0.5, 0.5});
+
   GenerateUnitCell(bravais_matrix, element_position_list);
   Duplicate(factors);
 }
@@ -93,22 +90,14 @@ void AntiPhaseConfig::GenerateZ1(const double &lattice_constant_a,
                               {0, lattice_constant_a, 0},
                               {0, 0, lattice_constant_a * 2}}};
   std::vector<std::pair<std::string, Vector3>> element_position_list;
-  element_position_list
-      .emplace_back(element_list[0], Vector3{0.0, 0.0, 0.0});
-  element_position_list
-      .emplace_back(element_list[0], Vector3{0.5, 0.5, 0.0});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.0, 0.5, 0.25});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.5, 0.0, 0.25});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.0, 0.0, 0.5});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.5, 0.5, 0.5});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.0, 0.5, 0.75});
-  element_position_list
-      .emplace_back(element_list[1], Vector3{0.5, 0.0, 0.75});
+  element_position_list.emplace_back(element_list[0], Vector3{0.0, 0.0, 0.0});
+  element_position_list.emplace_back(element_list[0], Vector3{0.5, 0.5, 0.0});
+  element_position_list.emplace_back(element_list[1], Vector3{0.0, 0.5, 0.25});
+  element_position_list.emplace_back(element_list[1], Vector3{0.5, 0.0, 0.25});
+  element_position_list.emplace_back(element_list[1], Vector3{0.0, 0.0, 0.5});
+  element_position_list.emplace_back(element_list[1], Vector3{0.5, 0.5, 0.5});
+  element_position_list.emplace_back(element_list[1], Vector3{0.0, 0.5, 0.75});
+  element_position_list.emplace_back(element_list[1], Vector3{0.5, 0.0, 0.75});
 
   GenerateUnitCell(bravais_matrix, element_position_list);
   Duplicate(factors);
