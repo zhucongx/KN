@@ -25,6 +25,35 @@ inline Matrix33 &operator/=(Matrix33 &lhs, const double &divisor)
   return lhs;
 }
 
+inline Matrix33 operator*(const Matrix33 &matrix, const double &factor)
+{
+  Matrix33 temp(matrix);
+  return (temp *= factor);
+}
+
+inline Matrix33 operator*(const double &factor, const Matrix33 &matrix)
+{
+  return operator*(matrix, factor);
+}
+inline Matrix33 operator/(const Matrix33 &matrix, const double &divisor)
+{
+  Matrix33 temp(matrix);
+  return (temp /= divisor);
+}
+
+inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs)
+{
+  return {lhs[kXDimension] * rhs[kXDimension][kXDimension]
+              + lhs[kYDimension] * rhs[kYDimension][kXDimension]
+              + lhs[kZDimension] * rhs[kZDimension][kXDimension],
+          lhs[kXDimension] * rhs[kXDimension][kYDimension]
+              + lhs[kYDimension] * rhs[kYDimension][kYDimension]
+              + lhs[kZDimension] * rhs[kZDimension][kYDimension],
+          lhs[kXDimension] * rhs[kXDimension][kZDimension]
+              + lhs[kYDimension] * rhs[kYDimension][kZDimension]
+              + lhs[kZDimension] * rhs[kZDimension][kZDimension]};
+}
+
 inline Matrix33 InverseMatrix33(const Matrix33 &input)
 {
   // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
@@ -66,36 +95,6 @@ inline Matrix33 InverseMatrix33(const Matrix33 &input)
         (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
             - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]) / det}}};
 }
-
-inline Matrix33 operator*(const Matrix33 &matrix, const double &factor)
-{
-  Matrix33 temp(matrix);
-  return (temp *= factor);
-}
-
-inline Matrix33 operator*(const double &factor, const Matrix33 &matrix)
-{
-  return operator*(matrix, factor);
-}
-inline Matrix33 operator/(const Matrix33 &matrix, const double &divisor)
-{
-  Matrix33 temp(matrix);
-  return (temp /= divisor);
-}
-
-inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs)
-{
-  return {lhs[kXDimension] * rhs[kXDimension][kXDimension]
-              + lhs[kYDimension] * rhs[kYDimension][kXDimension]
-              + lhs[kZDimension] * rhs[kZDimension][kXDimension],
-          lhs[kXDimension] * rhs[kXDimension][kYDimension]
-              + lhs[kYDimension] * rhs[kYDimension][kYDimension]
-              + lhs[kZDimension] * rhs[kZDimension][kYDimension],
-          lhs[kXDimension] * rhs[kXDimension][kZDimension]
-              + lhs[kYDimension] * rhs[kYDimension][kZDimension]
-              + lhs[kZDimension] * rhs[kZDimension][kZDimension]};
-}
-
 #endif //KN_INCLUDE_MATRIX33_H_
 
 
