@@ -5,13 +5,21 @@
 #include <vector>
 #include <algorithm>
 
-namespace FCC_const {
+namespace FCC_const
+{
 const double kFirstNearestNeighborCutoff = 3.5;
 // For FCC the first nearest neighbor is 12
 const int kNumFirstNearestNeighbors = 12;
 // For FCC the first and second nearest neighbor is 18
 const int kNumSecondNearNeighbors = 18;
 }// namespace FCC_const
+
+
+const int kDimension = 3;
+enum
+{
+  kXDimension, kYDimension, kZDimension
+};
 
 namespace elem_info {
 /* --------------------------------------------------------------------------

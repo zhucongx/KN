@@ -10,19 +10,19 @@ class AntiPhaseConfig : public Config
  public:
   void GenerateL10(const double &lattice_constant_a,
                    const std::vector<std::string> &element_list,
-                   const Vector3<int> &factors);
+                   const std::array<int, kDimension> &factors);
   void GenerateL12(const double &lattice_constant_a,
                    const std::vector<std::string> &element_list,
-                   const Vector3<int> &factors);
+                   const std::array<int, kDimension> &factors);
   void GenerateL10star(const double &lattice_constant_a,
                        const std::vector<std::string> &element_list,
-                       const Vector3<int> &factors);
+                       const std::array<int, kDimension> &factors);
   void GenerateL12star(const double &lattice_constant_a,
                        const std::vector<std::string> &element_list,
-                       const Vector3<int> &factors);
+                       const std::array<int, kDimension> &factors);
   void GenerateZ1(const double &lattice_constant_a,
                   const std::vector<std::string> &element_list,
-                  const Vector3<int> &factors);
+                  const std::array<int, kDimension> &factors);
 };
 
 }// namespace box
