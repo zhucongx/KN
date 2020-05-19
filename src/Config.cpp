@@ -98,7 +98,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff)
         continue;
       if (absolute_distance_vector[kZDimension] > second_r_cutoff_square)
         continue;
-      double absolute_distance_square = InnerProduct(absolute_distance_vector);
+      double absolute_distance_square = Inner(absolute_distance_vector);
       if (absolute_distance_square <= second_r_cutoff_square)
       {
         if (absolute_distance_square <= first_r_cutoff_square)
@@ -146,7 +146,7 @@ void Config::MoveRelativeDistance(const Vector3 &distance_vector)
   {
     atom.relative_position_ += distance_vector;
 
-    atom.relative_position_ -= Floor(atom.relative_position_);
+    atom.relative_position_ -= ElementFloor(atom.relative_position_);
 
     atom.cartesian_position_ = atom.relative_position_ * bravais_matrix_;
   }
@@ -155,7 +155,7 @@ void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
                                          const Vector3 &distance_vector)
 {
   atom_list_[index].relative_position_ += distance_vector;
-  atom_list_[index].relative_position_ -= Floor(atom_list_[index].relative_position_);
+  atom_list_[index].relative_position_ -= ElementFloor(atom_list_[index].relative_position_);
 
   atom_list_[index].cartesian_position_ = atom_list_[index].relative_position_ * bravais_matrix_;
 }

@@ -15,12 +15,6 @@ const int kNumSecondNearNeighbors = 18;
 }// namespace FCC_const
 
 
-const int kDimension = 3;
-enum
-{
-  kXDimension, kYDimension, kZDimension
-};
-
 namespace elem_info {
 /* --------------------------------------------------------------------------
  * Atomic weight data taken from:

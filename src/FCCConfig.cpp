@@ -27,7 +27,7 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
       // if the box is not a cubic box, compare absolute distance
       if (!cubic_status)
       {
-        distance_vector = StarProduct(distance_vector, length);
+        distance_vector = ElementProduct(distance_vector, length);
       }
       if (distance_vector[kXDimension] > second_r_cutoff_square)
         continue;
@@ -35,7 +35,7 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
         continue;
       if (distance_vector[kZDimension] > second_r_cutoff_square)
         continue;
-      double distance_square =InnerProduct(distance_vector);
+      double distance_square = Inner(distance_vector);
       if (distance_square < second_r_cutoff_square)
       {
         if (distance_square < first_r_cutoff_square)

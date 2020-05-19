@@ -6,7 +6,11 @@
 #include <ostream>
 #include <numeric>
 
-#include "Constants.h"
+const int kDimension = 3;
+enum
+{
+  kXDimension, kYDimension, kZDimension
+};
 
 // Todo: rewrite using Eigen
 // By default, it is always a 1 by 3 vector
@@ -107,37 +111,37 @@ inline double Sum(const Vector3 &vector)
 {
   return vector[kXDimension] + vector[kYDimension] + vector[kZDimension];
 }
-inline Vector3 Abs(const Vector3 &vector)
+inline Vector3 ElementAbs(const Vector3 &vector)
 {
   return {std::abs(vector[kXDimension]), std::abs(vector[kYDimension]),
           std::abs(vector[kZDimension])};
 }
-inline Vector3 Floor(const Vector3 &vector)
+inline Vector3 ElementFloor(const Vector3 &vector)
 {
   return {floor(vector[kXDimension]), floor(vector[kYDimension]), floor(vector[kZDimension])};
 }
-inline Vector3 CrossProduct(const Vector3 &first, const Vector3 &second)
+inline Vector3 Cross(const Vector3 &first, const Vector3 &second)
 {
   return {first[kYDimension] * second[kZDimension] - first[kZDimension] * second[kYDimension],
           first[kZDimension] * second[kXDimension] - first[kXDimension] * second[kZDimension],
           first[kXDimension] * second[kYDimension] - first[kYDimension] * second[kXDimension]};
 }
-inline double DotProduct(const Vector3 &first, const Vector3 &second)
+inline double Dot(const Vector3 &first, const Vector3 &second)
 {
   return first[kXDimension] * second[kXDimension] + first[kYDimension] * second[kYDimension]
       + first[kZDimension] * second[kZDimension];
 }
-inline double InnerProduct(const Vector3 &vector)
+inline double Inner(const Vector3 &vector)
 {
   return vector[kXDimension] * vector[kXDimension] + vector[kYDimension] * vector[kYDimension]
       + vector[kZDimension] * vector[kZDimension];
 }
-inline Vector3 StarProduct(const Vector3 &first, const Vector3 &second)
+inline Vector3 ElementProduct(const Vector3 &first, const Vector3 &second)
 {
   return {first[kXDimension] * second[kXDimension], first[kYDimension] * second[kYDimension],
           first[kZDimension] * second[kZDimension]};
 }
-inline Vector3 StarDivide(const Vector3 &dividend, const Vector3 &divisor)
+inline Vector3 ElementDivide(const Vector3 &dividend, const Vector3 &divisor)
 {
   return {dividend[kXDimension] / divisor[kXDimension],
           dividend[kYDimension] / divisor[kYDimension],

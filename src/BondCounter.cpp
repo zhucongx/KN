@@ -25,7 +25,7 @@ void BondCounter::SetPlane(Vector3 miller_index)
         {
           miller_index =
               {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
-          plane_set_.insert(StarProduct(miller_index, {i, j, k}));
+          plane_set_.insert(ElementProduct(miller_index, {i, j, k}));
         }
       }
     }
@@ -43,7 +43,7 @@ void BondCounter::SetBurgersVector(Vector3 miller_index)
       {
         for (const double &k :{-1.0, 1.0})
         {
-          burgers_vector_set_.insert(StarProduct(miller_index, {i, j, k}));
+          burgers_vector_set_.insert(ElementProduct(miller_index, {i, j, k}));
         }
       }
     }
@@ -76,7 +76,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const
     Vector3 plane_distance_vector = GetPlaneDistanceVector(plane_index);
     /// {1/90, 1/90, 1/90}
 
-    const double delta = 0.5 * Sum(Abs(plane_distance_vector));
+    const double delta = 0.5 * Sum(ElementAbs(plane_distance_vector));
     double d3 = FindD3Helper(plane_index, {0.0, 0.0, 0.0}, {1.0, 1.0, 1.0});
 
     const double d3_upper = d3 + delta;
@@ -116,7 +116,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const
       for (Atom::Rank j = 0; j < unsliped_config.GetNumAtoms(); ++j)
       {
         double d_checked =
-            DotProduct(unsliped_config.GetAtom(j).relative_position_, plane_index);
+            Dot(unsliped_config.GetAtom(j).relative_position_, plane_index);
         auto check_if_in_between = [](double value, double v_1, double v_2)
         {
           return (value > std::min(v_1, v_2) && value < std::max(v_1, v_2));
@@ -147,9 +147,9 @@ std::map<Bond, int> BondCounter::GetBondChange() const
       //  move atoms
       for (const auto &burgers_vector:burgers_vector_set_)
       {
-        if (DotProduct(plane_index, burgers_vector) != 0)
+        if (Dot(plane_index, burgers_vector) != 0)
           continue;
-        auto slip_direction = CrossProduct(plane_index, burgers_vector);
+        auto slip_direction = Cross(plane_index, burgers_vector);
 
         std::pair<int, Vector3>
             slip_direction_check = std::make_pair(i, slip_direction);
@@ -201,14 +201,14 @@ std::map<Bond, int> BondCounter::GetBondChange() const
 // relative distance
 Vector3 BondCounter::GetPlaneDistanceVector(const Vector3 &plane_index) const
 {
-  double inner = InnerProduct(plane_index);
+  double inner = Inner(plane_index);
   Vector3 distance_index = (1.0 / inner * plane_index);
-  return StarDivide(distance_index, factor_);
+  return ElementDivide(distance_index, factor_);
 }
 
 Vector3 BondCounter::GetBurgerDistanceVector(const Vector3 &burger_vector) const
 {
-  return StarDivide(burger_vector, factor_);
+  return ElementDivide(burger_vector, factor_);
 }
 
 double BondCounter::FindD3Helper(const Vector3 &plane_index,
@@ -238,7 +238,7 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
           GetRelativeDistanceVector(config.GetAtom(index1),
                                     config.GetAtom(index2));
       double absolute_distance_squared =
-          (InnerProduct(relative_distance_vector * config.GetBravaisMatrix()));
+          (Inner(relative_distance_vector * config.GetBravaisMatrix()));
 
       if (absolute_distance_squared > 8 && absolute_distance_squared < 9)
       {
