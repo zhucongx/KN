@@ -20,9 +20,9 @@ bool Config::operator<(const Config &rhs) const
 
 void Config::Initialize()
 {
-  bravais_matrix_ = {{0, 0, 0},
-                     {0, 0, 0},
-                     {0, 0, 0}};
+  bravais_matrix_ = {{{0, 0, 0},
+                      {0, 0, 0},
+                      {0, 0, 0}}};
   num_atoms_ = 0;
   energy_ = 0.0;
   scale_ = 1.0;
@@ -632,9 +632,9 @@ void Config::GenerateFCC(const double &lattice_constant_a,
 {
   Initialize();
   double mass = elem_info::FindMass(element);
-  bravais_matrix_ = {{lattice_constant_a * factors[kXDimension], 0, 0},
-                     {0, lattice_constant_a * factors[kYDimension], 0},
-                     {0, 0, lattice_constant_a * factors[kZDimension]}};
+  bravais_matrix_ = {{{lattice_constant_a * factors[kXDimension], 0, 0},
+                      {0, lattice_constant_a * factors[kYDimension], 0},
+                      {0, 0, lattice_constant_a * factors[kZDimension]}}};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
   num_atoms_ = 0;
@@ -681,9 +681,9 @@ void Config::GenerateBCC(const double &lattice_constant_a,
 {
   Initialize();
   double mass = elem_info::FindMass(element);
-  bravais_matrix_ = {{lattice_constant_a * factors[kXDimension], 0, 0},
-                     {0, lattice_constant_a * factors[kYDimension], 0},
-                     {0, 0, lattice_constant_a * factors[kZDimension]}};
+  bravais_matrix_ = {{{lattice_constant_a * factors[kXDimension], 0, 0},
+                      {0, lattice_constant_a * factors[kYDimension], 0},
+                      {0, 0, lattice_constant_a * factors[kZDimension]}}};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
   num_atoms_ = 0;
@@ -721,10 +721,10 @@ void Config::GenerateHCP(const double &lattice_constant_a,
 {
   Initialize();
   double mass = elem_info::FindMass(element);
-  bravais_matrix_ = {{lattice_constant_a * factors[kXDimension], 0, 0},
-                     {-0.5 * lattice_constant_a * factors[kYDimension],
-                      0.5 * sqrt(3) * lattice_constant_a * factors[kYDimension], 0},
-                     {0, 0, lattice_constant_c * factors[kZDimension]}};
+  bravais_matrix_ = {{{lattice_constant_a * factors[kXDimension], 0, 0},
+                      {-0.5 * lattice_constant_a * factors[kYDimension],
+                       0.5 * sqrt(3) * lattice_constant_a * factors[kYDimension], 0},
+                      {0, 0, lattice_constant_c * factors[kZDimension]}}};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
   num_atoms_ = 0;
