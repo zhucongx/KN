@@ -33,8 +33,8 @@ class Config
 
   // void MoveAbsoluteDistance(const Vector3 &distance_vector);
   std::map<Bond, int> CountAllBonds(double r_cutoff);
-  bool ReadConfig(const std::string &file_name);
-  bool ReadPOSCAR(const std::string &file_name);
+  void ReadConfig(const std::string &file_name);
+  void ReadPOSCAR(const std::string &file_name);
   void WriteConfig(const std::string &file_name = "config") const;
   // Write Configuration out as POSCAR file. If the show_vacancy_option is
   // true, output will have "X" for visualization. If false, vacancies will be

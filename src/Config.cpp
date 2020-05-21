@@ -190,165 +190,57 @@ std::map<Bond, int> Config::CountAllBonds(double r_cutoff)
   }
   return bonds_count_map;
 }
-bool Config::ReadConfig(const std::string &file_name)
+void Config::ReadConfig(const std::string &file_name)
 {
   Initialize();
   std::ifstream ifs(file_name, std::ifstream::in);
-  if (ifs.fail())
-  {
-    return false;
-  }
-  std::string line;
-  std::istringstream iss;
-  if (!getline(ifs, line))  // "Number of particles = %i"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> num_atoms_))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // A = 1.0 Angstrom (basic length-scale)
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> scale_))
-  {
-    return false;
-  }
 
-  if (!getline(ifs, line))  // "H0(1,1) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kXDimension][kXDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(1,2) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kXDimension][kYDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(1,3) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kXDimension][kZDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(2,1) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kYDimension][kXDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(2,2) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kYDimension][kYDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(2,3) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kYDimension][kZDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(3,1) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kZDimension][kXDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(3,2) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kZDimension][kYDimension]))
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "H0(3,3) = %lf A"
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
-  if (!(iss >> bravais_matrix_[kZDimension][kZDimension]))
-  {
-    return false;
-  }
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "Number of particles = %i"
+  ifs >> num_atoms_;
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
+             '=');  // A = 1.0 Angstrom (basic length-scale)
+  ifs >> scale_;
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(1,1) = %lf A"
+  ifs >> bravais_matrix_[kXDimension][kXDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(1,2) = %lf A"
+  ifs >> bravais_matrix_[kXDimension][kYDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(1,3) = %lf A"
+  ifs >> bravais_matrix_[kXDimension][kZDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(2,1) = %lf A"
+  ifs >> bravais_matrix_[kYDimension][kXDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(2,2) = %lf A"
+  ifs >> bravais_matrix_[kYDimension][kYDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(2,3) = %lf A"
+  ifs >> bravais_matrix_[kYDimension][kZDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(3,1) = %lf A"
+  ifs >> bravais_matrix_[kZDimension][kXDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(3,2) = %lf A"
+  ifs >> bravais_matrix_[kZDimension][kYDimension];
+
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(3,3) = %lf A"
+  ifs >> bravais_matrix_[kZDimension][kZDimension];
+
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
 
-  if (!getline(ifs, line))  // .NO_VELOCITY.
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // "entry_count = 3"
-  {
-    return false;
-  }
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // .NO_VELOCITY.
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // "entry_count = 3"
   for (Atom::Rank i = 0; i < num_atoms_; ++i)
   {
     double mass, relative_position_X, relative_position_Y, relative_position_Z;
     std::string type;
-    if (!getline(ifs, line))
-    {
-      return false;
-    }
-    iss = std::istringstream(line);
-    if (!(iss >> mass))
-    {
-      return false;
-    }
-    if (!getline(ifs, line))
-    {
-      return false;
-    }
-    type = line;
-    if (!getline(ifs, line))
-    {
-      return false;
-    }
-    iss = std::istringstream(line);
-    if (!(iss >> relative_position_X >> relative_position_Y
-              >> relative_position_Z))
-    {
-      return false;
-    }
+    ifs >> mass;
+    ifs >> type;
+    ifs >> relative_position_X >> relative_position_Y >> relative_position_Z;
     atom_list_.emplace_back(i, mass, type,
                             relative_position_X,
                             relative_position_Y,
@@ -356,105 +248,46 @@ bool Config::ReadConfig(const std::string &file_name)
     element_list_set_[type].emplace_back(i);
   }
   ConvertRelativeToAbsolute();
-  return true;
 }
 
-bool Config::ReadPOSCAR(const std::string &file_name)
+void Config::ReadPOSCAR(const std::string &file_name)
 {
   Initialize();
   std::ifstream ifs(file_name, std::ifstream::in);
-  if (ifs.fail())
-  {
-    return false;
-  }
-  std::string line;
-  std::istringstream iss;
-  if (!getline(ifs, line))  // #comment
-  {
-    return false;
-  }
-  if (!getline(ifs, line))  // scale factor, usually which is 1.0
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  if (!(iss >> scale_))
-  {
-    return false;
-  }
 
-  if (!getline(ifs, line))
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  if (!(iss >> bravais_matrix_[kXDimension][kXDimension]
-            >> bravais_matrix_[kXDimension][kYDimension]
-            >> bravais_matrix_[kXDimension][kZDimension]))
-  {
-    return false;
-  }
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // #comment
 
-  if (!getline(ifs, line))
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  if (!(iss >> bravais_matrix_[kYDimension][kXDimension]
-            >> bravais_matrix_[kYDimension][kYDimension]
-            >> bravais_matrix_[kYDimension][kZDimension]))
-  {
-    return false;
-  }
-
-  if (!getline(ifs, line))
-  {
-    return false;
-  }
-  iss = std::istringstream(line);
-  if (!(iss >> bravais_matrix_[kZDimension][kXDimension]
-            >> bravais_matrix_[kZDimension][kYDimension]
-            >> bravais_matrix_[kZDimension][kZDimension]))
-  {
-    return false;
-  }
+  ifs >> scale_;  // scale factor, usually which is 1.0
+  ifs >> bravais_matrix_[kXDimension][kXDimension]
+      >> bravais_matrix_[kXDimension][kYDimension]
+      >> bravais_matrix_[kXDimension][kZDimension]
+      >> bravais_matrix_[kYDimension][kXDimension]
+      >> bravais_matrix_[kYDimension][kYDimension]
+      >> bravais_matrix_[kYDimension][kZDimension]
+      >> bravais_matrix_[kZDimension][kXDimension]
+      >> bravais_matrix_[kZDimension][kYDimension]
+      >> bravais_matrix_[kZDimension][kZDimension];
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // finish this line
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
 
-  if (!getline(ifs, line))
-  {
-    return false;
-  }
+  std::string buffer;
+  getline(ifs, buffer);
+  std::istringstream element_iss(buffer);
+  getline(ifs, buffer);
+  std::istringstream count_iss(buffer);
+
   std::string element;
-  std::istringstream name_iss(line);
-  if (!getline(ifs, line))
-  {
-    return false;
-  }
   int count;
-  std::istringstream count_iss(line);
 
   std::vector<std::pair<std::string, int>> elements_counts;
-  while (name_iss >> element && count_iss >> count)
+  while (element_iss >> element && count_iss >> count)
   {
     num_atoms_ += count;
     elements_counts.emplace_back(element, count);
   }
-
-  if (!getline(ifs, line))
-  {
-    return false;
-  }
-  bool relOpt;
-  if (line[0] == 'D' || line[0] == 'd')
-  {
-    relOpt = true;
-  } else if (line[0] == 'C' || line[0] == 'c')
-  {
-    relOpt = false;
-  } else
-  {
-    return false;
-  }
+  getline(ifs, buffer);
+  bool relative_option;
+  relative_option = buffer[0] == 'D' || buffer[0] == 'd';
 
   Atom::Rank id_count = 0;
   for (const auto&[element_name, count]:elements_counts)
@@ -463,29 +296,20 @@ bool Config::ReadPOSCAR(const std::string &file_name)
     for (int j = 0; j < count; ++j)
     {
       double position_X, position_Y, position_Z;
-      if (!getline(ifs, line))
-      {
-        return false;
-      }
-      iss = std::istringstream(line);
-      if (!(iss >> position_X >> position_Y >> position_Z))
-      {
-        return false;
-      }
+      ifs >> position_X >> position_Y >> position_Z;
       atom_list_.emplace_back(id_count, mass, element_name,
                               position_X, position_Y, position_Z);
       element_list_set_[element_name].emplace_back(id_count);
       ++id_count;
     }
   }
-  if (relOpt)
+  if (relative_option)
   {
     ConvertRelativeToAbsolute();
   } else
   {
     ConvertAbsoluteToRelative();
   }
-  return true;
 }
 
 void Config::WriteConfig(const std::string &file_name) const
