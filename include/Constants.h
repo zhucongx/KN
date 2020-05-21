@@ -7,11 +7,11 @@
 
 namespace FCC_const
 {
-const double kFirstNearestNeighborCutoff = 3.5;
+constexpr double kFirstNearestNeighborCutoff = 3.5;
 // For FCC the first nearest neighbor is 12
-const int kNumFirstNearestNeighbors = 12;
+constexpr int kNumFirstNearestNeighbors = 12;
 // For FCC the first and second nearest neighbor is 18
-const int kNumSecondNearNeighbors = 18;
+constexpr int kNumSecondNearNeighbors = 18;
 }// namespace FCC_const
 
 
