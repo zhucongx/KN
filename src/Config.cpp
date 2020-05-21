@@ -1,5 +1,7 @@
 #include"Config.h"
 
+#include <iostream>
+#include <sstream>
 #include <utility>
 #include <random>
 #include <chrono>
@@ -198,22 +200,20 @@ bool Config::ReadConfig(const std::string &file_name)
   }
   std::string line;
   std::istringstream iss;
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "Number of particles = %i"
   {
     return false;
   }
-  // "Number of particles = %i"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> num_atoms_))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // A = 1.0 Angstrom (basic length-scale)
   {
     return false;
   }
-  // A = 1.0 Angstrom (basic length-scale)
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> scale_))
@@ -221,101 +221,90 @@ bool Config::ReadConfig(const std::string &file_name)
     return false;
   }
 
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(1,1) = %lf A"
   {
     return false;
   }
-  // "H0(1,1) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kXDimension][kXDimension]))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(1,2) = %lf A"
   {
     return false;
   }
-  // "H0(1,2) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kXDimension][kYDimension]))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(1,3) = %lf A"
   {
     return false;
   }
-  // "H0(1,3) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kXDimension][kZDimension]))
   {
     return false;
   }
-
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(2,1) = %lf A"
   {
     return false;
   }
-  // "H0(2,1) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kYDimension][kXDimension]))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(2,2) = %lf A"
   {
     return false;
   }
-  // "H0(2,2) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kYDimension][kYDimension]))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(2,3) = %lf A"
   {
     return false;
   }
-  // "H0(2,3) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kYDimension][kZDimension]))
   {
     return false;
   }
-
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(3,1) = %lf A"
   {
     return false;
   }
-  // "H0(3,1) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kZDimension][kXDimension]))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(3,2) = %lf A"
   {
     return false;
   }
-  // "H0(3,2) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kZDimension][kYDimension]))
   {
     return false;
   }
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "H0(3,3) = %lf A"
   {
     return false;
   }
-  // "H0(3,3) = %lf A"
   iss = std::istringstream(line);
   iss.ignore(std::numeric_limits<std::streamsize>::max(), '=');
   if (!(iss >> bravais_matrix_[kZDimension][kZDimension]))
@@ -324,16 +313,14 @@ bool Config::ReadConfig(const std::string &file_name)
   }
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
 
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // .NO_VELOCITY.
   {
     return false;
   }
-  // .NO_VELOCITY.
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // "entry_count = 3"
   {
     return false;
   }
-  // "entry_count = 3"
   for (Atom::Rank i = 0; i < num_atoms_; ++i)
   {
     double mass, relative_position_X, relative_position_Y, relative_position_Z;
@@ -382,16 +369,14 @@ bool Config::ReadPOSCAR(const std::string &file_name)
   }
   std::string line;
   std::istringstream iss;
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // #comment
   {
     return false;
   }
-  // #comment
-  if (!getline(ifs, line))
+  if (!getline(ifs, line))  // scale factor, usually which is 1.0
   {
     return false;
   }
-  // scale factor, usually which is 1
   iss = std::istringstream(line);
   if (!(iss >> scale_))
   {

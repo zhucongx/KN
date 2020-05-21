@@ -2,8 +2,6 @@
 #define KN_INCLUDE_CONFIG_H_
 
 #include <string>
-#include <iostream>
-#include <sstream>
 #include <array>
 #include <utility>
 #include <vector>
