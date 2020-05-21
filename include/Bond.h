@@ -3,7 +3,7 @@
 #include <iostream>
 class Bond {
  public:
-  Bond(std::string type1, std::string type_2);
+  Bond(std::string type1, std::string type2);
   bool operator<(const Bond &rhs) const;
   friend std::ostream &operator<<(std::ostream &os, const Bond &bond);
  private:
