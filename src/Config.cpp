@@ -258,15 +258,7 @@ void Config::ReadPOSCAR(const std::string &file_name)
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // #comment
 
   ifs >> scale_;  // scale factor, usually which is 1.0
-  ifs >> bravais_matrix_[kXDimension][kXDimension]
-      >> bravais_matrix_[kXDimension][kYDimension]
-      >> bravais_matrix_[kXDimension][kZDimension]
-      >> bravais_matrix_[kYDimension][kXDimension]
-      >> bravais_matrix_[kYDimension][kYDimension]
-      >> bravais_matrix_[kYDimension][kZDimension]
-      >> bravais_matrix_[kZDimension][kXDimension]
-      >> bravais_matrix_[kZDimension][kYDimension]
-      >> bravais_matrix_[kZDimension][kZDimension];
+  ifs >> bravais_matrix_;
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // finish this line
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
 
@@ -289,12 +281,12 @@ void Config::ReadPOSCAR(const std::string &file_name)
   relative_option = buffer[0] == 'D' || buffer[0] == 'd';
 
   Atom::Rank id_count = 0;
+  double position_X, position_Y, position_Z;
   for (const auto&[element_name, count]:elements_counts)
   {
     double mass = elem_info::FindMass(element_name);
     for (int j = 0; j < count; ++j)
     {
-      double position_X, position_Y, position_Z;
       ifs >> position_X >> position_Y >> position_Z;
       atom_list_.emplace_back(id_count, mass, element_name,
                               position_X, position_Y, position_Z);
@@ -333,9 +325,7 @@ void Config::WriteConfig(const std::string &file_name) const
     const std::string &type = atom.GetType();
     ofs << mass << '\n'
         << type << '\n'
-        << atom.relative_position_[kXDimension] << " "
-        << atom.relative_position_[kYDimension] << " "
-        << atom.relative_position_[kZDimension] << '\n';
+        << atom.relative_position_ << '\n';
   }
 }
 
@@ -344,22 +334,14 @@ void Config::WritePOSCAR(const std::string &file_name,
 {
   std::ofstream ofs(file_name, std::ofstream::out);
   ofs << "#comment\n" << scale_ << '\n';
-  ofs << bravais_matrix_[kXDimension][kXDimension] << " "
-      << bravais_matrix_[kXDimension][kYDimension] << " "
-      << bravais_matrix_[kXDimension][kZDimension] << '\n';
-  ofs << bravais_matrix_[kYDimension][kXDimension] << " "
-      << bravais_matrix_[kYDimension][kYDimension] << " "
-      << bravais_matrix_[kYDimension][kZDimension] << '\n';
-  ofs << bravais_matrix_[kZDimension][kXDimension] << " "
-      << bravais_matrix_[kZDimension][kYDimension] << " "
-      << bravais_matrix_[kZDimension][kZDimension] << '\n';
+  ofs << bravais_matrix_ << '\n';
   std::ostringstream ele_oss, count_oss;
   for (const auto &[element, element_list]:element_list_set_)
   {
     if (!show_vacancy_option || element != "X")
     {
-      ele_oss << element << " ";
-      count_oss << element_list.size() << " ";
+      ele_oss << element << ' ';
+      count_oss << element_list.size() << ' ';
     }
   }
   ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
@@ -368,9 +350,7 @@ void Config::WritePOSCAR(const std::string &file_name,
   {
     if (!show_vacancy_option || atom.GetType() != "X")
     {
-      ofs << atom.relative_position_[kXDimension] << " "
-          << atom.relative_position_[kYDimension] << " "
-          << atom.relative_position_[kZDimension] << '\n';
+      ofs << atom.relative_position_ << '\n';
     }
   }
 }
