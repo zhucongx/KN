@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-#include <ostream>
+#include <iostream>
 #include <numeric>
 // #define ARMA_ALLOW_FAKE_GCC
 // #define ARMA_DONT_USE_WRAPPER
