@@ -71,12 +71,13 @@ class Config
 
   // Three translational Bravais lattice vector
   // Matrix33 reciprocal_matrix_{},
-  int num_atoms_{};
+
   double energy_{};
   // The index of atom in the vector is always same as of the id of the atom
   std::vector<Atom> atom_list_;
   // indicate if the Config has found Atoms' neighbor list
   bool neighbor_found_{};
+
   std::map<std::string, std::vector<Atom::Rank>> element_list_set_;
 };
 

@@ -25,7 +25,6 @@ void Config::Initialize()
   bravais_matrix_ = {{{0, 0, 0},
                       {0, 0, 0},
                       {0, 0, 0}}};
-  num_atoms_ = 0;
   energy_ = 0.0;
   scale_ = 1.0;
   atom_list_.clear();
@@ -196,7 +195,8 @@ void Config::ReadConfig(const std::string &file_name)
   std::ifstream ifs(file_name, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "Number of particles = %i"
-  ifs >> num_atoms_;
+  int num_atoms;
+  ifs >> num_atoms;
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(),
              '=');  // A = 1.0 Angstrom (basic length-scale)
@@ -234,7 +234,7 @@ void Config::ReadConfig(const std::string &file_name)
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // .NO_VELOCITY.
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // "entry_count = 3"
-  for (Atom::Rank i = 0; i < num_atoms_; ++i)
+  for (Atom::Rank i = 0; i < num_atoms; ++i)
   {
     double mass, relative_position_X, relative_position_Y, relative_position_Z;
     std::string type;
@@ -282,7 +282,6 @@ void Config::ReadPOSCAR(const std::string &file_name)
   std::vector<std::pair<std::string, int>> elements_counts;
   while (element_iss >> element && count_iss >> count)
   {
-    num_atoms_ += count;
     elements_counts.emplace_back(element, count);
   }
   getline(ifs, buffer);
@@ -315,7 +314,7 @@ void Config::ReadPOSCAR(const std::string &file_name)
 void Config::WriteConfig(const std::string &file_name) const
 {
   std::ofstream ofs(file_name, std::ofstream::out);
-  ofs << "Number of particles = " << num_atoms_ << '\n';
+  ofs << "Number of particles = " << atom_list_.size() << '\n';
   ofs << "A = " << scale_ << " Angstrom (basic length-scale)\n";
   ofs << "H0(1,1) = " << bravais_matrix_[kXDimension][kXDimension] << " A\n";
   ofs << "H0(1,2) = " << bravais_matrix_[kXDimension][kYDimension] << " A\n";
@@ -383,14 +382,14 @@ void Config::GenerateUnitCell(const Matrix33 &bravais_matrix,
   bravais_matrix_ = bravais_matrix;
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
-  num_atoms_ = 0;
+  int atoms_counter_ = 0;
   for (const auto&[type, relative_position]:type_position_list)
   {
-    atom_list_.emplace_back(num_atoms_,
+    atom_list_.emplace_back(atoms_counter_,
                             elem_info::FindMass(type),
                             type,
                             relative_position);
-    element_list_set_[type].emplace_back(num_atoms_++);
+    element_list_set_[type].emplace_back(atoms_counter_++);
   }
   ConvertRelativeToAbsolute();
 }
@@ -404,7 +403,7 @@ void Config::Duplicate(const std::array<int, kDimension> &factors)
                      bravais_matrix_[kZDimension] * z_length};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   auto temp(std::move(atom_list_));
-  num_atoms_ = 0;
+  int atoms_counter_ = 0;
   energy_ = 0.0;
   scale_ = 1.0;
   atom_list_.clear();
@@ -421,14 +420,14 @@ void Config::Duplicate(const std::array<int, kDimension> &factors)
         auto z_reference = static_cast<double>(k);
         for (const auto &atom:temp)
         {
-          atom_list_.emplace_back(num_atoms_, atom.GetMass(), atom.GetType(),
+          atom_list_.emplace_back(atoms_counter_, atom.GetMass(), atom.GetType(),
                                   (x_reference + atom.relative_position_[kXDimension])
                                       / x_length,
                                   (y_reference + atom.relative_position_[kYDimension])
                                       / y_length,
                                   (z_reference + atom.relative_position_[kZDimension])
                                       / z_length);
-          element_list_set_[atom.GetType()].emplace_back(num_atoms_++);
+          element_list_set_[atom.GetType()].emplace_back(atoms_counter_++);
         }
       }
     }
@@ -446,7 +445,7 @@ void Config::GenerateFCC(const double &lattice_constant_a,
                       {0, 0, lattice_constant_a * factors[kZDimension]}}};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
-  num_atoms_ = 0;
+  int atoms_counter_ = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
   auto z_length = static_cast<double>(factors[kZDimension]);
@@ -459,26 +458,26 @@ void Config::GenerateFCC(const double &lattice_constant_a,
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 x_reference / x_length,
                                 y_reference / y_length,
                                 z_reference / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        element_list_set_[element].emplace_back(atoms_counter_++);
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 (x_reference + 0.5) / x_length,
                                 (y_reference + 0.5) / y_length,
                                 z_reference / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        element_list_set_[element].emplace_back(atoms_counter_++);
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 (x_reference + 0.5) / x_length,
                                 y_reference / y_length,
                                 (z_reference + 0.5) / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        element_list_set_[element].emplace_back(atoms_counter_++);
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 x_reference / x_length,
                                 (y_reference + 0.5) / y_length,
                                 (z_reference + 0.5) / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
+        element_list_set_[element].emplace_back(atoms_counter_++);
       }
     }
   }
@@ -495,7 +494,7 @@ void Config::GenerateBCC(const double &lattice_constant_a,
                       {0, 0, lattice_constant_a * factors[kZDimension]}}};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
-  num_atoms_ = 0;
+  int atoms_counter_ = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
   auto z_length = static_cast<double>(factors[kZDimension]);
@@ -508,16 +507,16 @@ void Config::GenerateBCC(const double &lattice_constant_a,
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 x_reference / x_length,
                                 y_reference / y_length,
                                 z_reference / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        element_list_set_[element].emplace_back(atoms_counter_++);
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 (x_reference + 0.5) / x_length,
                                 (y_reference + 0.5) / y_length,
                                 (z_reference + 0.5) / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
+        element_list_set_[element].emplace_back(atoms_counter_++);
       }
     }
   }
@@ -536,7 +535,7 @@ void Config::GenerateHCP(const double &lattice_constant_a,
                       {0, 0, lattice_constant_c * factors[kZDimension]}}};
   inverse_bravais_matrix_ = InverseMatrix33(bravais_matrix_);
   scale_ = 1.0;
-  num_atoms_ = 0;
+  int atoms_counter_ = 0;
 
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
@@ -550,16 +549,16 @@ void Config::GenerateHCP(const double &lattice_constant_a,
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 x_reference / x_length,
                                 y_reference / y_length,
                                 z_reference / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
-        atom_list_.emplace_back(num_atoms_, mass, element,
+        element_list_set_[element].emplace_back(atoms_counter_++);
+        atom_list_.emplace_back(atoms_counter_, mass, element,
                                 (x_reference + 1.0 / 3.0) / x_length,
                                 (y_reference + 2.0 / 3.0) / y_length,
                                 (z_reference + 0.5) / z_length);
-        element_list_set_[element].emplace_back(num_atoms_++);
+        element_list_set_[element].emplace_back(atoms_counter_++);
       }
     }
   }
@@ -579,7 +578,7 @@ const Atom &Config::GetAtom(const Atom::Rank &index) const
 }
 int Config::GetNumAtoms() const
 {
-  return num_atoms_;
+  return atom_list_.size();
 }
 
 }// namespace box
