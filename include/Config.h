@@ -18,8 +18,8 @@ class Config
   bool operator<(const Config &rhs) const;
   void Initialize();
   [[nodiscard]] bool IsCubic() const;
-  void ConvertRelativeToAbsolute();
-  void ConvertAbsoluteToRelative();
+  void ConvertRelativeToCartesian();
+  void ConvertCartesianToRelative();
   void Perturb();
   virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
   // update both atoms' relative and absolute positions according to periodic
@@ -52,7 +52,6 @@ class Config
                    const std::string &element,
                    const std::array<int, kDimension> &factors);
   [[nodiscard]] const Matrix33 &GetBravaisMatrix() const;
-  [[nodiscard]] const Matrix33 &GetInverseBravaisMatrix() const;
   [[nodiscard]] const Atom &GetAtom(const Atom::Rank &index) const;
   [[nodiscard]] int GetNumAtoms() const;
  protected:
@@ -64,10 +63,7 @@ class Config
   // This three vectors form a matrix matching the matrix in Config
   // and POSCAR file representing three Bravais lattice vectors that can be
   // used to convert relative position to absolute
-  Matrix33 bravais_matrix_{};
-  // The inverse three Bravais lattice vectors that can be used to convert
-  // absolute to relative position
-  Matrix33 inverse_bravais_matrix_{};
+  Matrix33 basis_{};
 
   // Three translational Bravais lattice vector
   // Matrix33 reciprocal_matrix_{},
@@ -78,7 +74,7 @@ class Config
   // indicate if the Config has found Atoms' neighbor list
   bool neighbor_found_{};
 
-  std::map<std::string, std::vector<Atom::Rank>> element_list_set_;
+  std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
 };
 
 }// namespace box
