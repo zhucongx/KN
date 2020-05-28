@@ -3,8 +3,7 @@
 
 #include "Config.h"
 #include "FCCConfig.h"
-class ConfigModifier
-{
+class ConfigModifier {
  public:
 
   static ConfigModifier *Instance();
@@ -12,13 +11,13 @@ class ConfigModifier
   void RegisterConfig(const int &index, box::Config *registrar);
   box::Config *GetConfig(const int &index);
   int GetNumConfig();
- private:
   // forbid creating from outside
-  ConfigModifier();
-  ~ConfigModifier();
+  ConfigModifier() = delete;
+  ~ConfigModifier() = delete;
   // forbid copying and assigning
-  ConfigModifier(const ConfigModifier &);
-  const ConfigModifier &operator=(const ConfigModifier &);
+  ConfigModifier(const ConfigModifier &) = delete;
+  const ConfigModifier &operator=(const ConfigModifier &) = delete;
+ private:
 
   static ConfigModifier *instance;
   std::map<int, box::Config *> map_config_;
@@ -26,30 +25,24 @@ class ConfigModifier
 };
 ConfigModifier *ConfigModifier::instance = new(std::nothrow) ConfigModifier;
 
-ConfigModifier *ConfigModifier::Instance()
-{
+ConfigModifier *ConfigModifier::Instance() {
   return instance;
 }
-void ConfigModifier::RegisterConfig(const int &index, box::Config *registrar)
-{
+void ConfigModifier::RegisterConfig(const int &index, box::Config *registrar) {
   map_config_[index] = registrar;
 }
-box::Config *ConfigModifier::GetConfig(const int &index)
-{
+box::Config *ConfigModifier::GetConfig(const int &index) {
   auto it = map_config_.find(index);
-  if (it != map_config_.end())
-  {
+  if (it != map_config_.end()) {
     return it->second;
   }
   std::cout << "error";
   return nullptr;
 }
-int ConfigModifier::GetNumConfig()
-{
+int ConfigModifier::GetNumConfig() {
   return map_config_.size();
 }
-ConfigModifier::ConfigModifier()
-{
+ConfigModifier::ConfigModifier() {
 }
 
 #endif //KN_INCLUDE_CONFIGMODIFIER_H_

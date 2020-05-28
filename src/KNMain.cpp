@@ -1,10 +1,19 @@
-#include "BondCounter.h"
-#include "AntiPhaseConfig.h"
+#include <boost/mpi/environment.hpp>
+#include <boost/mpi/communicator.hpp>
+#include "ClusterFinder.h"
+#include "MpiIterator.h"
 using namespace box;
 using namespace std;
+namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[])
 {
+
+
+
+  MpiIterator test(0,1000000,7744000000);
+  test.IterateToFindCLusters();
+
   // long long start = 0;
   // long long interval = 1000000;
   // long long end = 264000000;
@@ -21,12 +30,11 @@ int main(int argc, char *argv[])
   // {
   //   string fname = to_string(i);
   //   fname += ".cfg";
-  //   BondCounter test({30, 30, 30}, {1, 1, 1}, {0.5, 0.5, 0});
+  //   BondCounter test(fname,{30, 30, 30}, {1, 1, 1}, {0.5, 0.5, 0});
   //   // BondCounter test;
   //   // test.factor_ = {30, 30, 30};
   //   // test.plane_set_.insert({-1, -1, -1});
   //   // test.SetBurgersVector({0.5, 0.5, 0});
-  //   test.config_.ReadConfig(fname);
   //   std::map<Bond, int> bonds_changed = test.GetBondChange();
   //
   //   ofs << "#" << fname << endl;

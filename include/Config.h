@@ -8,11 +8,9 @@
 #include <map>
 #include "Atom.h"
 #include "Bond.h"
-namespace box
-{
-class Config
-{
-  // Todo finsih GenerateUnitCell
+namespace box {
+class Config {
+  // Todo output neighbor information
  public:
   Config();
   bool operator<(const Config &rhs) const;
@@ -45,15 +43,29 @@ class Config
   void GenerateUnitCell(const Matrix33 &bravais_matrix,
                         const std::vector<std::pair<std::string, Vector3>> &type_position_list);
   void Duplicate(const std::array<int, kDimension> &factors);
-  void GenerateFCC(const double &lattice_constant_a, const std::string &element, const std::array<int, kDimension> &factors);
-  void GenerateBCC(const double &lattice_constant_a, const std::string &element, const std::array<int, kDimension> &factors);
+  void GenerateFCC(const double &lattice_constant_a,
+                   const std::string &element,
+                   const std::array<int, kDimension> &factors);
+  void GenerateBCC(const double &lattice_constant_a,
+                   const std::string &element,
+                   const std::array<int, kDimension> &factors);
   void GenerateHCP(const double &lattice_constant_a,
                    const double &lattice_constant_c,
                    const std::string &element,
                    const std::array<int, kDimension> &factors);
-  [[nodiscard]] const Matrix33 &GetBravaisMatrix() const;
-  [[nodiscard]] const Atom &GetAtom(const Atom::Rank &index) const;
+
+  void SetScale(double scale);
+  [[nodiscard]] double GetScale() const;
+
+  [[nodiscard]] const Matrix33 &GetBasis() const;
+  void SetBasis(const Matrix33 &basis);
+
+  [[nodiscard]] const Atom &GetAtom(const int &index) const;
+  void AppendAtom(const Atom& atom);
   [[nodiscard]] int GetNumAtoms() const;
+  [[nodiscard]] const std::map<std::string, std::vector<Atom::Rank>> &GetElementListMap() const;
+
+
  protected:
   double scale_{};
   // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
@@ -69,7 +81,7 @@ class Config
   // Matrix33 reciprocal_matrix_{},
 
   double energy_{};
-  // The index of atom in the vector is always same as of the id of the atom
+  /// The index of atom in the vector is always same as of the id of the atom ?
   std::vector<Atom> atom_list_;
   // indicate if the Config has found Atoms' neighbor list
   bool neighbor_found_{};

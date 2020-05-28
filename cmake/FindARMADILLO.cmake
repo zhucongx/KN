@@ -1,4 +1,4 @@
-set(FIND_ARMADILLO_PATHS /global/homes/z/zhucongx/armadillo /usr/ /usr/local)
+set(FIND_ARMADILLO_PATHS ~/armadillo /usr/ /usr/local)
 
 find_path(ARMADILLO_INCLUDE_DIRS
         NAMES armadillo

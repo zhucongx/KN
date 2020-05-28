@@ -164,7 +164,15 @@ inline Vector3 ElementDivide(const Vector3 &dividend, const Vector3 &divisor)
           dividend[kYDimension] / divisor[kYDimension],
           dividend[kZDimension] / divisor[kZDimension]};
 }
-
+inline double ScalarLength(const Vector3 &vector)
+{
+  return std::sqrt(Inner(vector));
+}
+inline Vector3 Normalize(const Vector3 &vector)
+{
+  double factor = 1.0 / ScalarLength(vector);
+  return vector * factor;
+}
 
 inline std::ostream &operator<<(std::ostream &os, const Matrix33 &matrix)
 {

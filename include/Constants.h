@@ -5,14 +5,18 @@
 #include <vector>
 #include <algorithm>
 
-namespace FCC_const
+namespace Al_const
 {
 constexpr double kFirstNearestNeighborCutoff = 3.5;
+constexpr double kSecondNearestNeighborsCutoff = 4.1;
+
 // For FCC the first nearest neighbor is 12
 constexpr int kNumFirstNearestNeighbors = 12;
 // For FCC the first and second nearest neighbor is 18
 constexpr int kNumSecondNearNeighbors = 18;
-}// namespace FCC_const
+
+
+}// namespace Al_const
 
 
 namespace elem_info {
@@ -21,7 +25,7 @@ namespace elem_info {
  * Pure Appl. Chem., Vol. 83, No. 2, pp. 359–396, 2011.
  * Atomic weights of the elements 2009 (IUPAC Technical Report)
  * -------------------------------------------------------------------------- */
-const std::vector<double> mass_list = {
+static const std::vector<double> mass_list = {
     0.0,                                                              // Vacancy
     1.00797,     4.0026,      6.939,       9.012182,    10.811,      // H  - B
     12.01115,    14.0067,     15.9994,     18.9984032,  20.17976,    // C  - Ne
@@ -47,7 +51,7 @@ const std::vector<double> mass_list = {
     263.12,      262.12,      265.,        266.,        269.,        // Sg - Ds
     272.,        285.                                                // Rg - Cn
 };
-const std::vector<std::string> element_list = {
+static const std::vector<std::string> element_list = {
     "X",
     "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne",
     "Na", "Mg", "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca",
@@ -62,7 +66,7 @@ const std::vector<std::string> element_list = {
     "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds",
     "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Os"
 };
-const std::vector<int> atomicNumList = {
+static const std::vector<int> atomic_num_list = {
     0,
     1,   2,   3,   4,   5,   6,   7,   8,   9,   10,
     11,  12,  13,  14,  15,  16,  17,  18,  19,  20,
