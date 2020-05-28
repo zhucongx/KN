@@ -110,7 +110,7 @@ std::vector<std::vector<int>> ClusterFinder::FindAtomListOfClusters() {
   return cluster_atom_list_after_removing;
 }
 
-void ClusterFinder::FindClustersAndOutput() {
+std::vector<int> ClusterFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
   Config config_out;
   config_out.SetScale(config_.GetScale());
@@ -127,6 +127,12 @@ void ClusterFinder::FindClustersAndOutput() {
   output_name += output_name_suffix;
 
   config_out.WriteConfig(output_name);
+  std::vector<int> num_atom_in_clusters_list(config_out.GetElementListMap().size());
+  for (const auto &[atom, atom_list]:config_out.GetElementListMap()) {
+    num_atom_in_clusters_list.push_back(atom_list.size());
+  }
+
+  return num_atom_in_clusters_list;
 }
 
 }// namespace box

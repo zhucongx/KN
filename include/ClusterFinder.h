@@ -15,7 +15,7 @@ class ClusterFinder {
                 double first_nearest_neighbors_distance = Al_const::kFirstNearestNeighborCutoff,
                 double second_nearest_neighbors_distance = Al_const::kSecondNearestNeighborsCutoff);
 
-  void FindClustersAndOutput();
+  std::vector<int> FindClustersAndOutput();
  private:
   void ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
                                  double second_nearest_neighbors_distance);

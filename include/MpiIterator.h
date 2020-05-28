@@ -11,7 +11,9 @@ class MpiIterator {
               long long int finial_number);
   MpiIterator();
 
-  void IterateToFindCLusters();
+  void IterateToFindCLusters(const std::string& solvent_atom_type,
+                             int smallest_cluster_criteria,
+                             int solvent_bond_criteria);
  private:
   boost::mpi::environment env_;
   boost::mpi::communicator world_;

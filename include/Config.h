@@ -86,6 +86,7 @@ class Config {
   // indicate if the Config has found Atoms' neighbor list
   bool neighbor_found_{};
 
+  // using map data structure because we want to keep the order
   std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
 };
 

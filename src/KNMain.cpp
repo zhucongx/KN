@@ -1,5 +1,4 @@
-#include <boost/mpi/environment.hpp>
-#include <boost/mpi/communicator.hpp>
+#include <boost/mpi.hpp>
 #include "ClusterFinder.h"
 #include "MpiIterator.h"
 using namespace box;
@@ -11,8 +10,8 @@ int main(int argc, char *argv[]) {
   // ClusterFinder test("0.cfg", "Al", 3, 3);
   // test.FindClustersAndOutput();
 
-  MpiIterator test(0,1000000,7744000000);
-  test.IterateToFindCLusters();
+  MpiIterator test(370000000,10000000,7740000000);
+  test.IterateToFindCLusters("Al",3,3);
 
   // long long start = 0;
   // long long interval = 1000000;
