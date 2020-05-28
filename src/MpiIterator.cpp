@@ -23,5 +23,5 @@ void MpiIterator::IterateToFindCLusters() {
     box::ClusterFinder cluster_finder(file_name, "Al", 3, 3);
     cluster_finder.FindClustersAndOutput();
   }
-  
+
 }

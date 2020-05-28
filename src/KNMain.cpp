@@ -6,10 +6,10 @@ using namespace box;
 using namespace std;
 namespace mpi = boost::mpi;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 
-
+  // ClusterFinder test("0.cfg", "Al", 3, 3);
+  // test.FindClustersAndOutput();
 
   MpiIterator test(0,1000000,7744000000);
   test.IterateToFindCLusters();

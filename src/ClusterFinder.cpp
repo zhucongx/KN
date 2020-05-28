@@ -79,15 +79,17 @@ std::unordered_set<int> ClusterFinder::ConvertClusterAtomListToHashSetHelper(
   return unvisited_atoms_id_set;
 }
 std::vector<std::vector<int>> ClusterFinder::FindAtomListOfClusters() {
-  auto cluster_atom_list = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
+  auto cluster_atom_list_all = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters
-  std::erase_if(cluster_atom_list, [this](const auto &item) {
-    return item.size() <= smallest_cluster_criteria_;
-  });
+  std::vector<std::vector<int>> cluster_atom_list;
+  for (auto &&atom_list : cluster_atom_list_all) {
+    if (atom_list.size() > smallest_cluster_criteria_)
+      cluster_atom_list.push_back(std::move(atom_list));
+  }
 
   // add solvent neighbors
-  for (auto &atom_list:cluster_atom_list) {
+  for (auto &atom_list : cluster_atom_list) {
     std::unordered_map<int, int> neighbor_bond_count;
     for (const auto &atom_index:atom_list) {
       for (auto neighbor_id:config_.GetAtom(atom_index).first_nearest_neighbor_list_) {
