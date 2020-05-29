@@ -18,8 +18,9 @@ void MpiIterator::IterateToFindCLusters(const std::string &solvent_atom_type,
   long long quotient = num_total_loop / mpi_size_;
   auto remainder = num_total_loop % mpi_size_;
   long long num_cycle = remainder ? (quotient + 1) : quotient;
+
+  long long num_file = initial_number_ + mpi_rank_ * increment_number_;
   for (long long i = 0; i < num_cycle; i++) {
-    long long num_file = initial_number_ + (i * quotient + mpi_rank_) * increment_number_;
     if (num_file > finial_number_)
       break;
     std::string file_name = std::to_string(num_file) + ".cfg";
@@ -36,7 +37,7 @@ void MpiIterator::IterateToFindCLusters(const std::string &solvent_atom_type,
       std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
       auto file_index = num_file;
       for (const auto &this_num_different_element:all_num_different_element) {
-        ofs << file_index;
+        ofs << file_index << ' ';
         for (const auto num_atoms:this_num_different_element) {
           ofs << num_atoms << ' ';
         }
@@ -47,5 +48,5 @@ void MpiIterator::IterateToFindCLusters(const std::string &solvent_atom_type,
       boost::mpi::gather(world_, num_different_element, 0);
     }
   }
-
+  num_file += mpi_size_ * increment_number_;
 }
