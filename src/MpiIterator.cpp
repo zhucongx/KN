@@ -1,5 +1,7 @@
 #include "MpiIterator.h"
+#include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
 MpiIterator::MpiIterator() {}
 MpiIterator::MpiIterator(long long int initial_number,
                          long long int increment_number,
@@ -19,8 +21,8 @@ void MpiIterator::IterateToFindCLusters(const std::string &solvent_atom_type,
   auto remainder = num_total_loop % mpi_size_;
   long long num_cycle = remainder ? (quotient + 1) : quotient;
 
-  long long num_file = initial_number_ + mpi_rank_ * increment_number_;
   for (long long i = 0; i < num_cycle; i++) {
+    long long num_file = initial_number_ + (i * mpi_size_ + mpi_rank_) * increment_number_;
     if (num_file > finial_number_)
       break;
     std::string file_name = std::to_string(num_file) + ".cfg";
@@ -31,22 +33,24 @@ void MpiIterator::IterateToFindCLusters(const std::string &solvent_atom_type,
                                       solvent_bond_criteria);
     auto num_different_element = cluster_finder.FindClustersAndOutput();
     world_.barrier();
-    if (mpi_rank_ == 0) {
-      std::vector<std::vector<int>> all_num_different_element;
+    if (mpi_rank_ != 0) {
+      boost::mpi::gather(world_, num_different_element, 0);
+    } else {
+      std::vector<box::ClusterFinder::ClusterElementNumMap> all_num_different_element;
       boost::mpi::gather(world_, num_different_element, all_num_different_element, 0);
       std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
       auto file_index = num_file;
       for (const auto &this_num_different_element:all_num_different_element) {
-        ofs << file_index << ' ';
-        for (const auto num_atoms:this_num_different_element) {
-          ofs << num_atoms << ' ';
+        ofs << "Config " << file_index << '\n';
+        for (const auto &cluster:this_num_different_element) {
+          for(const auto&[key,count]:cluster){
+            ofs << count << ' ';
+          }
+          ofs << '\n';
         }
-        ofs << '\n';
         file_index += increment_number_;
       }
-    } else {
-      boost::mpi::gather(world_, num_different_element, 0);
+
     }
   }
-  num_file += mpi_size_ * increment_number_;
 }
