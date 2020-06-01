@@ -1,14 +1,14 @@
-#include "ClusterFinder.h"
+#include "ClustersFinder.h"
 #include <queue>
 #include <unordered_map>
 #include <utility>
 namespace box {
-ClusterFinder::ClusterFinder(std::string cfg_file_name,
-                             std::string solvent_atom_type,
-                             int smallest_cluster_criteria,
-                             int solvent_bond_criteria,
-                             double first_nearest_neighbors_distance,
-                             double second_nearest_neighbors_distance)
+ClustersFinder::ClustersFinder(std::string cfg_file_name,
+                               std::string solvent_atom_type,
+                               int smallest_cluster_criteria,
+                               int solvent_bond_criteria,
+                               double first_nearest_neighbors_distance,
+                               double second_nearest_neighbors_distance)
     : cfg_file_name_(std::move(cfg_file_name)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
@@ -17,8 +17,8 @@ ClusterFinder::ClusterFinder(std::string cfg_file_name,
                             second_nearest_neighbors_distance);
 }
 
-void ClusterFinder::ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
-                                              double second_nearest_neighbors_distance) {
+void ClustersFinder::ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
+                                               double second_nearest_neighbors_distance) {
   config_.ReadConfig(cfg_file_name_);
   config_.UpdateNeighbors(first_nearest_neighbors_distance, second_nearest_neighbors_distance);
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
@@ -28,7 +28,7 @@ void ClusterFinder::ReadFileAndUpdateNeighbor(double first_nearest_neighbors_dis
   }
 }
 
-std::unordered_set<int> ClusterFinder::FindSoluteAtomsHelper() const {
+std::unordered_set<int> ClustersFinder::FindSoluteAtomsHelper() const {
   std::unordered_set<int> solute_atoms_hashset;
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == solvent_element_ || element_type == "X")
@@ -40,7 +40,7 @@ std::unordered_set<int> ClusterFinder::FindSoluteAtomsHelper() const {
 
   return solute_atoms_hashset;
 }
-std::vector<std::vector<int>> ClusterFinder::FindAtomListOfClustersBFSHelper(
+std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
     std::unordered_set<int> unvisited_atoms_id_set) const {
 
   std::vector<std::vector<int>> cluster_atom_list;
@@ -72,7 +72,7 @@ std::vector<std::vector<int>> ClusterFinder::FindAtomListOfClustersBFSHelper(
   }
   return cluster_atom_list;
 }
-std::unordered_set<int> ClusterFinder::ConvertClusterAtomListToHashSetHelper(
+std::unordered_set<int> ClustersFinder::ConvertClusterAtomListToHashSetHelper(
     const std::vector<std::vector<int>> &cluster_atom_list) const {
   std::unordered_set<int> unvisited_atoms_id_set;
   for (const auto &index_vector:cluster_atom_list) {
@@ -83,7 +83,7 @@ std::unordered_set<int> ClusterFinder::ConvertClusterAtomListToHashSetHelper(
 
   return unvisited_atoms_id_set;
 }
-std::vector<std::vector<int>> ClusterFinder::FindAtomListOfClusters() const {
+std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list_all = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters
@@ -115,7 +115,7 @@ std::vector<std::vector<int>> ClusterFinder::FindAtomListOfClusters() const {
   return cluster_atom_list_after_removing;
 }
 
-ClusterFinder::ClusterElementNumMap ClusterFinder::FindClustersAndOutput() {
+ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
 
   Config config_out;

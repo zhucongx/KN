@@ -1,18 +1,17 @@
 #include <boost/mpi.hpp>
-#include "ClusterFinder.h"
-#include "MpiIterator.h"
+#include "MpiClusters.h"
 using namespace box;
 using namespace std;
 namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
 
-  // ClusterFinder test("0.cfg", "Al", 3, 3);
+  // ClustersFinder test("0.cfg", "Al", 3, 3);
   // test.FindClustersAndOutput();
 
-  MpiIterator test(370000000,10000000,7740000000);
-  test.IterateToFindCLusters("Al",3,3);
-
+  MpiClusters test(370000000, 10000000, 480000000,
+                   "Al", 3, 3);
+  test.IterateToRun();
   // long long start = 0;
   // long long interval = 1000000;
   // long long end = 264000000;
