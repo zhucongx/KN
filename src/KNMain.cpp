@@ -1,6 +1,7 @@
 #include <boost/mpi.hpp>
 #include "MpiClusters.h"
-using namespace box;
+#include "KMCSimulation.h"
+using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
 

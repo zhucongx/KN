@@ -2,7 +2,7 @@
 #define KN_INCLUDE_ANTIPHASECONFIG_H_
 
 #include "Config.h"
-namespace box
+namespace kn
 {
 
 class AntiPhaseConfig : public Config
@@ -25,6 +25,6 @@ class AntiPhaseConfig : public Config
                   const std::array<int, kDimension> &factors);
 };
 
-}// namespace box
+}// namespace kn
 
 #endif //KN_INCLUDE_ANTIPHASECONFIG_H_

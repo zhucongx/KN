@@ -1,6 +1,6 @@
 #include "MpiIterator.h"
 
-namespace box {
+namespace kn {
 
 MpiIterator::MpiIterator(long long int initial_number,
                          long long int increment_number,
@@ -13,6 +13,6 @@ MpiIterator::MpiIterator(long long int initial_number,
   mpi_size_ = world_.size();
 }
 
-}// namespace box
+}// namespace kn
 
 

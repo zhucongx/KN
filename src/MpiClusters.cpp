@@ -4,20 +4,20 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 
-namespace box {
-box::MpiClusters::MpiClusters(long long int initial_number,
-                              long long int increment_number,
-                              long long int finial_number,
-                              std::string solvent_element,
-                              int smallest_cluster_criteria,
-                              int solvent_bond_criteria) :
+namespace kn {
+kn::MpiClusters::MpiClusters(long long int initial_number,
+                             long long int increment_number,
+                             long long int finial_number,
+                             std::string solvent_element,
+                             int smallest_cluster_criteria,
+                             int solvent_bond_criteria) :
     MpiIterator(initial_number,
                 increment_number,
                 finial_number),
     solvent_element_(std::move(solvent_element)),
     smallest_cluster_criteria_(smallest_cluster_criteria),
     solvent_bond_criteria_(solvent_bond_criteria) {}
-void box::MpiClusters::IterateToRun() {
+void kn::MpiClusters::IterateToRun() {
   long long num_total_loop = (finial_number_ - initial_number_) / increment_number_ + 1;
   long long quotient = num_total_loop / mpi_size_;
   auto remainder = num_total_loop % mpi_size_;
@@ -61,4 +61,4 @@ void box::MpiClusters::IterateToRun() {
     }
   }
 }
-}  // namespace box
+}  // namespace kn

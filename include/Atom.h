@@ -8,7 +8,7 @@
 #include "Constants.h"
 #include "VectorMatrix.h"
 
-namespace box
+namespace kn
 {
 
 class Atom
@@ -43,5 +43,5 @@ class Atom
 };
 
 Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
-}// namespace box
+}// namespace kn
 #endif //KN_SRC_ATOM_H_

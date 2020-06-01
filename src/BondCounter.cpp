@@ -1,5 +1,5 @@
 #include "BondCounter.h"
-namespace box {
+namespace kn {
 BondCounter::BondCounter(const std::string& cfg_file_name,
                          Vector3 factor,
                          Vector3 plane,
@@ -219,4 +219,4 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
   return map_out;
 }
 
-}// namespace box
+}// namespace kn

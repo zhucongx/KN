@@ -3,7 +3,7 @@
 
 #include <boost/mpi.hpp>
 #include <ClustersFinder.h>
-namespace box {
+namespace kn {
 
 class MpiIterator {
  public:
@@ -22,7 +22,7 @@ class MpiIterator {
   long long finial_number_;
 };
 
-}// namespace box
+}// namespace kn
 
 
 

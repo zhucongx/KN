@@ -1,5 +1,5 @@
 #include "AntiPhaseConfig.h"
-namespace box
+namespace kn
 {
 void AntiPhaseConfig::GenerateL10(const double &lattice_constant_a,
                                   const std::vector<std::string> &element_list,
@@ -103,4 +103,4 @@ void AntiPhaseConfig::GenerateZ1(const double &lattice_constant_a,
   Duplicate(factors);
 }
 
-}// namespace box
+}// namespace kn

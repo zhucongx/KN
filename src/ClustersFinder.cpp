@@ -2,7 +2,7 @@
 #include <queue>
 #include <unordered_map>
 #include <utility>
-namespace box {
+namespace kn {
 ClustersFinder::ClustersFinder(std::string cfg_file_name,
                                std::string solvent_atom_type,
                                int smallest_cluster_criteria,
@@ -72,17 +72,6 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
   }
   return cluster_atom_list;
 }
-std::unordered_set<int> ClustersFinder::ConvertClusterAtomListToHashSetHelper(
-    const std::vector<std::vector<int>> &cluster_atom_list) const {
-  std::unordered_set<int> unvisited_atoms_id_set;
-  for (const auto &index_vector:cluster_atom_list) {
-    std::copy(index_vector.begin(),
-              index_vector.end(),
-              std::inserter(unvisited_atoms_id_set, unvisited_atoms_id_set.end()));
-  }
-
-  return unvisited_atoms_id_set;
-}
 std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list_all = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
@@ -109,8 +98,13 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   }
 
   // remove duplicate outer layer
-  auto cluster_atom_list_after_removing =
-      FindAtomListOfClustersBFSHelper(ConvertClusterAtomListToHashSetHelper(cluster_atom_list));
+  std::unordered_set<int> unvisited_atoms_id_set;
+  for (const auto &kIndexVector:cluster_atom_list) {
+    std::copy(kIndexVector.begin(),
+              kIndexVector.end(),
+              std::inserter(unvisited_atoms_id_set, unvisited_atoms_id_set.end()));
+  }
+  auto cluster_atom_list_after_removing = FindAtomListOfClustersBFSHelper(unvisited_atoms_id_set);
 
   return cluster_atom_list_after_removing;
 }
@@ -147,4 +141,4 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   return num_atom_in_clusters_set;
 }
 
-}// namespace box
+}// namespace kn

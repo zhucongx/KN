@@ -91,7 +91,7 @@ inline double FindMass(const std::string &elem) {
 inline double FindMass(const int &atomicNum) {
   return mass_list[atomicNum];
 }
-} // namespace elem_info
+}// namespace elem_info
 
 #endif //KN_INCLUDE_CONSTANTS_H_
 

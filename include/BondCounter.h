@@ -4,7 +4,7 @@
 #include <set>
 #include "Config.h"
 
-namespace box {
+namespace kn {
 
 class BondCounter {
  public:
@@ -33,5 +33,5 @@ class BondCounter {
   Vector3 factor_{};
 };
 
-}// namespace box
+}// namespace kn
 #endif //KN_INCLUDE_BONDCOUNTER_H_

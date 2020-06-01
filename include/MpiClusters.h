@@ -3,7 +3,7 @@
 
 #include "MpiIterator.h"
 #include "ClustersFinder.h"
-namespace box {
+namespace kn {
 
 class MpiClusters : public MpiIterator {
  public:
@@ -20,7 +20,7 @@ class MpiClusters : public MpiIterator {
   int solvent_bond_criteria_{};
 };
 
-}// namespace box
+}// namespace kn
 
 
 #endif //KN_INCLUDE_MPICLUSTERS_H_

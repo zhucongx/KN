@@ -6,7 +6,7 @@
 #include <random>
 #include <chrono>
 
-namespace box {
+namespace kn {
 
 const double kMean = 0;
 const double kStandardDeviation = 0.15;
@@ -508,4 +508,4 @@ const std::map<std::string, std::vector<Atom::Rank>> &Config::GetElementListMap(
   return element_list_map_;
 }
 
-}// namespace box
+}// namespace kn

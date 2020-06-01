@@ -3,7 +3,7 @@
 
 #include "Config.h"
 
-namespace box
+namespace kn
 {
 
 class FCCConfig : public Config
@@ -12,6 +12,6 @@ class FCCConfig : public Config
   void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) override;
 };
 
-}// namespace box
+}// namespace kn
 
 #endif //KN_INCLUDE_FCCCONFIG_H_

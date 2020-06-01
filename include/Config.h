@@ -8,7 +8,7 @@
 #include <map>
 #include "Atom.h"
 #include "Bond.h"
-namespace box {
+namespace kn {
 class Config {
   // Todo output neighbor information
  public:
@@ -90,6 +90,6 @@ class Config {
   std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
 };
 
-}// namespace box
+}// namespace kn
 
 #endif //KN_INCLUDE_CONFIG_H_

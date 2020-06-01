@@ -6,7 +6,7 @@
 
 #include "FCCConfig.h"
 
-namespace box {
+namespace kn {
 
 class ClustersFinder {
  public:
@@ -26,8 +26,6 @@ class ClustersFinder {
   [[nodiscard]] std::unordered_set<int> FindSoluteAtomsHelper() const;
   [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClustersBFSHelper(
       std::unordered_set<int> unvisited_atoms_id_set) const;
-  [[nodiscard]] std::unordered_set<int> ConvertClusterAtomListToHashSetHelper(
-      const std::vector<std::vector<int>> &cluster_atom_list)const;
 
   [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClusters() const;
 
@@ -40,7 +38,7 @@ class ClustersFinder {
 
 };
 
-}// namespace box
+}// namespace kn
 
 
 #endif //KN_INCLUDE_CLUSTERSFINDER_H_

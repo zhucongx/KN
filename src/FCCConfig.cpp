@@ -1,6 +1,6 @@
 #include "FCCConfig.h"
 
-namespace box {
+namespace kn {
 // todo need to be fixed
 void FCCConfig::UpdateNeighbors(double first_r_cutoff,
                                 double second_r_cutoff) {
@@ -43,5 +43,5 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
   neighbor_found_ = true;
 }
 
-}// namespace box
+}// namespace kn
 

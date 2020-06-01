@@ -1,6 +1,6 @@
 #include "Atom.h"
 
-namespace box
+namespace kn
 {
 Atom::Atom() = default;
 Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
@@ -66,4 +66,4 @@ Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second)
   return relative_distance_vector;
 }
 
-}// namespace box
+}// namespace kn
