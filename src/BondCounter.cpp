@@ -1,11 +1,12 @@
 #include "BondCounter.h"
+#include "ConfigIO.h"
 namespace kn {
-BondCounter::BondCounter(const std::string& cfg_file_name,
+BondCounter::BondCounter(const std::string& filename,
                          Vector3 factor,
                          Vector3 plane,
                          Vector3 burger_vector
 ) : factor_(factor) {
-  config_.ReadConfig(cfg_file_name);
+  config_ = ConfigIO::ReadConfig(filename);
   SetPlane(plane);
   SetBurgersVector(burger_vector);
 }
@@ -59,7 +60,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
 
   std::set<std::pair<int, Vector3>> slip_direction_set;
   for (const auto &plane_index:plane_set_) {
-    auto unsliped_config = config_;
+    auto unslipped_config = config_;
     Vector3 plane_distance_vector = GetPlaneDistanceVector(plane_index);
     /// {1/90, 1/90, 1/90}
 
@@ -90,8 +91,8 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
     const double d0_unslip_lower = d0 - 3 * delta;
 
     for (int i = 0; i < iteration_time; i++) {
-      unsliped_config.MoveRelativeDistance(plane_distance_vector);
-      // unsliped_config.WritePOSCAR((std::to_string(++iii) + ".poscar"));
+      unslipped_config.MoveRelativeDistance(plane_distance_vector);
+      // unslipped_config.WritePOSCAR((std::to_string(++iii) + ".poscar"));
       // int jjj = 0;
       // We select four planes, and we move two plan by the burgers vector and
       // calculate the bonds change between the these two planes and the
@@ -99,9 +100,10 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
       std::vector<Atom::Rank> unslipped_atoms_group;
       std::vector<Atom::Rank> slipped_atoms_group;
 
-      for (Atom::Rank j = 0; j < unsliped_config.GetNumAtoms(); ++j) {
+      auto upslipped_atom_reference = unslipped_config.GetAtomList();
+      for (Atom::Rank j = 0; j < unslipped_config.GetNumAtoms(); ++j) {
         double d_checked =
-            Dot(unsliped_config.GetAtom(j).relative_position_, plane_index);
+            Dot(upslipped_atom_reference[j].relative_position_, plane_index);
         auto check_if_in_between = [](double value, double v_1, double v_2) {
           return (value > std::min(v_1, v_2) && value < std::max(v_1, v_2));
         };
@@ -123,7 +125,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
       //           << slipped_atoms_group.size() << std::endl << std::endl;
 #endif
       std::map<Bond, int>
-          bonds_map_before = CountBondsBetweenTwoGroupHelper(unsliped_config,
+          bonds_map_before = CountBondsBetweenTwoGroupHelper(unslipped_config,
                                                              unslipped_atoms_group,
                                                              slipped_atoms_group);
       //  move atoms
@@ -143,7 +145,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
         }
 
         auto burger_distance_vector = GetBurgerDistanceVector(burgers_vector);
-        Config sliped_config = unsliped_config;
+        Config sliped_config = unslipped_config;
 
         for (const auto &index:slipped_atoms_group) {
           sliped_config
@@ -201,18 +203,20 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
     const std::vector<Atom::Rank> &group1,
     const std::vector<Atom::Rank> &group2) {
   std::map<Bond, int> map_out;
+  auto atoms_list_reference = config.GetAtomList();
+
   for (const auto &index1:group1) {
     for (const auto &index2:group2) {
       Vector3 relative_distance_vector =
-          GetRelativeDistanceVector(config.GetAtom(index1),
-                                    config.GetAtom(index2));
+          GetRelativeDistanceVector(atoms_list_reference[index1],
+                                    atoms_list_reference[index2]);
       double absolute_distance_squared =
           (Inner(relative_distance_vector * config.GetBasis()));
 
       if (absolute_distance_squared > 8 && absolute_distance_squared < 9) {
         // std::cout << absolute_distance_squared<<'\n';
-        map_out[{config.GetAtom(index1).GetType(),
-                 config.GetAtom(index2).GetType()}]++;
+        map_out[{atoms_list_reference[index1].type_,
+                 atoms_list_reference[index2].type_}]++;
       }
     }
   }

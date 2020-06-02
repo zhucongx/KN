@@ -8,7 +8,7 @@ namespace kn {
 
 class BondCounter {
  public:
-  BondCounter(const std::string& cfg_file_name,
+  BondCounter(const std::string& filename,
               Vector3 factor,
               Vector3 plane,
               Vector3 burger_vector);

@@ -1,12 +1,11 @@
 #ifndef KN_INCLUDE_KMCEVENT_H_
 #define KN_INCLUDE_KMCEVENT_H_
-
+#include <utility>
 namespace kn {
 class KMCEvent {
  public:
 
-  KMCEvent(const std::pair<int, int> &jump_pair);
-
+  explicit KMCEvent(const std::pair<int, int> &jump_pair);
 
   const std::pair<int, int> &GetJumpPair() const;
   double GetBarrier() const;

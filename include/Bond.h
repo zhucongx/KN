@@ -1,6 +1,7 @@
 #ifndef KN_SRC_BOND_H_
 #define KN_SRC_BOND_H_
 #include <iostream>
+namespace kn {
 class Bond {
  public:
   Bond(std::string type1, std::string type2);
@@ -10,5 +11,5 @@ class Bond {
   std::string type1_;
   std::string type2_;
 };
-
+}// namespace kn
 #endif //KN_SRC_BOND_H_

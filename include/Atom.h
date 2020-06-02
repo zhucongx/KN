@@ -8,11 +8,9 @@
 #include "Constants.h"
 #include "VectorMatrix.h"
 
-namespace kn
-{
+namespace kn {
 
-class Atom
-{
+class Atom {
  public:
   typedef int Rank;
 
@@ -20,13 +18,8 @@ class Atom
   // Set both relative and absolute position, but will be corrected later
   Atom(Rank id, double mass, std::string type, double x, double y, double z);
   Atom(Rank id, double mass, std::string type, Vector3 position);
-  void SetId(Rank id);
-  [[nodiscard]] Rank GetId() const;
-  void SetMass(double mass);
-  [[nodiscard]] double GetMass() const;
-  void SetType(const std::string &type);
-  [[nodiscard]] const std::string &GetType() const;
 
+ public:
   // absolute position
   Vector3 cartesian_position_{};
   // relative position in the box
@@ -35,7 +28,6 @@ class Atom
   std::vector<Rank> second_nearest_neighbor_list_;
   // First nearest neighbor list
   std::vector<Rank> first_nearest_neighbor_list_;
- private:
   // atom id which is an unique Rank for every atom indexed form 0
   Rank id_{};
   double mass_{};

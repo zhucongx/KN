@@ -32,11 +32,11 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
       double distance_square = Inner(distance_vector);
       if (distance_square < second_r_cutoff_square) {
         if (distance_square < first_r_cutoff_square) {
-          it1->first_nearest_neighbor_list_.emplace_back(it2->GetId());
-          it2->first_nearest_neighbor_list_.emplace_back(it1->GetId());
+          it1->first_nearest_neighbor_list_.emplace_back(it2->id_);
+          it2->first_nearest_neighbor_list_.emplace_back(it1->id_);
         }
-        it1->second_nearest_neighbor_list_.emplace_back(it2->GetId());
-        it2->second_nearest_neighbor_list_.emplace_back(it1->GetId());
+        it1->second_nearest_neighbor_list_.emplace_back(it2->id_);
+        it2->second_nearest_neighbor_list_.emplace_back(it1->id_);
       }
     }
   }

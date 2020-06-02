@@ -2,6 +2,7 @@
 #include <queue>
 #include <unordered_map>
 #include <utility>
+#include "ConfigIO.h"
 namespace kn {
 ClustersFinder::ClustersFinder(std::string cfg_file_name,
                                std::string solvent_atom_type,
@@ -19,7 +20,7 @@ ClustersFinder::ClustersFinder(std::string cfg_file_name,
 
 void ClustersFinder::ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
                                                double second_nearest_neighbors_distance) {
-  config_.ReadConfig(cfg_file_name_);
+  config_ = ConfigIO::ReadConfig(cfg_file_name_);
   config_.UpdateNeighbors(first_nearest_neighbors_distance, second_nearest_neighbors_distance);
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == "X")
@@ -42,7 +43,7 @@ std::unordered_set<int> ClustersFinder::FindSoluteAtomsHelper() const {
 }
 std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
     std::unordered_set<int> unvisited_atoms_id_set) const {
-
+  auto atoms_list_reference = config_.GetAtomList();
   std::vector<std::vector<int>> cluster_atom_list;
   std::queue<int> visit_id_queue;
   int atom_id;
@@ -54,13 +55,13 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
     visit_id_queue.push(*it);
     unvisited_atoms_id_set.erase(it);
 
-    std::vector<int> atom_list;
+    std::vector<int> atom_list_of_one_cluster;
     while (!visit_id_queue.empty()) {
       atom_id = visit_id_queue.front();
       visit_id_queue.pop();
 
-      atom_list.push_back(atom_id);
-      for (const auto &neighbor_id:config_.GetAtom(atom_id).first_nearest_neighbor_list_) {
+      atom_list_of_one_cluster.push_back(atom_id);
+      for (const auto &neighbor_id:atoms_list_reference[atom_id].first_nearest_neighbor_list_) {
         it = unvisited_atoms_id_set.find(neighbor_id);
         if (it != unvisited_atoms_id_set.end()) {
           visit_id_queue.push(*it);
@@ -68,26 +69,29 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
         }
       }
     }
-    cluster_atom_list.push_back(atom_list);
+    cluster_atom_list.push_back(atom_list_of_one_cluster);
   }
   return cluster_atom_list;
 }
 std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
-  auto cluster_atom_list_all = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
+  auto cluster_atom_list = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters
-  std::vector<std::vector<int>> cluster_atom_list;
-  for (auto &&atom_list : cluster_atom_list_all) {
-    if (atom_list.size() > smallest_cluster_criteria_)
-      cluster_atom_list.push_back(std::move(atom_list));
+  for (auto it = cluster_atom_list.begin(); it != cluster_atom_list.end();) {
+    if (it->size() <= smallest_cluster_criteria_) {
+      it = cluster_atom_list.erase(it);
+    } else {
+      ++it;
+    }
   }
 
   // add solvent neighbors
+  auto atoms_list_reference = config_.GetAtomList();
   for (auto &atom_list : cluster_atom_list) {
     std::unordered_map<int, int> neighbor_bond_count;
     for (const auto &atom_index:atom_list) {
-      for (auto neighbor_id:config_.GetAtom(atom_index).first_nearest_neighbor_list_) {
-        if (config_.GetAtom(neighbor_id).GetType() == solvent_element_)
+      for (auto neighbor_id:atoms_list_reference[atom_index].first_nearest_neighbor_list_) {
+        if (atoms_list_reference[neighbor_id].type_ == solvent_element_)
           neighbor_bond_count[neighbor_id]++;
       }
     }
@@ -116,7 +120,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   config_out.SetScale(config_.GetScale());
   config_out.SetBasis(config_.GetBasis());
   std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
-
+  auto atoms_list_reference = config_.GetAtomList();
   for (auto &atom_list:cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
     std::map<std::string, int> num_atom_in_one_cluster;
@@ -125,8 +129,8 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
     }
 
     for (const auto &atom_index:atom_list) {
-      num_atom_in_one_cluster[config_.GetAtom(atom_index).GetType()]++;
-      config_out.AppendAtom(config_.GetAtom(atom_index));
+      num_atom_in_one_cluster[atoms_list_reference[atom_index].type_]++;
+      config_out.AppendAtom(atoms_list_reference[atom_index]);
     }
 
     num_atom_in_clusters_set.push_back(std::move(num_atom_in_one_cluster));
@@ -136,7 +140,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   std::string output_name = cfg_file_name_.substr(0, pos);
   output_name += "_cluster.";
   output_name += output_name_suffix;
-  config_out.WriteConfig(output_name);
+  ConfigIO::WriteConfig(config_out, output_name);
 
   return num_atom_in_clusters_set;
 }

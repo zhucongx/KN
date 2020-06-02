@@ -10,7 +10,6 @@ Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
       relative_position_{x, y, z},
       cartesian_position_{x, y, z}
 {
-  // Set both relative and absolute position, but will be corrected later
 }
 Atom::Atom(Atom::Rank id,
            double mass,
@@ -24,30 +23,6 @@ Atom::Atom(Atom::Rank id,
 {
 }
 
-Atom::Rank Atom::GetId() const
-{
-  return id_;
-}
-void Atom::SetId(Rank id)
-{
-  id_ = id;
-}
-double Atom::GetMass() const
-{
-  return mass_;
-}
-void Atom::SetMass(double mass)
-{
-  mass_ = mass;
-}
-const std::string &Atom::GetType() const
-{
-  return type_;
-}
-void Atom::SetType(const std::string &type)
-{
-  type_ = type;
-}
 
 Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second)
 {

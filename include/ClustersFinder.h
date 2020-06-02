@@ -5,7 +5,6 @@
 #include <unordered_set>
 
 #include "FCCConfig.h"
-
 namespace kn {
 
 class ClustersFinder {
@@ -26,7 +25,6 @@ class ClustersFinder {
   [[nodiscard]] std::unordered_set<int> FindSoluteAtomsHelper() const;
   [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClustersBFSHelper(
       std::unordered_set<int> unvisited_atoms_id_set) const;
-
   [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClusters() const;
 
   std::string cfg_file_name_;

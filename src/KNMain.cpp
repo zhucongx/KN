@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   // ClustersFinder test("0.cfg", "Al", 3, 3);
   // test.FindClustersAndOutput();
 
-  MpiClusters test(370000000, 10000000, 480000000,
+  MpiClusters test(370000000, 10000000, 450000000,
                    "Al", 3, 3);
   test.IterateToRun();
   // long long start = 0;
