@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
   //                  "Al", 3, 3);
   // test.IterateToRun();
 
-  MpiNeighbors test(370000000, 10000000, 450000000);
+  MpiNeighbors test(370000000, 1000000, 6252000000);
   test.IterateToRun();
 
   // long long start = 0;

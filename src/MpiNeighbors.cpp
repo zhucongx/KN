@@ -18,7 +18,7 @@ void MpiNeighbors::IterateToRun() {
     if (num_file > finial_number_)
       break;
 
-    std::string filename = std::to_string(num_file) + ".cfg";
+    std::string filename = std::to_string(num_file) + "neighbor.cfg";
     auto config = ConfigIO::ReadConfig(filename);
     config.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
                            Al_const::kSecondNearestNeighborsCutoff);
