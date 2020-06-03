@@ -25,13 +25,13 @@ void MpiClusters::IterateToRun() {
   auto remainder = num_total_loop % mpi_size_;
   long long num_cycle = remainder ? (quotient + 1) : quotient;
 
-  for (long long i = 0; i < num_cycle; i++) {
+  for (long long i = 0; i < num_cycle; ++i) {
     long long num_file = initial_number_ + (i * mpi_size_ + mpi_rank_) * increment_number_;
     ClustersFinder::ClusterElementNumMap num_different_element;
     if (num_file <= finial_number_) {
-      std::string file_name = std::to_string(num_file) + ".cfg";
+      std::string filename = std::to_string(num_file) + ".cfg";
 
-      ClustersFinder cluster_finder(file_name,
+      ClustersFinder cluster_finder(filename,
                                     solvent_element_,
                                     smallest_cluster_criteria_,
                                     solvent_bond_criteria_);
