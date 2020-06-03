@@ -1,7 +1,6 @@
 #include "KMCSimulation.h"
-namespace kn
-{
+
+namespace kn {
 
 
-
-}// namespace kn
+} // namespace kn

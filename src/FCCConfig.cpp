@@ -1,12 +1,15 @@
 #include "FCCConfig.h"
 #include "AtomUtility.h"
+
 namespace kn {
 // todo need to be fixed
 void FCCConfig::UpdateNeighbors(double first_r_cutoff,
                                 double second_r_cutoff) {
-  Vector3 length = {basis_[kXDimension][kXDimension],
-                    basis_[kYDimension][kYDimension],
-                    basis_[kZDimension][kZDimension]};
+  Vector3 length = {
+      basis_[kXDimension][kXDimension],
+      basis_[kYDimension][kYDimension],
+      basis_[kZDimension][kZDimension]
+  };
   // if the box is a cubic box, we just need to compare relative distance
   const bool cubic_status = basis_[kXDimension][kXDimension] == basis_[kYDimension][kYDimension] &&
       basis_[kYDimension][kYDimension] == basis_[kZDimension][kZDimension] &&
@@ -50,5 +53,4 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
   neighbor_found_ = true;
 }
 
-}// namespace kn
-
+} // namespace kn

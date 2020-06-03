@@ -3,65 +3,63 @@
 
 #include <string>
 #include <array>
-#include <utility>
 #include <vector>
 #include <map>
 #include "Atom.h"
-#include "Bond.h"
+
 namespace kn {
 class Config {
   // Todo output neighbor information
- public:
-  Config();
-  bool operator<(const Config &rhs) const;
-  void ConvertRelativeToCartesian();
-  void ConvertCartesianToRelative();
-  void Perturb();
-  virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
-  // update both atoms' relative and absolute positions according to periodic
-  // boundary condition
+  public:
+    Config();
+    bool operator<(const Config &rhs) const;
+    void ConvertRelativeToCartesian();
+    void ConvertCartesianToRelative();
+    void Perturb();
+    virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
+    // update both atoms' relative and absolute positions according to periodic
+    // boundary condition
 
-  void MoveRelativeDistance(const Vector3 &distance_vector);
-  void MoveOneAtomRelativeDistance(const Atom::Rank &index, const Vector3 &distance_vector);
+    void MoveRelativeDistance(const Vector3 &distance_vector);
+    void MoveOneAtomRelativeDistance(const Atom::Rank &index, const Vector3 &distance_vector);
 
-  [[nodiscard]] int GetNumAtoms() const;
+    [[nodiscard]] int GetNumAtoms() const;
 
-  void SetScale(double scale);
-  [[nodiscard]] double GetScale() const;
+    void SetScale(double scale);
+    [[nodiscard]] double GetScale() const;
 
-  [[nodiscard]] const Matrix33 &GetBasis() const;
-  void SetBasis(const Matrix33 &basis);
-  void AppendAtom(const Atom &atom);
-  [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
-  [[nodiscard]] const std::map<std::string, std::vector<Atom::Rank>> &GetElementListMap() const;
-  [[nodiscard]] bool IsNeighborFound() const;
-  void SetNeighborFound(bool neighbor_found);
- protected:
-  double scale_ = 1;
-  // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
-  // std::array<double, 9> cell;
-  // length of three edges
-  // Vector3 length;
+    [[nodiscard]] const Matrix33 &GetBasis() const;
+    void SetBasis(const Matrix33 &basis);
+    void AppendAtom(const Atom &atom);
+    [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
+    [[nodiscard]] const std::map<std::string, std::vector<Atom::Rank>> &GetElementListMap() const;
+    [[nodiscard]] bool IsNeighborFound() const;
+    void SetNeighborFound(bool neighbor_found);
+  protected:
+    double scale_ = 1;
+    // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
+    // std::array<double, 9> cell;
+    // length of three edges
+    // Vector3 length;
 
-  // This three vectors form a matrix matching the matrix in Config
+    // This three vectors form a matrix matching the matrix in Config
 
-  // and POSCAR file representing three Bravais lattice vectors that can be
-  // used to convert relative position to absolute
-  Matrix33 basis_{};
+    // and POSCAR file representing three Bravais lattice vectors that can be
+    // used to convert relative position to absolute
+    Matrix33 basis_{};
 
-  // Three translational Bravais lattice vector
-  // Matrix33 reciprocal_matrix_{},
+    // Three translational Bravais lattice vector
+    // Matrix33 reciprocal_matrix_{},
 
-  double energy_{};
-  // The index of atom in the vector is not always same as of the id of the atom
-  std::vector<Atom> atom_list_;
-  // indicate if the Config has found Atoms' neighbor list
-  bool neighbor_found_{};
+    double energy_{};
+    // The index of atom in the vector is not always same as of the id of the atom
+    std::vector<Atom> atom_list_;
+    // indicate if the Config has found Atoms' neighbor list
+    bool neighbor_found_{};
 
-  // using map data structure because we want to keep the order
-  std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
+    // using map data structure because we want to keep the order
+    std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
 };
-
-}// namespace kn
+} // namespace kn
 
 #endif //KN_INCLUDE_CONFIG_H_

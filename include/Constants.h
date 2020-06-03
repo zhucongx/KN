@@ -5,8 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace Al_const
-{
+namespace Al_const {
 constexpr double kFirstNearestNeighborCutoff = 3.5;
 constexpr double kSecondNearestNeighborsCutoff = 4.1;
 
@@ -14,8 +13,7 @@ constexpr double kSecondNearestNeighborsCutoff = 4.1;
 constexpr int kNumFirstNearestNeighbors = 12;
 // For FCC the second nearest neighbor is 18
 constexpr int kNumSecondNearestNeighbors = 6;
-
-}// namespace Al_const
+} // namespace Al_const
 
 
 namespace elem_info {

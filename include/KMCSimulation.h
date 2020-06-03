@@ -2,12 +2,13 @@
 #define KN_INCLUDE_KMCSIMULATION_H_
 #include "Config.h"
 #include "KMCEvent.h"
+
 namespace kn {
 class KMCSimulation {
- private:
-  Config  config_;
+  private:
+    Config config_;
 
 };
 
-}// namespace kn
+} // namespace kn
 #endif //KN_INCLUDE_KMCSIMULATION_H_

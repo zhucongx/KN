@@ -3,15 +3,13 @@
 
 #include "Config.h"
 
-namespace kn
-{
+namespace kn {
 
-class FCCConfig : public Config
-{
- public:
-  void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) override;
+class FCCConfig : public Config {
+  public:
+    void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) override;
 };
 
-}// namespace kn
+} // namespace kn
 
 #endif //KN_INCLUDE_FCCCONFIG_H_

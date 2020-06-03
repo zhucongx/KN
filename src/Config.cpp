@@ -19,14 +19,14 @@ bool Config::operator<(const Config &rhs) const {
 }
 
 void Config::ConvertRelativeToCartesian() {
-  for (auto &atom:atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.cartesian_position_ = atom.relative_position_ * basis_;
   }
 }
 
 void Config::ConvertCartesianToRelative() {
   auto inverse_basis = InverseMatrix33(basis_);
-  for (auto &atom:atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.relative_position_ = atom.cartesian_position_ * inverse_basis;
   }
 }
@@ -42,7 +42,7 @@ void Config::Perturb() {
     }
     coordinate += displacement;
   };
-  for (auto &atom:atom_list_) {
+  for (auto &atom : atom_list_) {
     add_displacement(atom.cartesian_position_[kXDimension]);
     add_displacement(atom.cartesian_position_[kYDimension]);
     add_displacement(atom.cartesian_position_[kZDimension]);
@@ -80,9 +80,10 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   }
   neighbor_found_ = true;
 }
+
 // for better performance, shouldn't call Wrap function
 void Config::MoveRelativeDistance(const Vector3 &distance_vector) {
-  for (auto &atom:atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.relative_position_ += distance_vector;
 
     atom.relative_position_ -= ElementFloor(atom.relative_position_);
@@ -90,6 +91,7 @@ void Config::MoveRelativeDistance(const Vector3 &distance_vector) {
     atom.cartesian_position_ = atom.relative_position_ * basis_;
   }
 }
+
 void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
                                          const Vector3 &distance_vector) {
   atom_list_[index].relative_position_ += distance_vector;
@@ -97,6 +99,7 @@ void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
 
   atom_list_[index].cartesian_position_ = atom_list_[index].relative_position_ * basis_;
 }
+
 // void Config::MoveAbsoluteDistance(const Vector3 &distance_vector) {
 //   for (auto &atom:atom_list_) {
 //     atom.cartesian_position_ = atom.cartesian_position_ + distance_vector;
@@ -108,15 +111,19 @@ void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
 int Config::GetNumAtoms() const {
   return atom_list_.size();
 }
+
 void Config::SetScale(double scale) {
   scale_ = scale;
 }
+
 double Config::GetScale() const {
   return scale_;
 }
+
 const Matrix33 &Config::GetBasis() const {
   return basis_;
 }
+
 void Config::SetBasis(const Matrix33 &basis) {
   basis_ = basis;
 }
@@ -129,14 +136,17 @@ void Config::AppendAtom(const Atom &atom) {
 const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
+
 const std::map<std::string, std::vector<Atom::Rank>> &Config::GetElementListMap() const {
   return element_list_map_;
 }
+
 bool Config::IsNeighborFound() const {
   return neighbor_found_;
 }
+
 void Config::SetNeighborFound(bool neighbor_found) {
   neighbor_found_ = neighbor_found;
 }
 
-}// namespace kn
+} // namespace kn

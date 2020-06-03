@@ -3,27 +3,27 @@
 
 #include <boost/mpi.hpp>
 #include <ClustersFinder.h>
+
 namespace kn {
 
 class MpiIterator {
- public:
-  virtual void IterateToRun() = 0;
+  public:
+    virtual void IterateToRun() = 0;
 
-  MpiIterator(long long int initial_number,
-              long long int increment_number,
-              long long int finial_number);
- protected:
-  boost::mpi::environment env_;
-  boost::mpi::communicator world_;
-  int mpi_rank_, mpi_size_;
+    MpiIterator(long long int initial_number,
+                long long int increment_number,
+                long long int finial_number);
+  protected:
+    boost::mpi::environment env_;
+    boost::mpi::communicator world_;
+    int mpi_rank_, mpi_size_;
 
-  long long initial_number_;
-  long long increment_number_;
-  long long finial_number_;
+    long long initial_number_;
+    long long increment_number_;
+    long long finial_number_;
 };
 
-}// namespace kn
-
+} // namespace kn
 
 
 #endif //KN_INCLUDE_MPIIterator_H_

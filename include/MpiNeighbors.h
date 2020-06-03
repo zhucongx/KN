@@ -8,5 +8,5 @@ class MpiNeighbors {
 
 };
 
-}// namespace kn
+} // namespace kn
 #endif //KN_INCLUDE_MPINEIGHBORS_H_
