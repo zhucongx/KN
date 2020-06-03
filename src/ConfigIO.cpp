@@ -106,11 +106,13 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
     Atom atom(id, mass, type, relative_position_X, relative_position_Y, relative_position_Z);
     if (ifs.peek() != '\n') {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
+      atom.first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
+      atom.second_nearest_neighbor_list_.reserve(Al_const::kNumSecondNearestNeighbors);
       for (int i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
         ifs >> index;
         atom.first_nearest_neighbor_list_.push_back(index);
       }
-      for (int i = 0; i < Al_const::kNumSecondNearNeighbors; ++i) {
+      for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
         ifs >> index;
         atom.second_nearest_neighbor_list_.push_back(index);
       }
@@ -162,7 +164,7 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bo
   for (const auto &atom:config.GetAtomList()) {
     ofs << atom.mass_ << '\n'
         << atom.type_ << '\n'
-        << atom.relative_position_ << std::flush;
+        << atom.relative_position_;
     if (neighbors_info) {
       ofs << " #";
       for (auto neighbor_index:atom.first_nearest_neighbor_list_) {
