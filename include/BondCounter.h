@@ -3,7 +3,7 @@
 
 #include <set>
 #include "Config.h"
-
+#include "Bond.h"
 namespace kn {
 class BondCounter {
   public:
