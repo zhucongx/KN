@@ -1,23 +1,26 @@
 #include "BondCounter.h"
 #include "AtomUtility.h"
 #include "ConfigIO.h"
+
 namespace kn {
 BondCounter::BondCounter(const std::string &filename,
                          Vector3 factor,
                          Vector3 plane,
                          Vector3 burger_vector
-) : factor_(factor) {
+    ) : factor_(factor) {
   config_ = ConfigIO::ReadConfig(filename);
   SetPlane(plane);
   SetBurgersVector(burger_vector);
 }
+
 void BondCounter::SetFactor(const Vector3 &factor) {
   factor_ = factor;
 }
+
 void BondCounter::SetPlane(Vector3 miller_index) {
-  for (const double &i :{-1.0, 1.0}) {
-    for (const double &j :{-1.0, 1.0}) {
-      for (const double &k :{-1.0, 1.0}) {
+  for (const double &i : {-1.0, 1.0}) {
+    for (const double &j : {-1.0, 1.0}) {
+      for (const double &k : {-1.0, 1.0}) {
         for (int l = 0; l < 3; l++) {
           miller_index =
               {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
@@ -27,13 +30,14 @@ void BondCounter::SetPlane(Vector3 miller_index) {
     }
   }
 }
+
 void BondCounter::SetBurgersVector(Vector3 miller_index) {
   for (int l = 0; l < 3; l++) {
     miller_index =
         {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
-    for (const double &i :{-1.0, 1.0}) {
-      for (const double &j :{-1.0, 1.0}) {
-        for (const double &k :{-1.0, 1.0}) {
+    for (const double &i : {-1.0, 1.0}) {
+      for (const double &j : {-1.0, 1.0}) {
+        for (const double &k : {-1.0, 1.0}) {
           burgers_vector_set_.insert(ElementProduct(miller_index, {i, j, k}));
         }
       }
@@ -60,7 +64,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
   // int iii = -1;
 
   std::set<std::pair<int, Vector3>> slip_direction_set;
-  for (const auto &plane_index:plane_set_) {
+  for (const auto &plane_index : plane_set_) {
     auto unslipped_config = config_;
     Vector3 plane_distance_vector = GetPlaneDistanceVector(plane_index);
     /// {1/90, 1/90, 1/90}
@@ -109,14 +113,14 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
           return (value > std::min(v_1, v_2) && value < std::max(v_1, v_2));
         };
         if (check_if_in_between(d_checked, d0_unslip_lower, d0_unslip_upper) ||
-            check_if_in_between(d_checked, d1_unslip_lower, d1_unslip_upper) ||
-            check_if_in_between(d_checked, d2_unslip_lower, d2_unslip_upper) ||
-            check_if_in_between(d_checked, d3_unslip_lower, d3_unslip_upper)) {
+          check_if_in_between(d_checked, d1_unslip_lower, d1_unslip_upper) ||
+          check_if_in_between(d_checked, d2_unslip_lower, d2_unslip_upper) ||
+          check_if_in_between(d_checked, d3_unslip_lower, d3_unslip_upper)) {
           unslipped_atoms_group.push_back(j);
         } else if (check_if_in_between(d_checked, d0_lower, d0_upper) ||
-            check_if_in_between(d_checked, d1_lower, d1_upper) ||
-            check_if_in_between(d_checked, d2_lower, d2_upper) ||
-            check_if_in_between(d_checked, d3_lower, d3_upper)) {
+          check_if_in_between(d_checked, d1_lower, d1_upper) ||
+          check_if_in_between(d_checked, d2_lower, d2_upper) ||
+          check_if_in_between(d_checked, d3_lower, d3_upper)) {
           slipped_atoms_group.push_back(j);
         }
       }
@@ -130,7 +134,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
                                                              unslipped_atoms_group,
                                                              slipped_atoms_group);
       //  move atoms
-      for (const auto &burgers_vector:burgers_vector_set_) {
+      for (const auto &burgers_vector : burgers_vector_set_) {
         if (Dot(plane_index, burgers_vector) != 0)
           continue;
         auto slip_direction = Cross(plane_index, burgers_vector);
@@ -148,7 +152,7 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
         auto burger_distance_vector = GetBurgerDistanceVector(burgers_vector);
         Config sliped_config = unslipped_config;
 
-        for (const auto &index:slipped_atoms_group) {
+        for (const auto &index : slipped_atoms_group) {
           sliped_config
               .MoveOneAtomRelativeDistance(index, burger_distance_vector);
         }
@@ -164,10 +168,10 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
           continue;
         }
 
-        for (const auto&[key, count] : bonds_map_after) {
+        for (const auto &[key, count] : bonds_map_after) {
           bonds_changed[key] += count;
         }
-        for (const auto&[key, count] : bonds_map_before) {
+        for (const auto &[key, count] : bonds_map_before) {
           bonds_changed[key] -= count;
         }
       }
@@ -206,22 +210,24 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
   std::map<Bond, int> map_out;
   auto atoms_list_reference = config.GetAtomList();
 
-  for (const auto &index1:group1) {
-    for (const auto &index2:group2) {
+  for (const auto &index1 : group1) {
+    for (const auto &index2 : group2) {
       Vector3 relative_distance_vector =
           AtomUtility::GetRelativeDistanceVector(atoms_list_reference[index1],
-                                          atoms_list_reference[index2]);
+                                                 atoms_list_reference[index2]);
       double absolute_distance_squared =
           (Inner(relative_distance_vector * config.GetBasis()));
 
       if (absolute_distance_squared > 8 && absolute_distance_squared < 9) {
         // std::cout << absolute_distance_squared<<'\n';
-        map_out[{atoms_list_reference[index1].type_,
-                 atoms_list_reference[index2].type_}]++;
+        map_out[{
+            atoms_list_reference[index1].type_,
+            atoms_list_reference[index2].type_
+        }]++;
       }
     }
   }
   return map_out;
 }
 
-}// namespace kn
+} // namespace kn

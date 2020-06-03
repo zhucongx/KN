@@ -5,31 +5,31 @@
 #include <boost/serialization/map.hpp>
 
 namespace kn {
-kn::MpiClusters::MpiClusters(long long int initial_number,
-                             long long int increment_number,
-                             long long int finial_number,
-                             std::string solvent_element,
-                             int smallest_cluster_criteria,
-                             int solvent_bond_criteria) :
+MpiClusters::MpiClusters(long long int initial_number,
+                         long long int increment_number,
+                         long long int finial_number,
+                         std::string solvent_element,
+                         int smallest_cluster_criteria,
+                         int solvent_bond_criteria) :
     MpiIterator(initial_number,
                 increment_number,
                 finial_number),
     solvent_element_(std::move(solvent_element)),
     smallest_cluster_criteria_(smallest_cluster_criteria),
-    solvent_bond_criteria_(solvent_bond_criteria) {}
-void kn::MpiClusters::IterateToRun() {
+    solvent_bond_criteria_(solvent_bond_criteria) {
+}
+
+void MpiClusters::IterateToRun() {
   long long num_total_loop = (finial_number_ - initial_number_) / increment_number_ + 1;
   long long quotient = num_total_loop / mpi_size_;
   auto remainder = num_total_loop % mpi_size_;
   long long num_cycle = remainder ? (quotient + 1) : quotient;
 
-  for (long long i = 0; i < num_cycle; i++) {
+  for (long long i = 0; i < num_cycle; ++i) {
     long long num_file = initial_number_ + (i * mpi_size_ + mpi_rank_) * increment_number_;
     ClustersFinder::ClusterElementNumMap num_different_element;
     if (num_file <= finial_number_) {
-      std::string file_name = std::to_string(num_file) + ".cfg";
-
-      ClustersFinder cluster_finder(file_name,
+      ClustersFinder cluster_finder(std::to_string(num_file) + ".cfg",
                                     solvent_element_,
                                     smallest_cluster_criteria_,
                                     solvent_bond_criteria_);
@@ -44,13 +44,13 @@ void kn::MpiClusters::IterateToRun() {
 
       std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
       auto file_index = num_file;
-      for (const auto &this_num_different_element:all_num_different_element) {
+      for (const auto &this_num_different_element : all_num_different_element) {
         if (file_index > finial_number_)
           break;
-        ClustersFinder::PrintLog( std::to_string(file_index), this_num_different_element);
+        ClustersFinder::PrintLog(std::to_string(file_index), this_num_different_element);
         file_index += increment_number_;
       }
     }
   }
 }
-}  // namespace kn
+} // namespace kn

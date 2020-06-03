@@ -1,21 +1,21 @@
-
 #include "ConfigIO.h"
 #include <fstream>
 #include <sstream>
+
 namespace kn {
 
 Config ConfigIO::ReadPOSCAR(const std::string &filename) {
   Config config;
   std::ifstream ifs(filename, std::ifstream::in);
 
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // #comment
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // #comment
   double scale;
-  ifs >> scale;  // scale factor, usually which is 1.0
+  ifs >> scale; // scale factor, usually which is 1.0
   config.SetScale(scale);
   Matrix33 basis;
   ifs >> basis;
   config.SetBasis(basis);
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // finish this line
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
 
   std::string buffer;
   getline(ifs, buffer);
@@ -36,12 +36,14 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
 
   Atom::Rank id_count = 0;
   double position_X, position_Y, position_Z;
-  for (const auto&[element_name, count]:elements_counts) {
+  for (const auto &[element_name, count] : elements_counts) {
     double mass = elem_info::FindMass(element_name);
     for (int j = 0; j < count; ++j) {
       ifs >> position_X >> position_Y >> position_Z;
-      config.AppendAtom({id_count, mass, element_name,
-                         position_X, position_Y, position_Z});
+      config.AppendAtom({
+          id_count, mass, element_name,
+          position_X, position_Y, position_Z
+      });
       ++id_count;
     }
   }
@@ -53,47 +55,52 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
 
   return config;
 }
+
 Config ConfigIO::ReadConfig(const std::string &filename) {
   Config config;
   std::ifstream ifs(filename, std::ifstream::in);
 
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "Number of particles = %i"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
   int num_atoms;
   ifs >> num_atoms;
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '=');  // A = 1.0 Angstrom (basic length-scale)
+             '='); // A = 1.0 Angstrom (basic length-scale)
   double scale;
   ifs >> scale;
   config.SetScale(scale);
 
   double basis_xx, basis_xy, basis_xz, basis_yx, basis_yy, basis_yz, basis_zx, basis_zy, basis_zz;
 
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(1,1) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,1) = %lf A"
   ifs >> basis_xx;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(1,2) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,2) = %lf A"
   ifs >> basis_xy;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(1,3) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,3) = %lf A"
   ifs >> basis_xz;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(2,1) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(2,1) = %lf A"
   ifs >> basis_yx;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(2,2) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(2,2) = %lf A"
   ifs >> basis_yy;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(2,3) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(2,3) = %lf A"
   ifs >> basis_yz;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(3,1) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,1) = %lf A"
   ifs >> basis_zx;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(3,2) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,2) = %lf A"
   ifs >> basis_zy;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '=');  // "H0(3,3) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,3) = %lf A"
   ifs >> basis_zz;
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
-  config.SetBasis({{{basis_xx, basis_xy, basis_xz},
-                    {basis_yx, basis_yy, basis_yz},
-                    {basis_zx, basis_zy, basis_zz}}});
+  config.SetBasis({
+      {
+          {basis_xx, basis_xy, basis_xz},
+          {basis_yx, basis_yy, basis_yz},
+          {basis_zx, basis_zy, basis_zz}
+      }
+  });
 
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // .NO_VELOCITY.
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // "entry_count = 3"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // .NO_VELOCITY.
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // "entry_count = 3"
 
   double mass, relative_position_X, relative_position_Y, relative_position_Z;
   int index;
@@ -124,6 +131,7 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
   config.SetNeighborFound(neighbor_found);
   return config;
 }
+
 void ConfigIO::WritePOSCAR(const Config &config,
                            const std::string &filename,
                            bool show_vacancy_option) {
@@ -131,7 +139,7 @@ void ConfigIO::WritePOSCAR(const Config &config,
   ofs << "#comment\n" << config.GetScale() << '\n';
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
-  for (const auto &[element, element_list]:config.GetElementListMap()) {
+  for (const auto &[element, element_list] : config.GetElementListMap()) {
     if (!show_vacancy_option || element != "X") {
       ele_oss << element << ' ';
       count_oss << element_list.size() << ' ';
@@ -139,12 +147,13 @@ void ConfigIO::WritePOSCAR(const Config &config,
   }
   ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
   ofs << "Direct\n";
-  for (const auto &atom:config.GetAtomList()) {
+  for (const auto &atom : config.GetAtomList()) {
     if (!show_vacancy_option || atom.type_ != "X") {
       ofs << atom.relative_position_ << '\n';
     }
   }
 }
+
 void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bool neighbors_info) {
   std::ofstream ofs(filename, std::ofstream::out);
   ofs << "Number of particles = " << config.GetNumAtoms() << '\n';
@@ -161,20 +170,20 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bo
   ofs << "H0(3,3) = " << basis[kZDimension][kZDimension] << " A\n";
   ofs << ".NO_VELOCITY.\n";
   ofs << "entry_count = 3\n";
-  for (const auto &atom:config.GetAtomList()) {
+  for (const auto &atom : config.GetAtomList()) {
     ofs << atom.mass_ << '\n'
         << atom.type_ << '\n'
         << atom.relative_position_;
     if (neighbors_info) {
       ofs << " #";
-      for (auto neighbor_index:atom.first_nearest_neighbor_list_) {
+      for (auto neighbor_index : atom.first_nearest_neighbor_list_) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index:atom.second_nearest_neighbor_list_) {
+      for (auto neighbor_index : atom.second_nearest_neighbor_list_) {
         ofs << neighbor_index << ' ';
       }
     }
     ofs << '\n';
   }
 }
-}// namespace kn
+} // namespace kn

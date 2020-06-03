@@ -1,4 +1,5 @@
 #include "AtomUtility.h"
+
 namespace kn {
 Vector3 AtomUtility::GetRelativeDistanceVector(const Atom &first, const Atom &second) {
   Vector3 relative_distance_vector = first.relative_position_ - second.relative_position_;
@@ -14,4 +15,4 @@ Vector3 AtomUtility::GetRelativeDistanceVector(const Atom &first, const Atom &se
   check_periodic(relative_distance_vector[kZDimension]);
   return relative_distance_vector;
 }
-}// namespace kn
+} // namespace kn

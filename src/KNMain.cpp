@@ -1,7 +1,6 @@
-#include <boost/mpi.hpp>
 #include "MpiClusters.h"
+#include "MpiNeighbors.h"
 #include "KMCSimulation.h"
-#include "ConfigIO.h"
 using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
@@ -14,12 +13,9 @@ int main(int argc, char *argv[]) {
   // MpiClusters test(370000000, 10000000, 450000000,
   //                  "Al", 3, 3);
   // test.IterateToRun();
-  Config config = ConfigIO::ReadConfig("0_neighbor.cfg");
-  config.UpdateNeighbors(3.5, 4.1);
-  ConfigIO::WriteConfig(config, "0_1.cfg", false);
 
-
-
+  MpiNeighbors test(370000000, 1000000, 6252000000);
+  test.IterateToRun();
 
   // long long start = 0;
   // long long interval = 1000000;
@@ -68,19 +64,19 @@ int main(int argc, char *argv[]) {
   //   ofs << '\n';
   // }
 
-//  BondCounter test({2, 2, 2}, {1, 1, 1}, {0.5, 0.5, 0});
-//  AntiPhaseConfig L10;
-//  L10.GenerateL10(4.046, {"Al", "Zn"}, {2, 2, 2});
-//  test.config_ = L10;
-//  L10.WritePOSCAR("0.poscar");
-//
-//  std::map<Bond, int> bonds_changed = test.GetBondChange();
-//
-//  std::cout << "#" << 0 << endl;
-//  for (const auto&[key, count] : bonds_changed)
-//  {
-//    std::cout << "#" << key << ' ' << count << '\n';
-//  }
+  //  BondCounter test({2, 2, 2}, {1, 1, 1}, {0.5, 0.5, 0});
+  //  AntiPhaseConfig L10;
+  //  L10.GenerateL10(4.046, {"Al", "Zn"}, {2, 2, 2});
+  //  test.config_ = L10;
+  //  L10.WritePOSCAR("0.poscar");
+  //
+  //  std::map<Bond, int> bonds_changed = test.GetBondChange();
+  //
+  //  std::cout << "#" << 0 << endl;
+  //  for (const auto&[key, count] : bonds_changed)
+  //  {
+  //    std::cout << "#" << key << ' ' << count << '\n';
+  //  }
 
   // Config cfg;
   // cfg.ReadPOSCAR("0.pos");
