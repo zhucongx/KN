@@ -47,17 +47,9 @@ void kn::MpiClusters::IterateToRun() {
       for (const auto &this_num_different_element:all_num_different_element) {
         if (file_index > finial_number_)
           break;
-
-        ofs << "Config " << file_index << '\n';
-        for (const auto &cluster:this_num_different_element) {
-          for (const auto&[key, count]:cluster) {
-            ofs << count << ' ';
-          }
-          ofs << '\n';
-        }
+        ClustersFinder::PrintLog( std::to_string(file_index), this_num_different_element);
         file_index += increment_number_;
       }
-
     }
   }
 }

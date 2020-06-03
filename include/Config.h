@@ -14,23 +14,15 @@ class Config {
  public:
   Config();
   bool operator<(const Config &rhs) const;
-  void Initialize();
-  [[nodiscard]] bool IsCubic() const;
   void ConvertRelativeToCartesian();
   void ConvertCartesianToRelative();
   void Perturb();
   virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
   // update both atoms' relative and absolute positions according to periodic
   // boundary condition
-  // void WrapRelativePosition();
-  // void WrapAbsolutePosition();
-  // void ShiftAtomToCentral(const Atom::Rank &id);
 
   void MoveRelativeDistance(const Vector3 &distance_vector);
   void MoveOneAtomRelativeDistance(const Atom::Rank &index, const Vector3 &distance_vector);
-
-  // void MoveAbsoluteDistance(const Vector3 &distance_vector);
-  std::map<Bond, int> CountAllBonds(double r_cutoff);
 
   [[nodiscard]] int GetNumAtoms() const;
 
@@ -42,7 +34,8 @@ class Config {
   void AppendAtom(const Atom &atom);
   [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
   [[nodiscard]] const std::map<std::string, std::vector<Atom::Rank>> &GetElementListMap() const;
-
+  [[nodiscard]] bool IsNeighborFound() const;
+  void SetNeighborFound(bool neighbor_found);
  protected:
   double scale_ = 1;
   // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;

@@ -4,13 +4,13 @@
 #include <utility>
 #include "ConfigIO.h"
 namespace kn {
-ClustersFinder::ClustersFinder(std::string cfg_file_name,
+ClustersFinder::ClustersFinder(std::string cfg_filename,
                                std::string solvent_atom_type,
                                int smallest_cluster_criteria,
                                int solvent_bond_criteria,
                                double first_nearest_neighbors_distance,
                                double second_nearest_neighbors_distance)
-    : cfg_file_name_(std::move(cfg_file_name)),
+    : cfg_filename_(std::move(cfg_filename)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
       solvent_bond_criteria_(solvent_bond_criteria) {
@@ -18,9 +18,52 @@ ClustersFinder::ClustersFinder(std::string cfg_file_name,
                             second_nearest_neighbors_distance);
 }
 
+ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
+  auto cluster_to_atom_map = FindAtomListOfClusters();
+
+  Config config_out;
+  config_out.SetScale(config_.GetScale());
+  config_out.SetBasis(config_.GetBasis());
+  std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
+  auto atoms_list_reference = config_.GetAtomList();
+  for (auto &atom_list:cluster_to_atom_map) {
+    // initialize map with all the element, because some cluster may not have all types of element
+    std::map<std::string, int> num_atom_in_one_cluster;
+    for (const auto &element:element_set_) {
+      num_atom_in_one_cluster[element] = 0;
+    }
+
+    for (const auto &atom_index:atom_list) {
+      num_atom_in_one_cluster[atoms_list_reference[atom_index].type_]++;
+      config_out.AppendAtom(atoms_list_reference[atom_index]);
+    }
+
+    num_atom_in_clusters_set.push_back(std::move(num_atom_in_one_cluster));
+  }
+  auto const pos = cfg_filename_.find_last_of('.');
+  const std::string output_name_suffix = cfg_filename_.substr(pos + 1);
+  std::string output_name = cfg_filename_.substr(0, pos);
+  output_name += "_cluster.";
+  output_name += output_name_suffix;
+  ConfigIO::WriteConfig(config_out, output_name);
+  return num_atom_in_clusters_set;
+}
+
+void ClustersFinder::PrintLog(const std::string& filename,
+                              const ClustersFinder::ClusterElementNumMap &found_data) {
+  std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
+  ofs << '#' << filename << '\n';
+  for (const auto &cluster:found_data) {
+    for (const auto&[key, count]:cluster) {
+      ofs << count << ' ';
+    }
+    ofs << '\n';
+  }
+}
+
 void ClustersFinder::ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
                                                double second_nearest_neighbors_distance) {
-  config_ = ConfigIO::ReadConfig(cfg_file_name_);
+  config_ = ConfigIO::ReadConfig(cfg_filename_);
   config_.UpdateNeighbors(first_nearest_neighbors_distance, second_nearest_neighbors_distance);
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == "X")
@@ -111,38 +154,6 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list_after_removing = FindAtomListOfClustersBFSHelper(unvisited_atoms_id_set);
 
   return cluster_atom_list_after_removing;
-}
-
-ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
-  auto cluster_to_atom_map = FindAtomListOfClusters();
-
-  Config config_out;
-  config_out.SetScale(config_.GetScale());
-  config_out.SetBasis(config_.GetBasis());
-  std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
-  auto atoms_list_reference = config_.GetAtomList();
-  for (auto &atom_list:cluster_to_atom_map) {
-    // initialize map with all the element, because some cluster may not have all types of element
-    std::map<std::string, int> num_atom_in_one_cluster;
-    for (const auto &element:element_set_) {
-      num_atom_in_one_cluster[element] = 0;
-    }
-
-    for (const auto &atom_index:atom_list) {
-      num_atom_in_one_cluster[atoms_list_reference[atom_index].type_]++;
-      config_out.AppendAtom(atoms_list_reference[atom_index]);
-    }
-
-    num_atom_in_clusters_set.push_back(std::move(num_atom_in_one_cluster));
-  }
-  auto const pos = cfg_file_name_.find_last_of('.');
-  const std::string output_name_suffix = cfg_file_name_.substr(pos + 1);
-  std::string output_name = cfg_file_name_.substr(0, pos);
-  output_name += "_cluster.";
-  output_name += output_name_suffix;
-  ConfigIO::WriteConfig(config_out, output_name);
-
-  return num_atom_in_clusters_set;
 }
 
 }// namespace kn

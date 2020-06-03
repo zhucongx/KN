@@ -10,7 +10,7 @@ namespace kn {
 class ClustersFinder {
  public:
   typedef std::vector<std::map<std::string, int>> ClusterElementNumMap;
-  ClustersFinder(std::string cfg_file_name,
+  ClustersFinder(std::string cfg_filename,
                  std::string solvent_atom_type,
                  int smallest_cluster_criteria,
                  int solvent_bond_criteria,
@@ -19,6 +19,8 @@ class ClustersFinder {
   // Return a 2D array where values of each row representing the number of atoms of different
   // element in one cluster
   ClusterElementNumMap FindClustersAndOutput();
+
+  static void PrintLog(const std::string& filename, const ClusterElementNumMap &found_data);
  private:
   void ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
                                  double second_nearest_neighbors_distance);
@@ -27,7 +29,7 @@ class ClustersFinder {
       std::unordered_set<int> unvisited_atoms_id_set) const;
   [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClusters() const;
 
-  std::string cfg_file_name_;
+  std::string cfg_filename_;
   Config config_;
   std::string solvent_element_;
   std::set<std::string> element_set_;

@@ -14,7 +14,8 @@ class ConfigIO {
                           const std::string &filename,
                           bool show_vacancy_option = false);
   static void WriteConfig(const Config &config,
-                          const std::string &filename);
+                          const std::string &filename,
+                          bool neighbors_info = true);
 };
 
 }// namespace kn

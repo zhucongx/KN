@@ -16,7 +16,6 @@ enum
   kXDimension, kYDimension, kZDimension
 };
 
-// Todo: rewrite using Eigen
 // By default, it is always a 1 by 3 vector
 
 typedef std::array<double, kDimension> Vector3;

@@ -1,5 +1,5 @@
 #include "FCCConfig.h"
-
+#include "AtomUtility.h"
 namespace kn {
 // todo need to be fixed
 void FCCConfig::UpdateNeighbors(double first_r_cutoff,
@@ -8,7 +8,14 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
                     basis_[kYDimension][kYDimension],
                     basis_[kZDimension][kZDimension]};
   // if the box is a cubic box, we just need to compare relative distance
-  const bool cubic_status = IsCubic();
+  const bool cubic_status = basis_[kXDimension][kXDimension] == basis_[kYDimension][kYDimension] &&
+      basis_[kYDimension][kYDimension] == basis_[kZDimension][kZDimension] &&
+      basis_[kXDimension][kYDimension] == 0 &&
+      basis_[kXDimension][kZDimension] == 0 &&
+      basis_[kYDimension][kXDimension] == 0 &&
+      basis_[kYDimension][kZDimension] == 0 &&
+      basis_[kZDimension][kXDimension] == 0 &&
+      basis_[kZDimension][kYDimension] == 0;
   if (cubic_status) {
     first_r_cutoff /= length[kXDimension];
     second_r_cutoff /= length[kXDimension];
@@ -18,7 +25,7 @@ void FCCConfig::UpdateNeighbors(double first_r_cutoff,
 
   for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
-      Vector3 distance_vector = GetRelativeDistanceVector(*it1, *it2);
+      Vector3 distance_vector = AtomUtility::GetRelativeDistanceVector(*it1, *it2);
       // if the box is not a cubic box, compare absolute distance
       if (!cubic_status) {
         distance_vector = ElementProduct(distance_vector, length);

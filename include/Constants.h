@@ -12,9 +12,8 @@ constexpr double kSecondNearestNeighborsCutoff = 4.1;
 
 // For FCC the first nearest neighbor is 12
 constexpr int kNumFirstNearestNeighbors = 12;
-// For FCC the first and second nearest neighbor is 18
-constexpr int kNumSecondNearNeighbors = 18;
-
+// For FCC the second nearest neighbor is 18
+constexpr int kNumSecondNearNeighbors = 6;
 
 }// namespace Al_const
 

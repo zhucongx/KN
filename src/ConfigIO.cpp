@@ -96,17 +96,30 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // "entry_count = 3"
 
   double mass, relative_position_X, relative_position_Y, relative_position_Z;
+  int index;
+  bool neighbor_found = false;
   for (Atom::Rank id = 0; id < num_atoms; ++id) {
     std::string type;
     ifs >> mass;
     ifs >> type;
     ifs >> relative_position_X >> relative_position_Y >> relative_position_Z;
-    config.AppendAtom({id, mass, type,
-                       relative_position_X,
-                       relative_position_Y,
-                       relative_position_Z});
+    Atom atom(id, mass, type, relative_position_X, relative_position_Y, relative_position_Z);
+    if (ifs.peek() != '\n') {
+      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
+      for (int i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.first_nearest_neighbor_list_.push_back(index);
+      }
+      for (int i = 0; i < Al_const::kNumSecondNearNeighbors; ++i) {
+        ifs >> index;
+        atom.second_nearest_neighbor_list_.push_back(index);
+      }
+      neighbor_found = true;
+    }
+    config.AppendAtom(atom);
   }
   config.ConvertRelativeToCartesian();
+  config.SetNeighborFound(neighbor_found);
   return config;
 }
 void ConfigIO::WritePOSCAR(const Config &config,
@@ -130,7 +143,7 @@ void ConfigIO::WritePOSCAR(const Config &config,
     }
   }
 }
-void ConfigIO::WriteConfig(const Config &config, const std::string &filename) {
+void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bool neighbors_info) {
   std::ofstream ofs(filename, std::ofstream::out);
   ofs << "Number of particles = " << config.GetNumAtoms() << '\n';
   ofs << "A = " << config.GetScale() << " Angstrom (basic length-scale)\n";
@@ -149,7 +162,17 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename) {
   for (const auto &atom:config.GetAtomList()) {
     ofs << atom.mass_ << '\n'
         << atom.type_ << '\n'
-        << atom.relative_position_ << '\n';
+        << atom.relative_position_ << std::flush;
+    if (neighbors_info) {
+      ofs << " #";
+      for (auto neighbor_index:atom.first_nearest_neighbor_list_) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index:atom.second_nearest_neighbor_list_) {
+        ofs << neighbor_index << ' ';
+      }
+    }
+    ofs << '\n';
   }
 }
 }// namespace kn

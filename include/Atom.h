@@ -24,7 +24,7 @@ class Atom {
   Vector3 cartesian_position_{};
   // relative position in the box
   Vector3 relative_position_{};
-  // First and second nearest neighbor list
+  // Second nearest neighbor list
   std::vector<Rank> second_nearest_neighbor_list_;
   // First nearest neighbor list
   std::vector<Rank> first_nearest_neighbor_list_;
@@ -34,6 +34,6 @@ class Atom {
   std::string type_;
 };
 
-Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
+
 }// namespace kn
 #endif //KN_SRC_ATOM_H_

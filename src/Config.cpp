@@ -4,6 +4,7 @@
 #include <utility>
 #include <random>
 #include <chrono>
+#include "AtomUtility.h"
 
 namespace kn {
 
@@ -15,28 +16,6 @@ Config::Config() = default;
 
 bool Config::operator<(const Config &rhs) const {
   return energy_ < rhs.energy_;
-}
-
-void Config::Initialize() {
-  basis_ = {{{0, 0, 0},
-             {0, 0, 0},
-             {0, 0, 0}}};
-  energy_ = 0.0;
-  scale_ = 1.0;
-  atom_list_.clear();
-  element_list_map_.clear();
-  neighbor_found_ = false;
-}
-
-bool Config::IsCubic() const {
-  return basis_[kXDimension][kXDimension] == basis_[kYDimension][kYDimension] &&
-      basis_[kYDimension][kYDimension] == basis_[kZDimension][kZDimension] &&
-      basis_[kXDimension][kYDimension] == 0 &&
-      basis_[kXDimension][kZDimension] == 0 &&
-      basis_[kYDimension][kXDimension] == 0 &&
-      basis_[kYDimension][kZDimension] == 0 &&
-      basis_[kZDimension][kXDimension] == 0 &&
-      basis_[kZDimension][kYDimension] == 0;
 }
 
 void Config::ConvertRelativeToCartesian() {
@@ -80,7 +59,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
       Vector3 absolute_distance_vector =
-          GetRelativeDistanceVector(*it1, *it2) * basis_;
+          AtomUtility::GetRelativeDistanceVector(*it1, *it2) * basis_;
       if (absolute_distance_vector[kXDimension] > second_r_cutoff_square)
         continue;
       if (absolute_distance_vector[kYDimension] > second_r_cutoff_square)
@@ -92,36 +71,15 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
         if (absolute_distance_square <= first_r_cutoff_square) {
           it1->first_nearest_neighbor_list_.emplace_back(it2->id_);
           it2->first_nearest_neighbor_list_.emplace_back(it1->id_);
+        } else {
+          it1->second_nearest_neighbor_list_.emplace_back(it2->id_);
+          it2->second_nearest_neighbor_list_.emplace_back(it1->id_);
         }
-        it1->second_nearest_neighbor_list_.emplace_back(it2->id_);
-        it2->second_nearest_neighbor_list_.emplace_back(it1->id_);
       }
     }
   }
   neighbor_found_ = true;
 }
-
-// void Config::WrapRelativePosition() {
-//   for (auto &atom:atom_list_) {
-//     atom.relative_position_ -= ElementFloor(atom.relative_position_);
-//
-//     atom.cartesian_position_ = atom.relative_position_ * basis_;
-//   }
-// }
-
-// void Config::WrapAbsolutePosition() {
-//   ConvertCartesianToRelative();
-//   WrapRelativePosition();
-// }
-
-// void Config::ShiftAtomToCentral(const Atom::Rank &id) {
-//   Vector3 criterionDistance =
-//       atom_list_[id].relative_position_ - Vector3{0.5, 0.5, 0.5};
-//   for (auto &atom:atom_list_) {
-//     atom.relative_position_ = atom.relative_position_ - criterionDistance;
-//   }
-//   WrapRelativePosition();
-// }
 // for better performance, shouldn't call Wrap function
 void Config::MoveRelativeDistance(const Vector3 &distance_vector) {
   for (auto &atom:atom_list_) {
@@ -146,23 +104,6 @@ void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
 //   WrapAbsolutePosition();
 // }
 
-std::map<Bond, int> Config::CountAllBonds(double r_cutoff) {
-  if (!neighbor_found_)
-    UpdateNeighbors(r_cutoff, r_cutoff);
-
-  std::map<Bond, int> bonds_count_map;
-  std::string type1, type2;
-  for (const auto &atom:atom_list_) {
-    type1 = atom.type_;
-    for (const auto &atom2_id:atom.first_nearest_neighbor_list_) {
-      bonds_count_map[Bond{type1, atom_list_[atom2_id].type_}]++;
-    }
-  }
-  for (auto &bond_count:bonds_count_map) {
-    bond_count.second /= 2;
-  }
-  return bonds_count_map;
-}
 
 int Config::GetNumAtoms() const {
   return atom_list_.size();
@@ -191,6 +132,11 @@ const std::vector<Atom> &Config::GetAtomList() const {
 const std::map<std::string, std::vector<Atom::Rank>> &Config::GetElementListMap() const {
   return element_list_map_;
 }
-
+bool Config::IsNeighborFound() const {
+  return neighbor_found_;
+}
+void Config::SetNeighborFound(bool neighbor_found) {
+  neighbor_found_ = neighbor_found;
+}
 
 }// namespace kn

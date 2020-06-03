@@ -1,7 +1,8 @@
 #include "BondCounter.h"
+#include "AtomUtility.h"
 #include "ConfigIO.h"
 namespace kn {
-BondCounter::BondCounter(const std::string& filename,
+BondCounter::BondCounter(const std::string &filename,
                          Vector3 factor,
                          Vector3 plane,
                          Vector3 burger_vector
@@ -208,8 +209,8 @@ std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
   for (const auto &index1:group1) {
     for (const auto &index2:group2) {
       Vector3 relative_distance_vector =
-          GetRelativeDistanceVector(atoms_list_reference[index1],
-                                    atoms_list_reference[index2]);
+          AtomUtility::GetRelativeDistanceVector(atoms_list_reference[index1],
+                                          atoms_list_reference[index2]);
       double absolute_distance_squared =
           (Inner(relative_distance_vector * config.GetBasis()));
 
