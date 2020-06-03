@@ -11,12 +11,12 @@ MpiClusters::MpiClusters(long long int initial_number,
                          std::string solvent_element,
                          int smallest_cluster_criteria,
                          int solvent_bond_criteria) :
-  MpiIterator(initial_number,
-              increment_number,
-              finial_number),
-  solvent_element_(std::move(solvent_element)),
-  smallest_cluster_criteria_(smallest_cluster_criteria),
-  solvent_bond_criteria_(solvent_bond_criteria) {
+    MpiIterator(initial_number,
+                increment_number,
+                finial_number),
+    solvent_element_(std::move(solvent_element)),
+    smallest_cluster_criteria_(smallest_cluster_criteria),
+    solvent_bond_criteria_(solvent_bond_criteria) {
 }
 
 void MpiClusters::IterateToRun() {
@@ -29,9 +29,7 @@ void MpiClusters::IterateToRun() {
     long long num_file = initial_number_ + (i * mpi_size_ + mpi_rank_) * increment_number_;
     ClustersFinder::ClusterElementNumMap num_different_element;
     if (num_file <= finial_number_) {
-      std::string filename = std::to_string(num_file) + ".cfg";
-
-      ClustersFinder cluster_finder(filename,
+      ClustersFinder cluster_finder(std::to_string(num_file) + ".cfg",
                                     solvent_element_,
                                     smallest_cluster_criteria_,
                                     solvent_bond_criteria_);

@@ -18,11 +18,10 @@ void MpiNeighbors::IterateToRun() {
     if (num_file > finial_number_)
       break;
 
-    std::string filename = std::to_string(num_file);
-    auto config = ConfigIO::ReadConfig(filename);
+    auto config = ConfigIO::ReadConfig(std::to_string(num_file) + ".cfg");
     config.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
                            Al_const::kSecondNearestNeighborsCutoff);
-    ConfigIO::WriteConfig(config, filename + "_neighbor.cfg", true);
+    ConfigIO::WriteConfig(config, std::to_string(num_file) + "_neighbor.cfg", true);
   }
 }
 } // namespace kn
