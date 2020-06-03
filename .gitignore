@@ -3,7 +3,12 @@ bin/
 obj/
 lib/
 cmake-build-*/
+example/
+out/
 .idea/
 .vs/
+
+
+CMakeSettings.json
 .DS_Store
 
