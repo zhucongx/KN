@@ -12,16 +12,12 @@
 
 const int kDimension = 3;
 
-enum {
-  kXDimension,
-  kYDimension,
-  kZDimension
-};
+enum { kXDimension, kYDimension, kZDimension };
 
 // By default, it is always a 1 by 3 vector
 
-typedef std::array<double, kDimension> Vector3;
-typedef std::array<Vector3, kDimension> Matrix33;
+using Vector3 = std::array<double, kDimension>;
+using Matrix33 = std::array<Vector3, kDimension>;
 
 inline std::ostream &operator<<(std::ostream &os, const Vector3 &vector) {
   os << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
@@ -69,14 +65,14 @@ inline Vector3 &operator-=(Vector3 &lhs, const Vector3 &rhs) {
   return lhs;
 }
 
-inline Vector3 &operator*=(Vector3 &lhs, const double &factor) {
+inline Vector3 &operator*=(Vector3 &lhs, double factor) {
   lhs[kXDimension] *= factor;
   lhs[kYDimension] *= factor;
   lhs[kZDimension] *= factor;
   return lhs;
 }
 
-inline Vector3 &operator/=(Vector3 &lhs, const double &divisor) {
+inline Vector3 &operator/=(Vector3 &lhs, double divisor) {
   lhs[kXDimension] /= divisor;
   lhs[kYDimension] /= divisor;
   lhs[kZDimension] /= divisor;
@@ -93,16 +89,16 @@ inline Vector3 operator-(const Vector3 &lhs, const Vector3 &rhs) {
   return (temp -= rhs);
 }
 
-inline Vector3 operator*(const Vector3 &vector, const double &factor) {
+inline Vector3 operator*(const Vector3 &vector, double factor) {
   Vector3 temp(vector);
   return (temp *= factor);
 }
 
-inline Vector3 operator*(const double &factor, const Vector3 &vector) {
+inline Vector3 operator*(double factor, const Vector3 &vector) {
   return operator*(vector, factor);
 }
 
-inline Vector3 operator/(const Vector3 &vector, const double &divisor) {
+inline Vector3 operator/(const Vector3 &vector, double divisor) {
   Vector3 temp(vector);
   return (temp /= divisor);
 }
@@ -185,30 +181,30 @@ inline std::istream &operator>>(std::istream &is, Matrix33 &matrix) {
   return is;
 }
 
-inline Matrix33 &operator*=(Matrix33 &lhs, const double &factor) {
+inline Matrix33 &operator*=(Matrix33 &lhs, double factor) {
   lhs[kXDimension] *= factor;
   lhs[kYDimension] *= factor;
   lhs[kZDimension] *= factor;
   return lhs;
 }
 
-inline Matrix33 &operator/=(Matrix33 &lhs, const double &divisor) {
+inline Matrix33 &operator/=(Matrix33 &lhs, double divisor) {
   lhs[kXDimension] /= divisor;
   lhs[kYDimension] /= divisor;
   lhs[kZDimension] /= divisor;
   return lhs;
 }
 
-inline Matrix33 operator*(const Matrix33 &matrix, const double &factor) {
+inline Matrix33 operator*(const Matrix33 &matrix, double factor) {
   Matrix33 temp(matrix);
   return (temp *= factor);
 }
 
-inline Matrix33 operator*(const double &factor, const Matrix33 &matrix) {
+inline Matrix33 operator*(double factor, const Matrix33 &matrix) {
   return operator*(matrix, factor);
 }
 
-inline Matrix33 operator/(const Matrix33 &matrix, const double &divisor) {
+inline Matrix33 operator/(const Matrix33 &matrix, double divisor) {
   Matrix33 temp(matrix);
   return (temp /= divisor);
 }
@@ -216,14 +212,14 @@ inline Matrix33 operator/(const Matrix33 &matrix, const double &divisor) {
 inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs) {
   return {
       lhs[kXDimension] * rhs[kXDimension][kXDimension]
-      + lhs[kYDimension] * rhs[kYDimension][kXDimension]
-      + lhs[kZDimension] * rhs[kZDimension][kXDimension],
+          + lhs[kYDimension] * rhs[kYDimension][kXDimension]
+          + lhs[kZDimension] * rhs[kZDimension][kXDimension],
       lhs[kXDimension] * rhs[kXDimension][kYDimension]
-      + lhs[kYDimension] * rhs[kYDimension][kYDimension]
-      + lhs[kZDimension] * rhs[kZDimension][kYDimension],
+          + lhs[kYDimension] * rhs[kYDimension][kYDimension]
+          + lhs[kZDimension] * rhs[kZDimension][kYDimension],
       lhs[kXDimension] * rhs[kXDimension][kZDimension]
-      + lhs[kYDimension] * rhs[kYDimension][kZDimension]
-      + lhs[kZDimension] * rhs[kZDimension][kZDimension]
+          + lhs[kYDimension] * rhs[kYDimension][kZDimension]
+          + lhs[kZDimension] * rhs[kZDimension][kZDimension]
   };
 }
 
@@ -236,42 +232,42 @@ inline Matrix33 InverseMatrix33(const Matrix33 &input) {
   //         {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
   //         {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
   double det = (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
-    * input[kZDimension][kZDimension]
-    - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]
-    * input[kZDimension][kYDimension]
-    - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]
-    * input[kZDimension][kZDimension]
-    + input[kXDimension][kYDimension] * input[kYDimension][kZDimension]
-    * input[kZDimension][kXDimension]
-    + input[kXDimension][kZDimension] * input[kYDimension][kXDimension]
-    * input[kZDimension][kYDimension]
-    - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
-    * input[kZDimension][kXDimension]);
+      * input[kZDimension][kZDimension]
+      - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]
+          * input[kZDimension][kYDimension]
+      - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]
+          * input[kZDimension][kZDimension]
+      + input[kXDimension][kYDimension] * input[kYDimension][kZDimension]
+          * input[kZDimension][kXDimension]
+      + input[kXDimension][kZDimension] * input[kYDimension][kXDimension]
+          * input[kZDimension][kYDimension]
+      - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
+          * input[kZDimension][kXDimension]);
   return {
       {
           {
               (input[kYDimension][kYDimension] * input[kZDimension][kZDimension]
-                - input[kYDimension][kZDimension] * input[kZDimension][kYDimension]) / det,
+                  - input[kYDimension][kZDimension] * input[kZDimension][kYDimension]) / det,
               (input[kXDimension][kZDimension] * input[kZDimension][kYDimension]
-                - input[kXDimension][kYDimension] * input[kZDimension][kZDimension]) / det,
+                  - input[kXDimension][kYDimension] * input[kZDimension][kZDimension]) / det,
               (input[kXDimension][kYDimension] * input[kYDimension][kZDimension]
-                - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]) / det
+                  - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]) / det
           },
           {
               (input[kYDimension][kZDimension] * input[kZDimension][kXDimension]
-                - input[kYDimension][kXDimension] * input[kZDimension][kZDimension]) / det,
+                  - input[kYDimension][kXDimension] * input[kZDimension][kZDimension]) / det,
               (input[kXDimension][kXDimension] * input[kZDimension][kZDimension]
-                - input[kXDimension][kZDimension] * input[kZDimension][kXDimension]) / det,
+                  - input[kXDimension][kZDimension] * input[kZDimension][kXDimension]) / det,
               (input[kXDimension][kZDimension] * input[kYDimension][kXDimension]
-                - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]) / det
+                  - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]) / det
           },
           {
               (input[kYDimension][kXDimension] * input[kZDimension][kYDimension]
-                - input[kYDimension][kYDimension] * input[kZDimension][kXDimension]) / det,
+                  - input[kYDimension][kYDimension] * input[kZDimension][kXDimension]) / det,
               (input[kXDimension][kYDimension] * input[kZDimension][kXDimension]
-                - input[kXDimension][kXDimension] * input[kZDimension][kYDimension]) / det,
+                  - input[kXDimension][kXDimension] * input[kZDimension][kYDimension]) / det,
               (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
-                - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]) / det
+                  - input[kXDimension][kYDimension] * input[kYDimension][kXDimension]) / det
           }
       }
   };

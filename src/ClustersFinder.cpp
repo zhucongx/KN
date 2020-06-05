@@ -123,8 +123,9 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters
-  for (auto it = cluster_atom_list.begin(); it != cluster_atom_list.end();) {
-    if (it->size() <= smallest_cluster_criteria_) {
+  auto it = cluster_atom_list.begin();
+  while (it != cluster_atom_list.end()) {
+    if (static_cast<int>(it->size()) <= smallest_cluster_criteria_) {
       it = cluster_atom_list.erase(it);
     } else {
       ++it;

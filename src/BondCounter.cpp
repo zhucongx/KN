@@ -18,9 +18,9 @@ void BondCounter::SetFactor(const Vector3 &factor) {
 }
 
 void BondCounter::SetPlane(Vector3 miller_index) {
-  for (const double &i : {-1.0, 1.0}) {
-    for (const double &j : {-1.0, 1.0}) {
-      for (const double &k : {-1.0, 1.0}) {
+  for (double i : {-1.0, 1.0}) {
+    for (double j : {-1.0, 1.0}) {
+      for (double k : {-1.0, 1.0}) {
         for (int l = 0; l < 3; l++) {
           miller_index =
               {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
@@ -35,9 +35,9 @@ void BondCounter::SetBurgersVector(Vector3 miller_index) {
   for (int l = 0; l < 3; l++) {
     miller_index =
         {miller_index[kYDimension], miller_index[kZDimension], miller_index[kXDimension]};
-    for (const double &i : {-1.0, 1.0}) {
-      for (const double &j : {-1.0, 1.0}) {
-        for (const double &k : {-1.0, 1.0}) {
+    for (double i : {-1.0, 1.0}) {
+      for (double j : {-1.0, 1.0}) {
+        for (double k : {-1.0, 1.0}) {
           burgers_vector_set_.insert(ElementProduct(miller_index, {i, j, k}));
         }
       }

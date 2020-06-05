@@ -2,7 +2,7 @@
 
 namespace kn {
 
-Config ConfigGenerator::GenerateFCC(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
                                     const std::string &element,
                                     const std::array<int, kDimension> &factors) {
   Config config;
@@ -56,7 +56,7 @@ Config ConfigGenerator::GenerateFCC(const double &lattice_constant_a,
   return config;
 }
 
-Config ConfigGenerator::GenerateBCC(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateBCC(double lattice_constant_a,
                                     const std::string &element,
                                     const std::array<int, kDimension> &factors) {
   Config config;
@@ -98,8 +98,8 @@ Config ConfigGenerator::GenerateBCC(const double &lattice_constant_a,
   return config;
 }
 
-Config ConfigGenerator::GenerateHCP(const double &lattice_constant_a,
-                                    const double &lattice_constant_c,
+Config ConfigGenerator::GenerateHCP(double lattice_constant_a,
+                                    double lattice_constant_c,
                                     const std::string &element,
                                     const std::array<int, kDimension> &factors) {
   Config config;
@@ -145,7 +145,7 @@ Config ConfigGenerator::GenerateHCP(const double &lattice_constant_a,
   return config;
 }
 
-Config ConfigGenerator::GenerateL10(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateL10(double lattice_constant_a,
                                     const std::vector<std::string> &element_list,
                                     const std::array<int, kDimension> &factors) {
   Matrix33 basis = {
@@ -164,7 +164,7 @@ Config ConfigGenerator::GenerateL10(const double &lattice_constant_a,
   return Duplicate(GenerateUnitCell(basis, element_position_list), factors);
 }
 
-Config ConfigGenerator::GenerateL12(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateL12(double lattice_constant_a,
                                     const std::vector<std::string> &element_list,
                                     const std::array<int, kDimension> &factors) {
   Matrix33 basis = {
@@ -183,7 +183,7 @@ Config ConfigGenerator::GenerateL12(const double &lattice_constant_a,
   return Duplicate(GenerateUnitCell(basis, element_position_list), factors);
 }
 
-Config ConfigGenerator::GenerateL10star(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateL10star(double lattice_constant_a,
                                         const std::vector<std::string> &element_list,
                                         const std::array<int, kDimension> &factors) {
   Matrix33 basis = {
@@ -206,7 +206,7 @@ Config ConfigGenerator::GenerateL10star(const double &lattice_constant_a,
   return Duplicate(GenerateUnitCell(basis, element_position_list), factors);
 }
 
-Config ConfigGenerator::GenerateL12star(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateL12star(double lattice_constant_a,
                                         const std::vector<std::string> &element_list,
                                         const std::array<int, kDimension> &factors) {
   Matrix33 basis = {
@@ -237,7 +237,7 @@ Config ConfigGenerator::GenerateL12star(const double &lattice_constant_a,
   return Duplicate(GenerateUnitCell(basis, element_position_list), factors);
 }
 
-Config ConfigGenerator::GenerateZ1(const double &lattice_constant_a,
+Config ConfigGenerator::GenerateZ1(double lattice_constant_a,
                                    const std::vector<std::string> &element_list,
                                    const std::array<int, kDimension> &factors) {
   Matrix33 basis = {

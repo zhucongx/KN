@@ -11,7 +11,7 @@
 namespace kn {
 class Atom {
   public:
-    typedef int Rank;
+    using Rank = int;
 
     Atom();
     // Set both relative and absolute position, but will be corrected later

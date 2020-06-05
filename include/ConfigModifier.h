@@ -9,8 +9,8 @@ class ConfigModifier {
 
     static ConfigModifier *Instance();
 
-    void RegisterConfig(const int &index, box::Config *registrar);
-    box::Config *GetConfig(const int &index);
+    void RegisterConfig(int index, box::Config *registrar);
+    box::Config *GetConfig(int index);
     int GetNumConfig();
     // forbid creating from outside
     ConfigModifier() = delete;
@@ -31,11 +31,11 @@ ConfigModifier *ConfigModifier::Instance() {
   return instance;
 }
 
-void ConfigModifier::RegisterConfig(const int &index, box::Config *registrar) {
+void ConfigModifier::RegisterConfig(int index, box::Config *registrar) {
   map_config_[index] = registrar;
 }
 
-box::Config *ConfigModifier::GetConfig(const int &index) {
+box::Config *ConfigModifier::GetConfig(int index) {
   auto it = map_config_.find(index);
   if (it != map_config_.end()) {
     return it->second;

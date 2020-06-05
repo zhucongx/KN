@@ -85,7 +85,7 @@ inline double FindMass(const std::string &elem) {
   return mass_list[std::distance(element_list.begin(), it)];
 }
 
-inline double FindMass(const int &atomicNum) {
+inline double FindMass(int atomicNum) {
   return mass_list[atomicNum];
 }
 }// namespace elem_info

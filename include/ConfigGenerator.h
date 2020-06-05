@@ -5,30 +5,30 @@
 namespace kn {
 class ConfigGenerator {
   public:
-    static Config GenerateFCC(const double &lattice_constant_a,
+    static Config GenerateFCC(double lattice_constant_a,
                               const std::string &element,
                               const std::array<int, kDimension> &factors);
-    static Config GenerateBCC(const double &lattice_constant_a,
+    static Config GenerateBCC(double lattice_constant_a,
                               const std::string &element,
                               const std::array<int, kDimension> &factors);
-    static Config GenerateHCP(const double &lattice_constant_a,
-                              const double &lattice_constant_c,
+    static Config GenerateHCP(double lattice_constant_a,
+                              double lattice_constant_c,
                               const std::string &element,
                               const std::array<int, kDimension> &factors);
     // Anti-phase Configuration
-    static Config GenerateL10(const double &lattice_constant_a,
+    static Config GenerateL10(double lattice_constant_a,
                               const std::vector<std::string> &element_list,
                               const std::array<int, kDimension> &factors);
-    static Config GenerateL12(const double &lattice_constant_a,
+    static Config GenerateL12(double lattice_constant_a,
                               const std::vector<std::string> &element_list,
                               const std::array<int, kDimension> &factors);
-    static Config GenerateL10star(const double &lattice_constant_a,
+    static Config GenerateL10star(double lattice_constant_a,
                                   const std::vector<std::string> &element_list,
                                   const std::array<int, kDimension> &factors);
-    static Config GenerateL12star(const double &lattice_constant_a,
+    static Config GenerateL12star(double lattice_constant_a,
                                   const std::vector<std::string> &element_list,
                                   const std::array<int, kDimension> &factors);
-    static Config GenerateZ1(const double &lattice_constant_a,
+    static Config GenerateZ1(double lattice_constant_a,
                              const std::vector<std::string> &element_list,
                              const std::array<int, kDimension> &factors);
   private:

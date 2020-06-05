@@ -9,13 +9,16 @@ int main(int argc, char *argv[]) {
 
   // ClustersFinder test("0.cfg", "Al", 3, 3);
   // test.FindClustersAndOutput();
-
+  auto test = ConfigIO::ReadConfig("0.cfg");
+  // test.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
+  //                      Al_const::kSecondNearestNeighborsCutoff);
+  ConfigIO::WriteConfig(test, "0_f.cfg");
   // MpiClusters test(370000000, 10000000, 450000000,
   //                  "Al", 3, 3);
   // test.IterateToRun();
 
-  MpiNeighbors test(370000000, 1000000, 6252000000);
-  test.IterateToRun();
+  // MpiNeighbors test(370000000, 1000000, 6252000000);
+  // test.IterateToRun();
 
   // long long start = 0;
   // long long interval = 1000000;

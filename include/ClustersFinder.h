@@ -9,14 +9,13 @@
 namespace kn {
 class ClustersFinder {
   public:
-    typedef std::vector<std::map<std::string, int>> ClusterElementNumMap;
+    using ClusterElementNumMap = std::vector<std::map<std::string, int>>;
     ClustersFinder(std::string cfg_filename,
                    std::string solvent_atom_type,
                    int smallest_cluster_criteria,
                    int solvent_bond_criteria,
                    double first_nearest_neighbors_distance = Al_const::kFirstNearestNeighborCutoff,
-                   double second_nearest_neighbors_distance =
-                       Al_const::kSecondNearestNeighborsCutoff);
+                   double second_nearest_neighbors_distance = Al_const::kSecondNearestNeighborsCutoff);
     // Return a 2D array where values of each row representing the number of atoms of different
     // element in one cluster
     ClusterElementNumMap FindClustersAndOutput();
