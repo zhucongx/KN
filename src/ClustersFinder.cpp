@@ -46,7 +46,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   std::string output_name = cfg_filename_.substr(0, pos);
   output_name += "_cluster.";
   output_name += output_name_suffix;
-  ConfigIO::WriteConfig(config_out, output_name);
+  ConfigIO::WriteConfig(config_out, output_name, false);
   return num_atom_in_clusters_set;
 }
 
