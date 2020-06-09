@@ -1,6 +1,7 @@
 #include "MpiClusters.h"
-#include "MpiNeighbors.h"
+#include "ConfigUtility.h"
 #include "KMCSimulation.h"
+#include "ConfigGenerator.h"
 using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
@@ -9,11 +10,16 @@ int main(int argc, char *argv[]) {
 
   // ClustersFinder test("0.cfg", "Al", 3, 3);
   // test.FindClustersAndOutput();
-  auto test = ConfigIO::ReadConfig("0.cfg");
+  ConfigGenerator a(4.046,
+                    {4, 4, 4},
+                    "Al",
+                    {{"Al", 200}, {"Mg", 30}, {"Zn", 25}, {"X", 1}},
+                    "/Users/zhucongxi/Program/goali/pot_old/potpaw_PBE/elements/");
+  a.CreateRandom(1);
   // test.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
   //                      Al_const::kSecondNearestNeighborsCutoff);
-  ConfigIO::WriteConfig(test, "0_f.cfg");
-  // MpiClusters test(370000000, 10000000, 450000000,
+  // ConfigIO::WriteConfig(test, "0_f.cfg", false);
+  // MpiClusters test(370000000, 1000000, 6252000000,
   //                  "Al", 3, 3);
   // test.IterateToRun();
 
