@@ -48,11 +48,13 @@ void PreparePOTCAR(const std::string &path,
                    const std::string &pot_folder_path) {
   std::string out_filename = path + "/POTCAR";
   std::fstream ofs(out_filename, std::ofstream::out);
-  std::string element_pot_path;
   for (const auto &element : element_list) {
     if (element == "X")
       continue;
-    element_pot_path = (pot_folder_path + "/" + element + "/POTCAR ");
+    std::string element_pot_path(pot_folder_path);
+    element_pot_path += '/';
+    element_pot_path += element;
+    element_pot_path += "/POTCAR";
     std::ifstream ifs(element_pot_path, std::ifstream::in);
     ofs << ifs.rdbuf();
   }

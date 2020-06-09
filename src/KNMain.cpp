@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
                     {4, 4, 4},
                     "Al",
                     {{"Al", 200}, {"Mg", 30}, {"Zn", 25}, {"X", 1}},
-                    "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements");
+                    "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   a.CreateRandom(1);
   // test.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
   //                      Al_const::kSecondNearestNeighborsCutoff);
