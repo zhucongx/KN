@@ -34,7 +34,7 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
   bool relative_option;
   relative_option = buffer[0] == 'D' || buffer[0] == 'd';
 
-  Atom::Rank id_count = 0;
+  int id_count = 0;
   double position_X, position_Y, position_Z;
   for (const auto &[element_name, count] : elements_counts) {
     double mass = elem_info::FindMass(element_name);
@@ -105,7 +105,7 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
   double mass, relative_position_X, relative_position_Y, relative_position_Z;
   int index;
   bool neighbor_found = false;
-  for (Atom::Rank id = 0; id < num_atoms; ++id) {
+  for (int id = 0; id < num_atoms; ++id) {
     std::string type;
     ifs >> mass;
     ifs >> type;

@@ -3,7 +3,7 @@
 namespace kn {
 Atom::Atom() = default;
 
-Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z) :
+Atom::Atom(int id, double mass, std::string type, double x, double y, double z) :
   cartesian_position_{x, y, z},
   relative_position_{x, y, z},
   id_(id),
@@ -11,7 +11,7 @@ Atom::Atom(Rank id, double mass, std::string type, double x, double y, double z)
   type_(std::move(type)) {
 }
 
-Atom::Atom(Rank id,
+Atom::Atom(int id,
            double mass,
            std::string type,
            Vector3 position) :

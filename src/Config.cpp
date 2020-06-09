@@ -92,7 +92,7 @@ void Config::MoveRelativeDistance(const Vector3 &distance_vector) {
   }
 }
 
-void Config::MoveOneAtomRelativeDistance(const Atom::Rank &index,
+void Config::MoveOneAtomRelativeDistance(const int &index,
                                          const Vector3 &distance_vector) {
   atom_list_[index].relative_position_ += distance_vector;
   atom_list_[index].relative_position_ -= ElementFloor(atom_list_[index].relative_position_);
@@ -137,7 +137,7 @@ const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
 
-const std::map<std::string, std::vector<Atom::Rank>> &Config::GetElementListMap() const {
+const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const {
   return element_list_map_;
 }
 

@@ -21,7 +21,7 @@ class Config {
     // boundary condition
 
     void MoveRelativeDistance(const Vector3 &distance_vector);
-    void MoveOneAtomRelativeDistance(const Atom::Rank &index, const Vector3 &distance_vector);
+    void MoveOneAtomRelativeDistance(const int &index, const Vector3 &distance_vector);
 
     [[nodiscard]] int GetNumAtoms() const;
 
@@ -32,7 +32,7 @@ class Config {
     void SetBasis(const Matrix33 &basis);
     void AppendAtom(const Atom &atom);
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
-    [[nodiscard]] const std::map<std::string, std::vector<Atom::Rank>> &GetElementListMap() const;
+    [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
     [[nodiscard]] bool IsNeighborFound() const;
     void SetNeighborFound(bool neighbor_found);
   protected:
