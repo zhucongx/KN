@@ -8,9 +8,9 @@ class ConfigIO {
     static Config ReadPOSCAR(const std::string &filename);
     static Config ReadConfig(const std::string &filename);
 
-    // Write Configuration out as POSCAR file. If the show_vacancy_option is
-    // true, output will have "X" for visualization. If false, vacancies will be
-    // ignored for VASP calculation.
+// Write Configuration out as POSCAR file. If the show_vacancy_option is
+// true, output will have "X" for visualization. If false, vacancies will be
+// ignored for VASP calculation.
     static void WritePOSCAR(const Config &config,
                             const std::string &filename,
                             bool show_vacancy_option = false);
