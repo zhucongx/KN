@@ -3,13 +3,14 @@
 
 #include <cmath>
 
+#include <array>
 #include <iostream>
 #include <numeric>
 // #define ARMA_ALLOW_FAKE_GCC
 // #define ARMA_DONT_USE_WRAPPER
 // Uncomment this line if there is a compilation error
 // #include <armadillo>
-
+#include "Constants.h"
 const int kDimension = 3;
 
 enum { kXDimension, kYDimension, kZDimension };

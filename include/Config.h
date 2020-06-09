@@ -15,7 +15,6 @@ class Config {
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
-    void Perturb();
     virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
     // update both atoms' relative and absolute positions according to periodic
     // boundary condition
