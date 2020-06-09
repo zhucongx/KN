@@ -2,15 +2,10 @@
 
 #include <iostream>
 #include <utility>
-#include <random>
-#include <chrono>
+
 #include "AtomUtility.h"
 
 namespace kn {
-
-const double kMean = 0;
-const double kStandardDeviation = 0.15;
-const double kPerturbCutOff = 0.4;
 
 Config::Config() = default;
 
@@ -31,24 +26,7 @@ void Config::ConvertCartesianToRelative() {
   }
 }
 
-void Config::Perturb() {
-  auto seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::mt19937_64 generator(seed);
-  std::normal_distribution<double> distribution(kMean, kStandardDeviation);
-  auto add_displacement = [&generator, &distribution](double &coordinate) {
-    double displacement = distribution(generator);
-    while (std::abs(displacement) > kPerturbCutOff) {
-      displacement = distribution(generator);
-    }
-    coordinate += displacement;
-  };
-  for (auto &atom : atom_list_) {
-    add_displacement(atom.cartesian_position_[kXDimension]);
-    add_displacement(atom.cartesian_position_[kYDimension]);
-    add_displacement(atom.cartesian_position_[kZDimension]);
-  }
-  ConvertCartesianToRelative();
-}
+
 
 void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   if (neighbor_found_)

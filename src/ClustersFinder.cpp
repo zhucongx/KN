@@ -26,7 +26,6 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   config_out.SetScale(config_.GetScale());
   config_out.SetBasis(config_.GetBasis());
   std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
-  auto atoms_list_reference = config_.GetAtomList();
   for (auto &atom_list : cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
     std::map<std::string, int> num_atom_in_one_cluster;
@@ -35,8 +34,8 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
     }
 
     for (const auto &atom_index : atom_list) {
-      num_atom_in_one_cluster[atoms_list_reference[atom_index].type_]++;
-      config_out.AppendAtom(atoms_list_reference[atom_index]);
+      num_atom_in_one_cluster[config_.GetAtomList()[atom_index].type_]++;
+      config_out.AppendAtom(config_.GetAtomList()[atom_index]);
     }
 
     num_atom_in_clusters_set.push_back(std::move(num_atom_in_one_cluster));
@@ -88,7 +87,6 @@ std::unordered_set<int> ClustersFinder::FindSoluteAtomsHelper() const {
 
 std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
     std::unordered_set<int> unvisited_atoms_id_set) const {
-  auto atoms_list_reference = config_.GetAtomList();
   std::vector<std::vector<int>> cluster_atom_list;
   std::queue<int> visit_id_queue;
   int atom_id;
@@ -106,7 +104,7 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
       visit_id_queue.pop();
 
       atom_list_of_one_cluster.push_back(atom_id);
-      for (const auto &neighbor_id : atoms_list_reference[atom_id].first_nearest_neighbor_list_) {
+      for (const auto &neighbor_id : config_.GetAtomList()[atom_id].first_nearest_neighbor_list_) {
         it = unvisited_atoms_id_set.find(neighbor_id);
         if (it != unvisited_atoms_id_set.end()) {
           visit_id_queue.push(*it);
@@ -133,12 +131,11 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   }
 
   // add solvent neighbors
-  auto atoms_list_reference = config_.GetAtomList();
   for (auto &atom_list : cluster_atom_list) {
     std::unordered_map<int, int> neighbor_bond_count;
     for (const auto &atom_index : atom_list) {
-      for (auto neighbor_id : atoms_list_reference[atom_index].first_nearest_neighbor_list_) {
-        if (atoms_list_reference[neighbor_id].type_ == solvent_element_)
+      for (auto neighbor_id : config_.GetAtomList()[atom_index].first_nearest_neighbor_list_) {
+        if (config_.GetAtomList()[neighbor_id].type_ == solvent_element_)
           neighbor_bond_count[neighbor_id]++;
       }
     }
@@ -150,9 +147,9 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
 
   // remove duplicate outer layer
   std::unordered_set<int> unvisited_atoms_id_set;
-  for (const auto &kIndexVector : cluster_atom_list) {
-    std::copy(kIndexVector.begin(),
-              kIndexVector.end(),
+  for (const auto &singe_cluster_vector : cluster_atom_list) {
+    std::copy(singe_cluster_vector.begin(),
+              singe_cluster_vector.end(),
               std::inserter(unvisited_atoms_id_set, unvisited_atoms_id_set.end()));
   }
   auto cluster_atom_list_after_removing = FindAtomListOfClustersBFSHelper(unvisited_atoms_id_set);
