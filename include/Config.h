@@ -11,6 +11,8 @@ namespace kn {
 class Config {
   // Todo output neighbor information
   public:
+    friend class ConfigUtility;
+
     Config();
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
@@ -57,7 +59,7 @@ class Config {
     bool neighbor_found_{};
 
     // using map data structure because we want to keep the order
-    std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
+    std::map<std::string, std::vector<int>> element_list_map_;
 };
 } // namespace kn
 
