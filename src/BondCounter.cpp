@@ -13,9 +13,6 @@ BondCounter::BondCounter(const std::string &filename,
   SetBurgersVector(burger_vector);
 }
 
-void BondCounter::SetFactor(const Vector3 &factor) {
-  factor_ = factor;
-}
 
 void BondCounter::SetPlane(Vector3 miller_index) {
   for (double i : {-1.0, 1.0}) {
