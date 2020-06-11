@@ -6,8 +6,10 @@
 #include "AtomUtility.h"
 
 namespace kn {
-
 Config::Config() = default;
+Config::Config(const Matrix33 &basis, int atom_size) : basis_(basis) {
+  atom_list_.reserve(atom_size);
+}
 
 bool Config::operator<(const Config &rhs) const {
   return energy_ < rhs.energy_;
@@ -25,8 +27,6 @@ void Config::ConvertCartesianToRelative() {
     atom.relative_position_ = atom.cartesian_position_ * inverse_basis;
   }
 }
-
-
 
 void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   if (neighbor_found_)
@@ -90,20 +90,8 @@ int Config::GetNumAtoms() const {
   return atom_list_.size();
 }
 
-void Config::SetScale(double scale) {
-  scale_ = scale;
-}
-
-double Config::GetScale() const {
-  return scale_;
-}
-
 const Matrix33 &Config::GetBasis() const {
   return basis_;
-}
-
-void Config::SetBasis(const Matrix33 &basis) {
-  basis_ = basis;
 }
 
 void Config::AppendAtom(const Atom &atom) {

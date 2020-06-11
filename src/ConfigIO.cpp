@@ -5,16 +5,13 @@
 namespace kn {
 
 Config ConfigIO::ReadPOSCAR(const std::string &filename) {
-  Config config;
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // #comment
   double scale;
   ifs >> scale; // scale factor, usually which is 1.0
-  config.SetScale(scale);
   Matrix33 basis;
   ifs >> basis;
-  config.SetBasis(basis);
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
 
   std::string buffer;
@@ -25,15 +22,16 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
 
   std::string element;
   int count;
-
+  int num_atoms = 0;
   std::vector<std::pair<std::string, int>> elements_counts;
   while (element_iss >> element && count_iss >> count) {
     elements_counts.emplace_back(element, count);
+    num_atoms += count;
   }
   getline(ifs, buffer);
   bool relative_option;
   relative_option = buffer[0] == 'D' || buffer[0] == 'd';
-
+  Config config(basis * scale, num_atoms);
   int id_count = 0;
   double position_X, position_Y, position_Z;
   for (const auto &[element_name, count] : elements_counts) {
@@ -41,7 +39,7 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
     for (int j = 0; j < count; ++j) {
       ifs >> position_X >> position_Y >> position_Z;
       config.AppendAtom({id_count, mass, element_name,
-                         position_X, position_Y, position_Z});
+                         position_X * scale, position_Y * scale, position_Z * scale});
       ++id_count;
     }
   }
@@ -54,7 +52,6 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
 }
 
 Config ConfigIO::ReadConfig(const std::string &filename) {
-  Config config;
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
@@ -65,10 +62,8 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
              '='); // A = 1.0 Angstrom (basic length-scale)
   double scale;
   ifs >> scale;
-  config.SetScale(scale);
 
   double basis_xx, basis_xy, basis_xz, basis_yx, basis_yy, basis_yz, basis_zx, basis_zy, basis_zz;
-
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,1) = %lf A"
   ifs >> basis_xx;
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,2) = %lf A"
@@ -88,11 +83,9 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,3) = %lf A"
   ifs >> basis_zz;
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
-  config.SetBasis({{
-                       {basis_xx, basis_xy, basis_xz},
-                       {basis_yx, basis_yy, basis_yz},
-                       {basis_zx, basis_zy, basis_zz}
-                   }});
+  Config config(Matrix33{{{basis_xx, basis_xy, basis_xz},
+                          {basis_yx, basis_yy, basis_yz},
+                          {basis_zx, basis_zy, basis_zz}}} * scale, num_atoms);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // .NO_VELOCITY.
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // "entry_count = 3"
@@ -105,7 +98,10 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
     ifs >> mass;
     ifs >> type;
     ifs >> relative_position_X >> relative_position_Y >> relative_position_Z;
-    Atom atom(id, mass, type, relative_position_X, relative_position_Y, relative_position_Z);
+    Atom atom(id, mass, type,
+              relative_position_X * scale,
+              relative_position_Y * scale,
+              relative_position_Z * scale);
     if (ifs.peek() != '\n') {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
       atom.first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
@@ -131,7 +127,7 @@ void ConfigIO::WritePOSCAR(const Config &config,
                            const std::string &filename,
                            bool show_vacancy_option) {
   std::ofstream ofs(filename, std::ofstream::out);
-  ofs << "#comment\n" << config.GetScale() << '\n';
+  ofs << "#comment\n1.0\n";
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
   for (const auto &[element, element_list] : config.GetElementListMap()) {
@@ -155,7 +151,7 @@ void ConfigIO::WritePOSCAR(const Config &config,
 void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bool neighbors_info) {
   std::ofstream ofs(filename, std::ofstream::out);
   ofs << "Number of particles = " << config.GetNumAtoms() << '\n';
-  ofs << "A = " << config.GetScale() << " Angstrom (basic length-scale)\n";
+  ofs << "A = 1.0 Angstrom (basic length-scale)\n";
   auto basis = config.GetBasis();
   ofs << "H0(1,1) = " << basis[kXDimension][kXDimension] << " A\n";
   ofs << "H0(1,2) = " << basis[kXDimension][kYDimension] << " A\n";

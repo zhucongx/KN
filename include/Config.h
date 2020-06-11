@@ -9,11 +9,12 @@
 
 namespace kn {
 class Config {
-  // Todo output neighbor information
+    // Todo output neighbor information
   public:
     friend class ConfigUtility;
 
     Config();
+    Config(const Matrix33 &basis, int atom_size);
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
@@ -26,18 +27,14 @@ class Config {
 
     [[nodiscard]] int GetNumAtoms() const;
 
-    void SetScale(double scale);
-    [[nodiscard]] double GetScale() const;
-
     [[nodiscard]] const Matrix33 &GetBasis() const;
-    void SetBasis(const Matrix33 &basis);
+
     void AppendAtom(const Atom &atom);
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
     [[nodiscard]] bool IsNeighborFound() const;
     void SetNeighborFound(bool neighbor_found);
   protected:
-    double scale_ = 1;
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;
     // length of three edges
@@ -49,6 +46,7 @@ class Config {
     // used to convert relative position to absolute
     Matrix33 basis_{};
 
+  protected:
     // Three translational Bravais lattice vector
     // Matrix33 reciprocal_matrix_{},
 
