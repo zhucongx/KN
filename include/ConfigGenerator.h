@@ -13,9 +13,9 @@ class ConfigGenerator {
     using Factor_t = std::array<int, kDimension>;
     ConfigGenerator(double lattice_const,
                     const Factor_t &factors,
-                    const std::string &solvent_element,
-                    const std::map<std::string, int> &element_count_map,
-                    const std::string &pot_folder_path);
+                    std::string solvent_element,
+                    std::map<std::string, int> element_count_map,
+                    std::string pot_folder_path);
 
     void CreateRandom(int num_configs);
     void CreateSpecific();

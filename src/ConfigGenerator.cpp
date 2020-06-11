@@ -3,33 +3,32 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <utility>
 #include "ConfigIO.h"
 #include "ConfigUtility.h"
 namespace kn {
 ConfigGenerator::ConfigGenerator(double lattice_const,
                                  const ConfigGenerator::Factor_t &factors,
-                                 const std::string &solvent_element,
-                                 const std::map<std::string, int> &element_count_map,
-                                 const std::string &pot_folder_path) :
+                                 std::string solvent_element,
+                                 std::map<std::string, int> element_count_map,
+                                 std::string pot_folder_path) :
     lattice_const_(lattice_const),
     factors_(factors),
-    solvent_element_(solvent_element),
-    element_count_map_(element_count_map),
-    pot_folder_path_(pot_folder_path),
+    solvent_element_(std::move(solvent_element)),
+    element_count_map_(std::move(element_count_map)),
+    pot_folder_path_(std::move(pot_folder_path)),
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {
   std::transform(element_count_map_.begin(),
                  element_count_map_.end(),
                  std::back_inserter(element_list_),
-                 [](std::pair<std::string, int> pair) { return pair.first; });
+                 [](const std::pair<std::string, int> &pair) { return pair.first; });
 
-  for (const auto[element, count] : element_count_map_) {
+  for (const auto&[element, count] : element_count_map_) {
     atom_index_list_.insert(atom_index_list_.end(), count, element);
   }
 }
 Config ConfigGenerator::ShuffleConfig(const Config &config) const {
-  Config config_out;
-  config_out.SetScale(config.GetScale());
-  config_out.SetBasis(config.GetBasis());
+  Config config_out(config.GetBasis(), config.GetNumAtoms());
 
   auto atom_index_list_copy(atom_index_list_);
   shuffle(atom_index_list_copy.begin(), atom_index_list_copy.end(), generator_);
@@ -60,9 +59,7 @@ void ConfigGenerator::CreateSpecific() {
 Config GenerateUnitCell(
     const Matrix33 &basis_matrix,
     const std::vector<std::pair<std::string, Vector3>> &type_position_list) {
-  Config config;
-  config.SetBasis(basis_matrix);
-  config.SetScale(1.0);
+  Config config(basis_matrix, type_position_list.size());
   int atoms_counter = 0;
   for (const auto &[type, relative_position] : type_position_list) {
     config.AppendAtom({atoms_counter++, elem_info::FindMass(type), type, relative_position});
@@ -73,17 +70,15 @@ Config GenerateUnitCell(
 
 Config Duplicate(const Config &in_config,
                  const std::array<int, kDimension> &factors) {
-  Config out_config;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
   auto z_length = static_cast<double>(factors[kZDimension]);
   auto basis_of_input = in_config.GetBasis();
-  out_config.SetBasis({
-                          basis_of_input[kXDimension] * x_length,
-                          basis_of_input[kYDimension] * y_length,
-                          basis_of_input[kZDimension] * z_length
-                      });
-  out_config.SetScale(1.0);
+  Config out_config({basis_of_input[kXDimension] * x_length,
+                     basis_of_input[kYDimension] * y_length,
+                     basis_of_input[kZDimension] * z_length},
+                    in_config.GetNumAtoms() * factors[kXDimension] * factors[kYDimension]
+                        * factors[kZDimension]);
   auto atom_list_of_input = in_config.GetAtomList();
   int atoms_counter = 0;
   for (int k = 0; k < factors[kZDimension]; ++k) {
@@ -108,14 +103,12 @@ Config Duplicate(const Config &in_config,
 Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
                                     const std::string &element,
                                     const std::array<int, kDimension> &factors) {
-  Config config;
+
   double mass = elem_info::FindMass(element);
-  config.SetBasis({{
-                       {lattice_constant_a * factors[kXDimension], 0, 0},
-                       {0, lattice_constant_a * factors[kYDimension], 0},
-                       {0, 0, lattice_constant_a * factors[kZDimension]}
-                   }});
-  config.SetScale(1.0);
+  Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
+                  {0, lattice_constant_a * factors[kYDimension], 0},
+                  {0, 0, lattice_constant_a * factors[kZDimension]}}},
+                4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
   int atoms_counter = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
@@ -160,16 +153,11 @@ Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
 // Config ConfigGenerator::GenerateBCC(double lattice_constant_a,
 //                                     const std::string &element,
 //                                     const std::array<int, kDimension> &factors) {
-//   Config config;
 //   double mass = elem_info::FindMass(element);
-//   config.SetBasis({
-//                       {
-//                           {lattice_constant_a * factors[kXDimension], 0, 0},
-//                           {0, lattice_constant_a * factors[kYDimension], 0},
-//                           {0, 0, lattice_constant_a * factors[kZDimension]}
-//                       }
-//                   });
-//   config.SetScale(1.0);
+//   Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
+//                   {0, lattice_constant_a * factors[kYDimension], 0},
+//                   {0, 0, lattice_constant_a * factors[kZDimension]}}},
+//                 2 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
 //   int atoms_counter = 0;
 //   auto x_length = static_cast<double>(factors[kXDimension]);
 //   auto y_length = static_cast<double>(factors[kYDimension]);
@@ -203,17 +191,13 @@ Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
 //                                     double lattice_constant_c,
 //                                     const std::string &element,
 //                                     const std::array<int, kDimension> &factors) {
-//   Config config;
+//
 //   double mass = elem_info::FindMass(element);
-//   config.SetBasis({
-//                       {
-//                           {lattice_constant_a * factors[kXDimension], 0, 0},
-//                           {-0.5 * lattice_constant_a * factors[kYDimension],
-//                            0.5 * sqrt(3) * lattice_constant_a * factors[kYDimension], 0},
-//                           {0, 0, lattice_constant_c * factors[kZDimension]}
-//                       }
-//                   });
-//   config.SetScale(1.0);
+//   Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
+//                   {-0.5 * lattice_constant_a * factors[kYDimension],
+//                    0.5 * sqrt(3) * lattice_constant_a * factors[kYDimension], 0},
+//                   {0, 0, lattice_constant_c * factors[kZDimension]}}},
+//                 2 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
 //   int atoms_counter = 0;
 //
 //   auto x_length = static_cast<double>(factors[kXDimension]);

@@ -11,10 +11,10 @@ ClustersFinder::ClustersFinder(std::string cfg_filename,
                                int solvent_bond_criteria,
                                double first_nearest_neighbors_distance,
                                double second_nearest_neighbors_distance)
-  : cfg_filename_(std::move(cfg_filename)),
-    solvent_element_(std::move(solvent_atom_type)),
-    smallest_cluster_criteria_(smallest_cluster_criteria),
-    solvent_bond_criteria_(solvent_bond_criteria) {
+    : cfg_filename_(std::move(cfg_filename)),
+      solvent_element_(std::move(solvent_atom_type)),
+      smallest_cluster_criteria_(smallest_cluster_criteria),
+      solvent_bond_criteria_(solvent_bond_criteria) {
   ReadFileAndUpdateNeighbor(first_nearest_neighbors_distance,
                             second_nearest_neighbors_distance);
 }
@@ -22,9 +22,7 @@ ClustersFinder::ClustersFinder(std::string cfg_filename,
 ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
 
-  Config config_out;
-  config_out.SetScale(config_.GetScale());
-  config_out.SetBasis(config_.GetBasis());
+  Config config_out(config_.GetBasis(), config_.GetNumAtoms());
   std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
   for (auto &atom_list : cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
@@ -139,7 +137,7 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
           neighbor_bond_count[neighbor_id]++;
       }
     }
-    for (auto [neighbor_id, bond_count] : neighbor_bond_count) {
+    for (auto[neighbor_id, bond_count] : neighbor_bond_count) {
       if (bond_count >= solvent_bond_criteria_)
         atom_list.push_back(neighbor_id);
     }
