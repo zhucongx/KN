@@ -9,21 +9,21 @@
 namespace kn {
 ConfigGenerator::ConfigGenerator(double lattice_const,
                                  const ConfigGenerator::Factor_t &factors,
-                                 const std::string &solvent_element,
-                                 const std::map<std::string, int> &element_count_map,
-                                 const std::string &pot_folder_path) :
+                                 std::string solvent_element,
+                                 std::map<std::string, int> element_count_map,
+                                 std::string pot_folder_path) :
     lattice_const_(lattice_const),
     factors_(factors),
-    solvent_element_(solvent_element),
-    element_count_map_(element_count_map),
-    pot_folder_path_(pot_folder_path),
+    solvent_element_(std::move(solvent_element)),
+    element_count_map_(std::move(element_count_map)),
+    pot_folder_path_(std::move(pot_folder_path)),
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {
   std::transform(element_count_map_.begin(),
                  element_count_map_.end(),
                  std::back_inserter(element_list_),
-                 [](std::pair<std::string, int> pair) { return pair.first; });
+                 [](const std::pair<std::string, int> &pair) { return pair.first; });
 
-  for (const auto[element, count] : element_count_map_) {
+  for (const auto&[element, count] : element_count_map_) {
     atom_index_list_.insert(atom_index_list_.end(), count, element);
   }
 }
