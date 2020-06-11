@@ -11,17 +11,18 @@ namespace kn {
 class Config {
   // Todo output neighbor information
   public:
+    friend class ConfigUtility;
+
     Config();
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
-    void Perturb();
     virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
     // update both atoms' relative and absolute positions according to periodic
     // boundary condition
 
     void MoveRelativeDistance(const Vector3 &distance_vector);
-    void MoveOneAtomRelativeDistance(const Atom::Rank &index, const Vector3 &distance_vector);
+    void MoveOneAtomRelativeDistance(const int &index, const Vector3 &distance_vector);
 
     [[nodiscard]] int GetNumAtoms() const;
 
@@ -32,7 +33,7 @@ class Config {
     void SetBasis(const Matrix33 &basis);
     void AppendAtom(const Atom &atom);
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
-    [[nodiscard]] const std::map<std::string, std::vector<Atom::Rank>> &GetElementListMap() const;
+    [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
     [[nodiscard]] bool IsNeighborFound() const;
     void SetNeighborFound(bool neighbor_found);
   protected:
@@ -58,7 +59,7 @@ class Config {
     bool neighbor_found_{};
 
     // using map data structure because we want to keep the order
-    std::map<std::string, std::vector<Atom::Rank>> element_list_map_;
+    std::map<std::string, std::vector<int>> element_list_map_;
 };
 } // namespace kn
 

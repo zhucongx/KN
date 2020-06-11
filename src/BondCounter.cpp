@@ -13,9 +13,6 @@ BondCounter::BondCounter(const std::string &filename,
   SetBurgersVector(burger_vector);
 }
 
-void BondCounter::SetFactor(const Vector3 &factor) {
-  factor_ = factor;
-}
 
 void BondCounter::SetPlane(Vector3 miller_index) {
   for (double i : {-1.0, 1.0}) {
@@ -102,11 +99,11 @@ std::map<Bond, int> BondCounter::GetBondChange() const {
       // We select four planes, and we move two plan by the burgers vector and
       // calculate the bonds change between the these two planes and the
       // other two.
-      std::vector<Atom::Rank> unslipped_atoms_group;
-      std::vector<Atom::Rank> slipped_atoms_group;
+      std::vector<int> unslipped_atoms_group;
+      std::vector<int> slipped_atoms_group;
 
       auto upslipped_atom_reference = unslipped_config.GetAtomList();
-      for (Atom::Rank j = 0; j < unslipped_config.GetNumAtoms(); ++j) {
+      for (int j = 0; j < unslipped_config.GetNumAtoms(); ++j) {
         double d_checked =
             Dot(upslipped_atom_reference[j].relative_position_, plane_index);
         auto check_if_in_between = [](double value, double v_1, double v_2) {
@@ -205,8 +202,8 @@ double BondCounter::FindD3Helper(const Vector3 &plane_index,
 
 std::map<Bond, int> BondCounter::CountBondsBetweenTwoGroupHelper(
     const Config &config,
-    const std::vector<Atom::Rank> &group1,
-    const std::vector<Atom::Rank> &group2) {
+    const std::vector<int> &group1,
+    const std::vector<int> &group2) {
   std::map<Bond, int> map_out;
   auto atoms_list_reference = config.GetAtomList();
 

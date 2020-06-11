@@ -34,24 +34,21 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
   bool relative_option;
   relative_option = buffer[0] == 'D' || buffer[0] == 'd';
 
-  Atom::Rank id_count = 0;
+  int id_count = 0;
   double position_X, position_Y, position_Z;
   for (const auto &[element_name, count] : elements_counts) {
     double mass = elem_info::FindMass(element_name);
     for (int j = 0; j < count; ++j) {
       ifs >> position_X >> position_Y >> position_Z;
-      config.AppendAtom({
-          id_count, mass, element_name,
-          position_X, position_Y, position_Z
-      });
+      config.AppendAtom({id_count, mass, element_name,
+                         position_X, position_Y, position_Z});
       ++id_count;
     }
   }
-  if (relative_option) {
+  if (relative_option)
     config.ConvertRelativeToCartesian();
-  } else {
+  else
     config.ConvertCartesianToRelative();
-  }
 
   return config;
 }
@@ -91,13 +88,11 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,3) = %lf A"
   ifs >> basis_zz;
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
-  config.SetBasis({
-      {
-          {basis_xx, basis_xy, basis_xz},
-          {basis_yx, basis_yy, basis_yz},
-          {basis_zx, basis_zy, basis_zz}
-      }
-  });
+  config.SetBasis({{
+                       {basis_xx, basis_xy, basis_xz},
+                       {basis_yx, basis_yy, basis_yz},
+                       {basis_zx, basis_zy, basis_zz}
+                   }});
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // .NO_VELOCITY.
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // "entry_count = 3"
@@ -105,7 +100,7 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
   double mass, relative_position_X, relative_position_Y, relative_position_Z;
   int index;
   bool neighbor_found = false;
-  for (Atom::Rank id = 0; id < num_atoms; ++id) {
+  for (int id = 0; id < num_atoms; ++id) {
     std::string type;
     ifs >> mass;
     ifs >> type;
@@ -140,16 +135,19 @@ void ConfigIO::WritePOSCAR(const Config &config,
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
   for (const auto &[element, element_list] : config.GetElementListMap()) {
-    if (!show_vacancy_option || element != "X") {
+    if (show_vacancy_option || element != "X") {
       ele_oss << element << ' ';
       count_oss << element_list.size() << ' ';
     }
   }
   ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
   ofs << "Direct\n";
-  for (const auto &atom : config.GetAtomList()) {
-    if (!show_vacancy_option || atom.type_ != "X") {
-      ofs << atom.relative_position_ << '\n';
+
+  for (const auto &[element, element_list] : config.GetElementListMap()) {
+    if (show_vacancy_option || element != "X") {
+      for (auto index : element_list) {
+        ofs << config.GetAtomList()[index].relative_position_ << '\n';
+      }
     }
   }
 }
