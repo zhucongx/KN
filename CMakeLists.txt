@@ -31,11 +31,17 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 endif ()
 
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W -Wall -O0 -g3 -ggdb -DMY_DEBUG"
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
+-Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Waggregate-return \
+-Winline -Wunreachable-code -Wcast-align -Wundef -Wredundant-decls \
+-O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DMY_RELEASE"
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -frename-registers\
+-fopenmp -D_GLIBCXX_PARALLEL"
         CACHE INTERNAL "")
+
+message(${CMAKE_CXX_FLAGS_RELEASE})
 file(GLOB KN_SRC
         ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
