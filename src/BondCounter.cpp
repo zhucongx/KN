@@ -8,7 +8,7 @@ BondCounter::BondCounter(const std::string &filename,
                          Vector3 plane,
                          Vector3 burger_vector
     ) : factor_(factor) {
-  config_ = ConfigIO::ReadConfig(filename);
+  config_ = ConfigIO::ReadConfig(filename, true);
   SetPlane(plane);
   SetBurgersVector(burger_vector);
 }

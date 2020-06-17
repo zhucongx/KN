@@ -51,7 +51,7 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
   return config;
 }
 
-Config ConfigIO::ReadConfig(const std::string &filename) {
+Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
@@ -97,6 +97,9 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
     std::string type;
     ifs >> mass;
     ifs >> type;
+#ifndef NDEBUG
+    mass = elem_info::FindMass(type);
+#endif
     ifs >> relative_position_X >> relative_position_Y >> relative_position_Z;
     Atom atom(id, mass, type,
               relative_position_X * scale,
@@ -119,7 +122,10 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
     config.AppendAtom(atom);
   }
   config.ConvertRelativeToCartesian();
-  config.SetNeighborFound(neighbor_found);
+  config.neighbor_found_ = neighbor_found;
+  if (update_neighbors)
+    config.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
+                           Al_const::kSecondNearestNeighborsCutoff);
   return config;
 }
 

@@ -16,7 +16,8 @@ class MpiIterator {
   protected:
     boost::mpi::environment env_;
     boost::mpi::communicator world_;
-    int mpi_rank_, mpi_size_;
+    int mpi_rank_;
+    int mpi_size_;
 
     long long initial_number_;
     long long increment_number_;

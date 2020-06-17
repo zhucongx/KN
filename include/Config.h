@@ -5,36 +5,41 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <random>
 #include "Atom.h"
-
+#include "AtomUtility.h"
 namespace kn {
 class Config {
-    // Todo output neighbor information
+    Todo output neighbor information
   public:
-    friend class ConfigUtility;
+    friend class ConfigIO;
 
     Config();
     Config(const Matrix33 &basis, int atom_size);
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
-    virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
     // update both atoms' relative and absolute positions according to periodic
     // boundary condition
 
+    void WrapAtomRelative();
+    void WrapAtomCartesian();
     void MoveRelativeDistance(const Vector3 &distance_vector);
     void MoveOneAtomRelativeDistance(const int &index, const Vector3 &distance_vector);
-
+    void Perturb(std::mt19937_64 &generator);
     [[nodiscard]] int GetNumAtoms() const;
 
     [[nodiscard]] const Matrix33 &GetBasis() const;
 
     void AppendAtom(const Atom &atom);
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
+    std::vector<Atom> &GetAtomListMapRef();
+
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
     [[nodiscard]] bool IsNeighborFound() const;
-    void SetNeighborFound(bool neighbor_found);
   protected:
+    virtual void UpdateNeighbors(double first_r_cutoff, double second_r_cutoff);
+
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;
     // length of three edges
@@ -46,7 +51,6 @@ class Config {
     // used to convert relative position to absolute
     Matrix33 basis_{};
 
-  protected:
     // Three translational Bravais lattice vector
     // Matrix33 reciprocal_matrix_{},
 

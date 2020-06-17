@@ -1,5 +1,7 @@
 #include "MpiClusters.h"
 #include "ConfigUtility.h"
+#include "ConfigIO.h"
+
 #include "KMCSimulation.h"
 #include "ConfigGenerator.h"
 using namespace kn;
@@ -10,12 +12,23 @@ int main(int argc, char *argv[]) {
 
   // ClustersFinder test("0.cfg", "Al", 3, 3);
   // test.FindClustersAndOutput();
-  ConfigGenerator a(4.046,
-                    {4, 4, 4},
-                    "Al",
-                    {{"Al", 200}, {"Mg", 30}, {"Zn", 25}, {"X", 1}},
-                    "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
-  a.CreateRandom(1);
+  // ConfigGenerator a(4.046,
+  //                   {4, 4, 4},
+  //                   "Al",
+  //                   {{"Al", 200}, {"Mg", 30}, {"Zn", 25}, {"X", 1}},
+  //                   "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
+  // a.CreateRandom(1);
+
+  Config test = ConfigIO::ReadConfig("0.cfg", true);
+
+  auto asd = ConfigUtility::Encode(test, {82, 83});
+
+  for (auto &&a:asd) {
+    for (auto &&b:a)
+      cout << b << "   ";
+    cout << '\n';
+  }
+
   // test.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
   //                      Al_const::kSecondNearestNeighborsCutoff);
   // ConfigIO::WriteConfig(test, "0_f.cfg", false);

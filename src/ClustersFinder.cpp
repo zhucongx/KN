@@ -8,15 +8,12 @@ namespace kn {
 ClustersFinder::ClustersFinder(std::string cfg_filename,
                                std::string solvent_atom_type,
                                int smallest_cluster_criteria,
-                               int solvent_bond_criteria,
-                               double first_nearest_neighbors_distance,
-                               double second_nearest_neighbors_distance)
+                               int solvent_bond_criteria)
     : cfg_filename_(std::move(cfg_filename)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
       solvent_bond_criteria_(solvent_bond_criteria) {
-  ReadFileAndUpdateNeighbor(first_nearest_neighbors_distance,
-                            second_nearest_neighbors_distance);
+  ReadFileAndUpdateNeighbor();
 }
 
 ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
@@ -38,11 +35,9 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
 
     num_atom_in_clusters_set.push_back(std::move(num_atom_in_one_cluster));
   }
-  auto const pos = cfg_filename_.find_last_of('.');
-  const std::string output_name_suffix = cfg_filename_.substr(pos + 1);
-  std::string output_name = cfg_filename_.substr(0, pos);
-  output_name += "_cluster.";
-  output_name += output_name_suffix;
+  auto output_name(cfg_filename_);
+  auto const pos = output_name.find_last_of('.');
+  output_name.insert(pos,"_cluster" );
   ConfigIO::WriteConfig(config_out, output_name, false);
   return num_atom_in_clusters_set;
 }
@@ -59,10 +54,8 @@ void ClustersFinder::PrintLog(const std::string &filename,
   }
 }
 
-void ClustersFinder::ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
-                                               double second_nearest_neighbors_distance) {
-  config_ = ConfigIO::ReadConfig(cfg_filename_);
-  config_.UpdateNeighbors(first_nearest_neighbors_distance, second_nearest_neighbors_distance);
+void ClustersFinder::ReadFileAndUpdateNeighbor() {
+  config_ = ConfigIO::ReadConfig(cfg_filename_, true);
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == "X")
       continue;

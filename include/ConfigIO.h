@@ -6,7 +6,7 @@ namespace kn {
 class ConfigIO {
   public:
     static Config ReadPOSCAR(const std::string &filename);
-    static Config ReadConfig(const std::string &filename);
+    static Config ReadConfig(const std::string &filename, bool update_neighbors);
 
 // Write Configuration out as POSCAR file. If the show_vacancy_option is
 // true, output will have "X" for visualization. If false, vacancies will be

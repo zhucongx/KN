@@ -10,9 +10,9 @@ Vector3 AtomUtility::GetRelativeDistanceVector(const Atom &first, const Atom &se
       distance += 1;
   };
   // periodic boundary conditions
-  check_periodic(relative_distance_vector[kXDimension]);
-  check_periodic(relative_distance_vector[kYDimension]);
-  check_periodic(relative_distance_vector[kZDimension]);
+  for (const auto kDim : All_Dimensions) {
+    check_periodic(relative_distance_vector[kDim]);
+  }
   return relative_distance_vector;
 }
 } // namespace kn

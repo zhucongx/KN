@@ -3,8 +3,6 @@
 #include <iostream>
 #include <utility>
 
-#include "AtomUtility.h"
-
 namespace kn {
 Config::Config() = default;
 Config::Config(const Matrix33 &basis, int atom_size) : basis_(basis) {
@@ -58,14 +56,26 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   }
   neighbor_found_ = true;
 }
+void Config::WrapAtomRelative() {
+  for (auto &atom : atom_list_) {
+    atom.relative_position_ -= ElementFloor(atom.relative_position_);
+    atom.cartesian_position_ = atom.relative_position_ * basis_;
+  }
+}
+void Config::WrapAtomCartesian() {
+  auto inverse_basis = InverseMatrix33(basis_);
+  for (auto &atom : atom_list_) {
+    atom.relative_position_ = atom.cartesian_position_ * inverse_basis;
+    atom.relative_position_ -= ElementFloor(atom.relative_position_);
+    atom.cartesian_position_ = atom.relative_position_ * basis_;
+  }
+}
 
 // for better performance, shouldn't call Wrap function
 void Config::MoveRelativeDistance(const Vector3 &distance_vector) {
   for (auto &atom : atom_list_) {
     atom.relative_position_ += distance_vector;
-
     atom.relative_position_ -= ElementFloor(atom.relative_position_);
-
     atom.cartesian_position_ = atom.relative_position_ * basis_;
   }
 }
@@ -74,7 +84,6 @@ void Config::MoveOneAtomRelativeDistance(const int &index,
                                          const Vector3 &distance_vector) {
   atom_list_[index].relative_position_ += distance_vector;
   atom_list_[index].relative_position_ -= ElementFloor(atom_list_[index].relative_position_);
-
   atom_list_[index].cartesian_position_ = atom_list_[index].relative_position_ * basis_;
 }
 
@@ -85,6 +94,26 @@ void Config::MoveOneAtomRelativeDistance(const int &index,
 //   WrapAbsolutePosition();
 // }
 
+const double kMean = 0;
+const double kStandardDeviation = 0.15;
+const double kPerturbCutOff = 0.4;
+
+void Config::Perturb(std::mt19937_64 &generator) {
+  std::normal_distribution<double> distribution(kMean, kStandardDeviation);
+  auto add_displacement = [&generator, &distribution](double &coordinate) {
+    double displacement = distribution(generator);
+    while (std::abs(displacement) > kPerturbCutOff) {
+      displacement = distribution(generator);
+    }
+    coordinate += displacement;
+  };
+  for (auto &atom : atom_list_) {
+    add_displacement(atom.cartesian_position_[kXDimension]);
+    add_displacement(atom.cartesian_position_[kYDimension]);
+    add_displacement(atom.cartesian_position_[kZDimension]);
+  }
+  WrapAtomCartesian();
+}
 
 int Config::GetNumAtoms() const {
   return atom_list_.size();
@@ -103,16 +132,16 @@ const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
 
+std::vector<Atom> &Config::GetAtomListMapRef() {
+  return atom_list_;
+}
+
 const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const {
   return element_list_map_;
 }
 
 bool Config::IsNeighborFound() const {
   return neighbor_found_;
-}
-
-void Config::SetNeighborFound(bool neighbor_found) {
-  neighbor_found_ = neighbor_found;
 }
 
 } // namespace kn
