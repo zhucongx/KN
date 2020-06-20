@@ -10,7 +10,7 @@
 #include "AtomUtility.h"
 namespace kn {
 class Config {
-    Todo output neighbor information
+    /// Todo output neighbor information
   public:
     friend class ConfigIO;
 

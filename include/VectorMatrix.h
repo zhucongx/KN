@@ -47,17 +47,20 @@ inline bool operator!=(const Vector3 &lhs, const Vector3 &rhs) {
   return !(rhs == lhs);
 }
 
+const double kEpsilon = 1e-12;
 inline bool operator<(const Vector3 &lhs, const Vector3 &rhs) {
-  const double epsilon = 1e-12;
-  if (lhs[kXDimension] < rhs[kXDimension] - epsilon)
+  const double x_diff = lhs[kXDimension] - rhs[kXDimension];
+  if (x_diff < -kEpsilon)
     return true;
-  if (rhs[kXDimension] < lhs[kXDimension] - epsilon)
+  if (x_diff > kEpsilon)
     return false;
-  if (lhs[kYDimension] < rhs[kYDimension] - epsilon)
+  const double y_diff = lhs[kYDimension] - rhs[kYDimension];
+  if (y_diff < -kEpsilon)
     return true;
-  if (rhs[kYDimension] < lhs[kYDimension] - epsilon)
+  if (y_diff > kEpsilon)
     return false;
-  return lhs[kZDimension] < rhs[kZDimension] - epsilon;
+
+  return lhs[kZDimension] < rhs[kZDimension] - kEpsilon;
 }
 
 inline Vector3 operator-(const Vector3 &vector) {
