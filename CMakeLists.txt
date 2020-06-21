@@ -13,23 +13,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17"
         CACHE INTERNAL "")
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message("GUN flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-            CACHE INTERNAL ""
-            )
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    message("AppleClang flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-            CACHE INTERNAL ""
-            )
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-    message("Intel flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-            CACHE INTERNAL ""
-            )
-endif ()
-
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
 -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Waggregate-return \
@@ -37,13 +21,26 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -frename-registers\
--fopenmp -D_GLIBCXX_PARALLEL"
-        CACHE INTERNAL "")
 
-message(${CMAKE_CXX_FLAGS_RELEASE})
-file(GLOB KN_SRC
-        ${PROJECT_SOURCE_DIR}/src/*.cpp)
+message("-- Detecting ${CMAKE_CXX_COMPILER_ID} compiler")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -frename-registers \
+-fopenmp -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -frename-registers \
+-D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
+else ()
+message(WARNING "Please check which compiler you are using")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -D_GLIBCXX_PARALLEL"
+        CACHE INTERNAL "")
+endif ()
+
+file(GLOB KN_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
