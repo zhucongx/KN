@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <utility>
 #include "ConfigIO.h"
-#include "ConfigUtility.h"
 namespace kn {
 ConfigGenerator::ConfigGenerator(double lattice_const,
                                  const ConfigGenerator::Factor_t &factors,
