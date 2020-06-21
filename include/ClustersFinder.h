@@ -4,7 +4,7 @@
 #include <set>
 #include <unordered_set>
 
-#include "FCCConfig.h"
+#include "Config.h"
 
 namespace kn {
 class ClustersFinder {
