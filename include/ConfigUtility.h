@@ -13,7 +13,7 @@ class ConfigUtility {
     // add small perturbation to break perfect fcc symmetry this method is about to increase
     // the chance to find lower ground states for VASP software
     static std::vector<std::vector<std::string>> Encode(const Config &config,
-                                                        const std::pair<int, int> &pair);
+                                                        const std::pair<int, int> &jump_pair);
 
 };
 } // namespace kn
