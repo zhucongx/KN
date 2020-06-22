@@ -6,6 +6,7 @@
 #include <array>
 #include <iostream>
 #include <numeric>
+#include <iomanip>
 // #define ARMA_ALLOW_FAKE_GCC
 // #define ARMA_DONT_USE_WRAPPER
 // Uncomment this line if there is a compilation error

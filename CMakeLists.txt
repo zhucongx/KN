@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} "
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
--Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Waggregate-return \
+-Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual \
 -Winline -Wunreachable-code -Wcast-align -Wundef -Wredundant-decls \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
