@@ -10,23 +10,27 @@
 
 namespace kn {
 struct Atom {
-    Atom() = default;
-    // Set both relative and absolute position, but will be corrected later
-    Atom(int id, double mass, std::string type, double x, double y, double z) :
-        cartesian_position_{x, y, z},
-        relative_position_{x, y, z},
-        id_(id),
-        mass_(mass),
-        type_(std::move(type)) {
-    }
+  Atom() = default;
+  // Set both relative and absolute position, but will be corrected later
+  Atom(int id, double mass, std::string type, double x, double y, double z) :
+      cartesian_position_{x, y, z},
+      relative_position_{x, y, z},
+      id_(id),
+      mass_(mass),
+      type_(std::move(type)) {
+    first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
+    near_neighbor_list_.reserve(Al_const::kNumNearNeighbors);
+  }
 
-    Atom(int id, double mass, std::string type, Vector3 position) :
-        cartesian_position_(position),
-        relative_position_(position),
-        id_(id),
-        mass_(mass),
-        type_(std::move(type)) {
-    }
+  Atom(int id, double mass, std::string type, Vector3 position) :
+      cartesian_position_(position),
+      relative_position_(position),
+      id_(id),
+      mass_(mass),
+      type_(std::move(type)) {
+    first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
+    near_neighbor_list_.reserve(Al_const::kNumNearNeighbors);
+  }
 
     // absolute position
     Vector3 cartesian_position_{};

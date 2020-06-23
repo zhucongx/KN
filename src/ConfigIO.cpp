@@ -104,8 +104,6 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
               relative_position_Z * scale);
     if (ifs.peek() != '\n') {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
-      atom.first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
-      atom.second_nearest_neighbor_list_.reserve(Al_const::kNumSecondNearestNeighbors);
       for (int i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
         ifs >> index;
         atom.first_nearest_neighbor_list_.push_back(index);
