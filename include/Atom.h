@@ -9,14 +9,25 @@
 #include "VectorMatrix.h"
 
 namespace kn {
-class Atom {
-  public:
-    Atom();
+struct Atom {
+    Atom() = default;
     // Set both relative and absolute position, but will be corrected later
-    Atom(int id, double mass, std::string type, double x, double y, double z);
-    Atom(int id, double mass, std::string type, Vector3 position);
+    Atom(int id, double mass, std::string type, double x, double y, double z) :
+        cartesian_position_{x, y, z},
+        relative_position_{x, y, z},
+        id_(id),
+        mass_(mass),
+        type_(std::move(type)) {
+    }
 
-  public:
+    Atom(int id, double mass, std::string type, Vector3 position) :
+        cartesian_position_(position),
+        relative_position_(position),
+        id_(id),
+        mass_(mass),
+        type_(std::move(type)) {
+    }
+
     // absolute position
     Vector3 cartesian_position_{};
     // relative position in the box
