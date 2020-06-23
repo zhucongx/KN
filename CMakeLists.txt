@@ -21,23 +21,26 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra"
+        CACHE INTERNAL "")
 
 message("-- Detecting ${CMAKE_CXX_COMPILER_ID} compiler")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -frename-registers \
--fopenmp -D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -fopenmp -D_GLIBCXX_PARALLEL"
             CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -fopenmp -D_GLIBCXX_PARALLEL"
             CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -frename-registers \
--D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -D_GLIBCXX_PARALLEL"
             CACHE INTERNAL "")
 else ()
-message(WARNING "Please check which compiler you are using")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra -D_GLIBCXX_PARALLEL"
-        CACHE INTERNAL "")
+    message(WARNING "Please check which compiler you are using")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
 endif ()
 
 file(GLOB KN_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
