@@ -33,7 +33,6 @@ class Config {
 
     void AppendAtom(const Atom &atom);
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
-    std::vector<Atom> &GetAtomListMapRef();
 
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
     [[nodiscard]] bool IsNeighborFound() const;

@@ -132,10 +132,6 @@ const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
 
-std::vector<Atom> &Config::GetAtomListMapRef() {
-  return atom_list_;
-}
-
 const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const {
   return element_list_map_;
 }
