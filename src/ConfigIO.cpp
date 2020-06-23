@@ -108,9 +108,9 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
         ifs >> index;
         atom.first_nearest_neighbor_list_.push_back(index);
       }
-      for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
+      for (int i = 0; i < Al_const::kNumNearNeighbors; ++i) {
         ifs >> index;
-        atom.second_nearest_neighbor_list_.push_back(index);
+        atom.near_neighbor_list_.push_back(index);
       }
       neighbor_found = true;
     }
@@ -120,7 +120,7 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
   config.neighbor_found_ = neighbor_found;
   if (update_neighbors)
     config.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
-                           Al_const::kSecondNearestNeighborsCutoff);
+                           Al_const::kNearNeighborsCutoff);
   return config;
 }
 
@@ -174,7 +174,7 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bo
       for (auto neighbor_index : atom.first_nearest_neighbor_list_) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index : atom.second_nearest_neighbor_list_) {
+      for (auto neighbor_index : atom.near_neighbor_list_) {
         ofs << neighbor_index << ' ';
       }
     }

@@ -93,7 +93,7 @@ std::vector<std::vector<std::string>> ConfigUtility::Encode(const Config &config
                          config.GetAtomList()[jump_pair.second]}) {
     for (const int neighbor_index : atom.first_nearest_neighbor_list_)
       id_set.insert(neighbor_index);
-    for (const int neighbor_index : atom.second_nearest_neighbor_list_)
+    for (const int neighbor_index : atom.near_neighbor_list_)
       id_set.insert(neighbor_index);
   }
   std::vector<int> temporary_id;

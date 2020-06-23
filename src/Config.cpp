@@ -48,8 +48,8 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
           it1->first_nearest_neighbor_list_.emplace_back(it2->id_);
           it2->first_nearest_neighbor_list_.emplace_back(it1->id_);
         } else {
-          it1->second_nearest_neighbor_list_.emplace_back(it2->id_);
-          it2->second_nearest_neighbor_list_.emplace_back(it1->id_);
+          it1->near_neighbor_list_.emplace_back(it2->id_);
+          it2->near_neighbor_list_.emplace_back(it1->id_);
         }
       }
     }
