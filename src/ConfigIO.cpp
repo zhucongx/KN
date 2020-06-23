@@ -97,9 +97,6 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
     std::string type;
     ifs >> mass;
     ifs >> type;
-#ifndef NDEBUG
-    mass = elem_info::FindMass(type);
-#endif
     ifs >> relative_position_X >> relative_position_Y >> relative_position_Z;
     Atom atom(id, mass, type,
               relative_position_X * scale,
