@@ -26,6 +26,8 @@ class Config {
     void WrapAtomCartesian();
     void MoveRelativeDistance(const Vector3 &distance_vector);
     void MoveOneAtomRelativeDistance(const int &index, const Vector3 &distance_vector);
+    // add small perturbation to break perfect fcc symmetry this method is about to increase
+    // the chance to find lower ground states for VASP software
     void Perturb(std::mt19937_64 &generator);
     [[nodiscard]] int GetNumAtoms() const;
 
