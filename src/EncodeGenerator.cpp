@@ -79,6 +79,7 @@ std::vector<std::vector<std::string>> EncodeGenerator::Encode(
     const std::pair<int, int> &jump_pair) {
   std::vector<std::vector<std::string>> result;
 
+  // put jump type and environment atoms' index into a set to avoid duplicate
   std::unordered_set<int> id_set;
   for (const auto &atom:{config.GetAtomList()[jump_pair.first],
                          config.GetAtomList()[jump_pair.second]}) {
@@ -87,6 +88,7 @@ std::vector<std::vector<std::string>> EncodeGenerator::Encode(
     for (const int neighbor_index : atom.near_neighbor_list_)
       id_set.insert(neighbor_index);
   }
+  // convert set to vector and don't keep the jump type
   std::vector<int> temporary_id;
   std::copy_if(id_set.begin(), id_set.end(), std::back_inserter(temporary_id),
                [jump_pair](const int &index) {
