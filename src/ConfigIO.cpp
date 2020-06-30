@@ -119,8 +119,7 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
   config.ConvertRelativeToCartesian();
   config.SetNeighborFound(neighbor_found) ;
   if (!neighbor_found && update_neighbors)
-    config.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
-                           Al_const::kNearNeighborsCutoff);
+    config.UpdateNeighbors();
   return config;
 }
 
