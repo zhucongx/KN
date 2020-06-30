@@ -2,6 +2,8 @@
 #include <chrono>
 
 #include "ConfigIO.h"
+#include "ConfigUtility.h"
+#include "EncodeGenerator.h"
 namespace kn {
 
 KMCSimulation::KMCSimulation(const std::string &cfg_filename,
@@ -21,9 +23,14 @@ void KMCSimulation::RunSimulation() {
 }
 
 std::vector<double> KMCSimulation::CalculateBarrierAndEnergyDifference(
-    const std::pair<int, int> &jump_pair) {
-  auto[first, second] = jump_pair;
+    const std::pair<int, int> &jump_pair) const {
+  const auto[first, second] = jump_pair;
   std::vector<std::string> codes; // atom location in the original atom list
+  const auto input_forward = EncodeGenerator::Encode(config_, jump_pair);
+  int num_row = input_forward.size();
+
+  // const auto &  = encodes;
+
 
 }
 

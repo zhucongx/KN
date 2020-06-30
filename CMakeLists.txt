@@ -56,6 +56,10 @@ find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 
+#find_package(TensorFlow REQUIRED)
+#target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
+
 #find_package(MPI REQUIRED)
 ## include directories
 #target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
