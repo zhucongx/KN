@@ -29,7 +29,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
     }
 
     for (const auto &atom_index : atom_list) {
-      num_atom_in_one_cluster[config_.GetAtomList()[atom_index].type_]++;
+      num_atom_in_one_cluster[config_.GetAtomList()[atom_index].GetType()]++;
       config_out.AppendAtom(config_.GetAtomList()[atom_index]);
     }
 
@@ -95,7 +95,7 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
       visit_id_queue.pop();
 
       atom_list_of_one_cluster.push_back(atom_id);
-      for (const auto &neighbor_id : config_.GetAtomList()[atom_id].first_nearest_neighbor_list_) {
+      for (const auto &neighbor_id : config_.GetAtomList()[atom_id].GetFirstNearestNeighborList()) {
         it = unvisited_atoms_id_set.find(neighbor_id);
         if (it != unvisited_atoms_id_set.end()) {
           visit_id_queue.push(*it);
@@ -125,8 +125,8 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   for (auto &atom_list : cluster_atom_list) {
     std::unordered_map<int, int> neighbor_bond_count;
     for (const auto &atom_index : atom_list) {
-      for (auto neighbor_id : config_.GetAtomList()[atom_index].first_nearest_neighbor_list_) {
-        if (config_.GetAtomList()[neighbor_id].type_ == solvent_element_)
+      for (auto neighbor_id : config_.GetAtomList()[atom_index].GetFirstNearestNeighborList()) {
+        if (config_.GetAtomList()[neighbor_id].GetType() == solvent_element_)
           neighbor_bond_count[neighbor_id]++;
       }
     }

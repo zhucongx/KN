@@ -2,7 +2,6 @@
 #include <chrono>
 
 #include "ConfigIO.h"
-#include "ConfigUtility.h"
 #include "EncodeGenerator.h"
 namespace kn {
 

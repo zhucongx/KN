@@ -1,5 +1,4 @@
 #include "MpiClusters.h"
-#include "ConfigUtility.h"
 #include "ConfigIO.h"
 #include "EncodeGenerator.h"
 #include "KMCSimulation.h"

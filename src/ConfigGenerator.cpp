@@ -30,7 +30,7 @@ Config ConfigGenerator::ShuffleConfig(const Config &config) const {
   auto atom_index_list_copy(atom_index_list_);
   shuffle(atom_index_list_copy.begin(), atom_index_list_copy.end(), generator_);
   for (auto atom : config.GetAtomList()) {
-    atom.type_ = atom_index_list_copy[atom.id_];
+    atom.SetType(atom_index_list_copy[atom.GetId()]);
     config_out.AppendAtom(atom);
   }
   return config_out;
@@ -85,10 +85,10 @@ Config Duplicate(const Config &in_config,
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
         for (const auto &atom : atom_list_of_input) {
-          out_config.AppendAtom({atoms_counter++, atom.mass_, atom.type_,
-                                 (x_reference + atom.relative_position_[kXDimension]) / x_length,
-                                 (y_reference + atom.relative_position_[kYDimension]) / y_length,
-                                 (z_reference + atom.relative_position_[kZDimension]) / z_length
+          out_config.AppendAtom({atoms_counter++, atom.GetMass(), atom.GetType(),
+                                 (x_reference + atom.GetRelativePosition()[kXDimension]) / x_length,
+                                 (y_reference + atom.GetRelativePosition()[kYDimension]) / y_length,
+                                 (z_reference + atom.GetRelativePosition()[kZDimension]) / z_length
                                 });
         }
       }
