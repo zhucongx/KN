@@ -44,10 +44,15 @@ else ()
 endif ()
 
 file(GLOB KN_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+set(KN_INCLUDE "${PROJECT_SOURCE_DIR}/include")
 
-add_executable(${PROJECT_NAME} ${KN_SRC})
+file(GLOB EXTERNAL_SRC ${PROJECT_SOURCE_DIR}/external/cppflow/src/*.cpp)
+set(EXTERNAL_INCLUDE "${PROJECT_SOURCE_DIR}/external/cppflow/include")
+
+add_executable(${PROJECT_NAME} ${KN_SRC} ${EXTERNAL_SRC})
+target_include_directories(${PROJECT_NAME} PUBLIC ${KN_INCLUDE} ${EXTERNAL_INCLUDE})
+
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 #find_package(EIGEN3 REQUIRED)
 #include_directories(${EIGEN3_INCLUDE_DIR})
@@ -56,9 +61,9 @@ find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 
-#find_package(TensorFlow REQUIRED)
-#target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
+find_package(TensorFlow REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
 
 #find_package(MPI REQUIRED)
 ## include directories
