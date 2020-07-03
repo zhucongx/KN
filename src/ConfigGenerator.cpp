@@ -1,11 +1,8 @@
 #include "ConfigGenerator.h"
-#include <random>
 #include <chrono>
 #include <filesystem>
-#include <fstream>
 #include <utility>
 #include "ConfigIO.h"
-#include "ConfigUtility.h"
 namespace kn {
 ConfigGenerator::ConfigGenerator(double lattice_const,
                                  const ConfigGenerator::Factor_t &factors,
@@ -21,7 +18,7 @@ ConfigGenerator::ConfigGenerator(double lattice_const,
   std::transform(element_count_map_.begin(),
                  element_count_map_.end(),
                  std::back_inserter(element_list_),
-                 [](const std::pair<std::string, int> &pair) { return pair.first; });
+                 [](const auto &pair) { return pair.first; });
 
   for (const auto&[element, count] : element_count_map_) {
     atom_index_list_.insert(atom_index_list_.end(), count, element);
@@ -33,7 +30,7 @@ Config ConfigGenerator::ShuffleConfig(const Config &config) const {
   auto atom_index_list_copy(atom_index_list_);
   shuffle(atom_index_list_copy.begin(), atom_index_list_copy.end(), generator_);
   for (auto atom : config.GetAtomList()) {
-    atom.type_ = atom_index_list_copy[atom.id_];
+    atom.SetType(atom_index_list_copy[atom.GetId()]);
     config_out.AppendAtom(atom);
   }
   return config_out;
@@ -45,7 +42,7 @@ void ConfigGenerator::CreateRandom(int num_configs) {
     std::string start_path("config" + std::to_string(i) + "/s");
     std::filesystem::create_directories(start_path);
     ConfigIO::WriteConfig(config_start, start_path + "/start.cfg", false);
-    ConfigUtility::Perturb(config_start, generator_);
+    config_start.Perturb(generator_);
     ConfigIO::WritePOSCAR(config_start, "config" + std::to_string(i) + "/s/POSCAR", false);
     PrepareVASPFiles(start_path);
   }
@@ -88,10 +85,10 @@ Config Duplicate(const Config &in_config,
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
         for (const auto &atom : atom_list_of_input) {
-          out_config.AppendAtom({atoms_counter++, atom.mass_, atom.type_,
-                                 (x_reference + atom.relative_position_[kXDimension]) / x_length,
-                                 (y_reference + atom.relative_position_[kYDimension]) / y_length,
-                                 (z_reference + atom.relative_position_[kZDimension]) / z_length
+          out_config.AppendAtom({atoms_counter++, atom.GetMass(), atom.GetType(),
+                                 (x_reference + atom.GetRelativePosition()[kXDimension]) / x_length,
+                                 (y_reference + atom.GetRelativePosition()[kYDimension]) / y_length,
+                                 (z_reference + atom.GetRelativePosition()[kZDimension]) / z_length
                                 });
         }
       }
@@ -187,46 +184,46 @@ Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
 //   return config;
 // }
 //
-// Config ConfigGenerator::GenerateHCP(double lattice_constant_a,
-//                                     double lattice_constant_c,
-//                                     const std::string &element,
-//                                     const std::array<int, kDimension> &factors) {
-//
-//   double mass = elem_info::FindMass(element);
-//   Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
-//                   {-0.5 * lattice_constant_a * factors[kYDimension],
-//                    0.5 * sqrt(3) * lattice_constant_a * factors[kYDimension], 0},
-//                   {0, 0, lattice_constant_c * factors[kZDimension]}}},
-//                 2 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
-//   int atoms_counter = 0;
-//
-//   auto x_length = static_cast<double>(factors[kXDimension]);
-//   auto y_length = static_cast<double>(factors[kYDimension]);
-//   auto z_length = static_cast<double>(factors[kZDimension]);
-//   for (int k = 0; k < factors[kZDimension]; ++k) {
-//     for (int j = 0; j < factors[kYDimension]; ++j) {
-//       for (int i = 0; i < factors[kXDimension]; ++i) {
-//         auto x_reference = static_cast<double>(i);
-//         auto y_reference = static_cast<double>(j);
-//         auto z_reference = static_cast<double>(k);
-//         config.AppendAtom({
-//                               atoms_counter++, mass, element,
-//                               x_reference / x_length,
-//                               y_reference / y_length,
-//                               z_reference / z_length
-//                           });
-//         config.AppendAtom({
-//                               atoms_counter, mass, element,
-//                               (x_reference + 1.0 / 3.0) / x_length,
-//                               (y_reference + 2.0 / 3.0) / y_length,
-//                               (z_reference + 0.5) / z_length
-//                           });
-//       }
-//     }
-//   }
-//   config.ConvertRelativeToCartesian();
-//   return config;
-// }
+Config ConfigGenerator::GenerateHCP(double lattice_constant_a,
+                                    double lattice_constant_c,
+                                    const std::string &element,
+                                    const std::array<int, kDimension> &factors) {
+
+  double mass = elem_info::FindMass(element);
+  Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
+                  {-0.5 * lattice_constant_a * factors[kYDimension],
+                   0.5 * sqrt(3) * lattice_constant_a * factors[kYDimension], 0},
+                  {0, 0, lattice_constant_c * factors[kZDimension]}}},
+                2 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
+  int atoms_counter = 0;
+
+  auto x_length = static_cast<double>(factors[kXDimension]);
+  auto y_length = static_cast<double>(factors[kYDimension]);
+  auto z_length = static_cast<double>(factors[kZDimension]);
+  for (int k = 0; k < factors[kZDimension]; ++k) {
+    for (int j = 0; j < factors[kYDimension]; ++j) {
+      for (int i = 0; i < factors[kXDimension]; ++i) {
+        auto x_reference = static_cast<double>(i);
+        auto y_reference = static_cast<double>(j);
+        auto z_reference = static_cast<double>(k);
+        config.AppendAtom({
+                              atoms_counter++, mass, element,
+                              x_reference / x_length,
+                              y_reference / y_length,
+                              z_reference / z_length
+                          });
+        config.AppendAtom({
+                              atoms_counter, mass, element,
+                              (x_reference + 1.0 / 3.0) / x_length,
+                              (y_reference + 2.0 / 3.0) / y_length,
+                              (z_reference + 0.5) / z_length
+                          });
+      }
+    }
+  }
+  config.ConvertRelativeToCartesian();
+  return config;
+}
 
 Config ConfigGenerator::GenerateL10(double lattice_constant_a,
                                     const std::vector<std::string> &element_list,

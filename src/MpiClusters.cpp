@@ -4,6 +4,8 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 
+#include "ClustersFinder.h"
+
 namespace kn {
 MpiClusters::MpiClusters(long long int initial_number,
                          long long int increment_number,

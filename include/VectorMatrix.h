@@ -6,6 +6,7 @@
 #include <array>
 #include <iostream>
 #include <numeric>
+#include <iomanip>
 // #define ARMA_ALLOW_FAKE_GCC
 // #define ARMA_DONT_USE_WRAPPER
 // Uncomment this line if there is a compilation error
@@ -13,15 +14,23 @@
 #include "Constants.h"
 const int kDimension = 3;
 
-enum { kXDimension, kYDimension, kZDimension };
+enum Dimension { kXDimension, kYDimension, kZDimension };
+const std::array<Dimension, 3> All_Dimensions{kXDimension, kYDimension, kZDimension};
+
 
 // By default, it is always a 1 by 3 vector
-
 using Vector3 = std::array<double, kDimension>;
 using Matrix33 = std::array<Vector3, kDimension>;
 
+
 inline std::ostream &operator<<(std::ostream &os, const Vector3 &vector) {
+#ifndef NDEBUG
+  os << std::setprecision(16) <<
+     vector[kXDimension] << ' ' << std::setprecision(16) << vector[kYDimension] << ' '
+     << std::setprecision(16) << vector[kZDimension];
+#else
   os << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
+#endif
   return os;
 }
 
@@ -35,21 +44,30 @@ inline bool operator==(const Vector3 &lhs, const Vector3 &rhs) {
       lhs[kYDimension] == rhs[kYDimension] &&
       lhs[kZDimension] == rhs[kZDimension];
 }
-
 inline bool operator!=(const Vector3 &lhs, const Vector3 &rhs) {
   return !(rhs == lhs);
 }
 
+const double kEpsilon = 1e-12;
 inline bool operator<(const Vector3 &lhs, const Vector3 &rhs) {
-  if (lhs[kXDimension] < rhs[kXDimension])
+  const double x_diff = lhs[kXDimension] - rhs[kXDimension];
+  if (x_diff < -kEpsilon)
     return true;
-  if (rhs[kXDimension] < lhs[kXDimension])
+  if (x_diff > kEpsilon)
     return false;
-  if (lhs[kYDimension] < rhs[kYDimension])
+  const double y_diff = lhs[kYDimension] - rhs[kYDimension];
+  if (y_diff < -kEpsilon)
     return true;
-  if (rhs[kYDimension] < lhs[kYDimension])
+  if (y_diff > kEpsilon)
     return false;
-  return lhs[kZDimension] < rhs[kZDimension];
+
+  return lhs[kZDimension] < rhs[kZDimension] - kEpsilon;
+}
+
+inline Vector3 operator-(const Vector3 &vector) {
+  return {-vector[kXDimension],
+          -vector[kYDimension],
+          -vector[kZDimension]};
 }
 
 inline Vector3 &operator+=(Vector3 &lhs, const Vector3 &rhs) {
@@ -223,16 +241,8 @@ inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs) {
           + lhs[kZDimension] * rhs[kZDimension][kZDimension]
   };
 }
-
-inline Matrix33 InverseMatrix33(const Matrix33 &input) {
-  // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
-  //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
-  //                        {input[kZDimension][kXDimension], input[kZDimension][kYDimension], input[kZDimension][kZDimension]}};
-  // arma::mat inverse_matrix = arma::inv(mat_input);
-  // return {{inverse_matrix(0, 0), inverse_matrix(0, 1), inverse_matrix(0, 2)},
-  //         {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
-  //         {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
-  double det = (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
+inline double Determinant(const Matrix33 &input) {
+  return (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
       * input[kZDimension][kZDimension]
       - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]
           * input[kZDimension][kYDimension]
@@ -244,6 +254,21 @@ inline Matrix33 InverseMatrix33(const Matrix33 &input) {
           * input[kZDimension][kYDimension]
       - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
           * input[kZDimension][kXDimension]);
+}
+// inline Matrix33 Normalize(const Matrix33 &input) {
+//   std::cout <<Determinant(input)<<'\n';
+//   double factor = 1.0 / Determinant(input);
+//   return input * factor;
+// }
+inline Matrix33 InverseMatrix33(const Matrix33 &input) {
+  // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
+  //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
+  //                        {input[kZDimension][kXDimension], input[kZDimension][kYDimension], input[kZDimension][kZDimension]}};
+  // arma::mat inverse_matrix = arma::inv(mat_input);
+  // return {{inverse_matrix(0, 0), inverse_matrix(0, 1), inverse_matrix(0, 2)},
+  //         {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
+  //         {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
+  double det = Determinant(input);
   return {
       {
           {

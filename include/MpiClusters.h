@@ -2,7 +2,6 @@
 #define KN_INCLUDE_MPICLUSTERS_H_
 
 #include "MpiIterator.h"
-#include "ClustersFinder.h"
 namespace kn {
 
 class MpiClusters : public MpiIterator {

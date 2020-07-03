@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_C_COMPILER "mpicc")
-set(CMAKE_CXX_COMPILER "mpicxx")
+#set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
+#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 17)
@@ -10,38 +10,49 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17"
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} "
         CACHE INTERNAL "")
 
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
+-Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual \
+-Winline -Wunreachable-code -Wcast-align -Wundef -Wredundant-decls \
+-O0 -g3 -finline-functions"
+        CACHE INTERNAL "")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra"
+        CACHE INTERNAL "")
+
+message("-- Detecting ${CMAKE_CXX_COMPILER_ID} compiler")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message("GUN flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-            CACHE INTERNAL ""
-            )
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -fopenmp -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    message("AppleClang flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-            CACHE INTERNAL ""
-            )
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -fopenmp -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-    message("Intel flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}"
-            CACHE INTERNAL ""
-            )
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
+else ()
+    message(WARNING "Please check which compiler you are using")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_GLIBCXX_PARALLEL"
+            CACHE INTERNAL "")
 endif ()
 
+file(GLOB KN_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+set(KN_INCLUDE "${PROJECT_SOURCE_DIR}/include")
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -W -Wall -O0 -g3 -ggdb -DMY_DEBUG"
-        CACHE INTERNAL "")
+file(GLOB EXTERNAL_SRC ${PROJECT_SOURCE_DIR}/external/cppflow/src/*.cpp)
+set(EXTERNAL_INCLUDE "${PROJECT_SOURCE_DIR}/external/cppflow/include")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DMY_RELEASE"
-        CACHE INTERNAL "")
-file(GLOB KN_SRC
-        ${PROJECT_SOURCE_DIR}/src/*.cpp)
+add_executable(${PROJECT_NAME} ${KN_SRC} ${EXTERNAL_SRC})
+target_include_directories(${PROJECT_NAME} PUBLIC ${KN_INCLUDE} ${EXTERNAL_INCLUDE})
 
-add_executable(${PROJECT_NAME} ${KN_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 #find_package(EIGEN3 REQUIRED)
 #include_directories(${EIGEN3_INCLUDE_DIR})
@@ -49,6 +60,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
+
+find_package(TensorFlow REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
 
 #find_package(MPI REQUIRED)
 ## include directories

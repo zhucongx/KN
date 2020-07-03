@@ -4,7 +4,7 @@
 #include <set>
 #include <unordered_set>
 
-#include "FCCConfig.h"
+#include "Config.h"
 
 namespace kn {
 class ClustersFinder {
@@ -13,17 +13,14 @@ class ClustersFinder {
     ClustersFinder(std::string cfg_filename,
                    std::string solvent_atom_type,
                    int smallest_cluster_criteria,
-                   int solvent_bond_criteria,
-                   double first_nearest_neighbors_distance = Al_const::kFirstNearestNeighborCutoff,
-                   double second_nearest_neighbors_distance = Al_const::kSecondNearestNeighborsCutoff);
+                   int solvent_bond_criteria);
     // Return a 2D array where values of each row representing the number of atoms of different
     // element in one cluster
     ClusterElementNumMap FindClustersAndOutput();
 
     static void PrintLog(const std::string &filename, const ClusterElementNumMap &found_data);
   private:
-    void ReadFileAndUpdateNeighbor(double first_nearest_neighbors_distance,
-                                   double second_nearest_neighbors_distance);
+    void ReadFileAndUpdateNeighbor();
     [[nodiscard]] std::unordered_set<int> FindSoluteAtomsHelper() const;
     [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClustersBFSHelper(
         std::unordered_set<int> unvisited_atoms_id_set) const;

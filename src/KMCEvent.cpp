@@ -2,7 +2,7 @@
 #include "KMCEvent.h"
 
 namespace kn {
-KMCEvent::KMCEvent(const std::pair<int, int> &jump_pair) : jump_pair_(jump_pair) {
+KMCEvent::KMCEvent(std::pair<int, int> jump_pair) : jump_pair_(std::move(jump_pair)) {
 }
 
 const std::pair<int, int> &KMCEvent::GetJumpPair() const {

@@ -3,8 +3,6 @@
 #include <iostream>
 #include <utility>
 
-#include "AtomUtility.h"
-
 namespace kn {
 Config::Config() = default;
 Config::Config(const Matrix33 &basis, int atom_size) : basis_(basis) {
@@ -17,14 +15,14 @@ bool Config::operator<(const Config &rhs) const {
 
 void Config::ConvertRelativeToCartesian() {
   for (auto &atom : atom_list_) {
-    atom.cartesian_position_ = atom.relative_position_ * basis_;
+    atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
   }
 }
 
 void Config::ConvertCartesianToRelative() {
   auto inverse_basis = InverseMatrix33(basis_);
   for (auto &atom : atom_list_) {
-    atom.relative_position_ = atom.cartesian_position_ * inverse_basis;
+    atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
   }
 }
 
@@ -36,8 +34,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
   for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
-      Vector3 absolute_distance_vector =
-          AtomUtility::GetRelativeDistanceVector(*it1, *it2) * basis_;
+      Vector3 absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
       if (absolute_distance_vector[kXDimension] > second_r_cutoff_square)
         continue;
       if (absolute_distance_vector[kYDimension] > second_r_cutoff_square)
@@ -47,35 +44,47 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
       double absolute_distance_square = Inner(absolute_distance_vector);
       if (absolute_distance_square <= second_r_cutoff_square) {
         if (absolute_distance_square <= first_r_cutoff_square) {
-          it1->first_nearest_neighbor_list_.emplace_back(it2->id_);
-          it2->first_nearest_neighbor_list_.emplace_back(it1->id_);
+          it1->AppendFirstNearestNeighborList(it2->GetId());
+          it2->AppendFirstNearestNeighborList(it1->GetId());
         } else {
-          it1->second_nearest_neighbor_list_.emplace_back(it2->id_);
-          it2->second_nearest_neighbor_list_.emplace_back(it1->id_);
+          it1->AppendNearNeighborList(it2->GetId());
+          it2->AppendNearNeighborList(it1->GetId());
         }
       }
     }
   }
   neighbor_found_ = true;
 }
+void Config::WrapAtomRelative() {
+  for (auto &atom : atom_list_) {
+    atom.SetRelativePosition(atom.GetRelativePosition() - ElementFloor(atom.GetRelativePosition()));
+    atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
+  }
+}
+void Config::WrapAtomCartesian() {
+  auto inverse_basis = InverseMatrix33(basis_);
+  for (auto &atom : atom_list_) {
+    atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
+    atom.SetRelativePosition(atom.GetRelativePosition() - ElementFloor(atom.GetRelativePosition()));
+    atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
+  }
+}
 
 // for better performance, shouldn't call Wrap function
 void Config::MoveRelativeDistance(const Vector3 &distance_vector) {
   for (auto &atom : atom_list_) {
-    atom.relative_position_ += distance_vector;
-
-    atom.relative_position_ -= ElementFloor(atom.relative_position_);
-
-    atom.cartesian_position_ = atom.relative_position_ * basis_;
+    atom.SetRelativePosition(atom.GetRelativePosition() + distance_vector);
+    atom.SetRelativePosition(atom.GetRelativePosition() - ElementFloor(atom.GetRelativePosition()));
+    atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
   }
 }
 
-void Config::MoveOneAtomRelativeDistance(const int &index,
+void Config::MoveOneAtomRelativeDistance(int index,
                                          const Vector3 &distance_vector) {
-  atom_list_[index].relative_position_ += distance_vector;
-  atom_list_[index].relative_position_ -= ElementFloor(atom_list_[index].relative_position_);
-
-  atom_list_[index].cartesian_position_ = atom_list_[index].relative_position_ * basis_;
+  atom_list_[index].SetRelativePosition(atom_list_[index].GetRelativePosition() + distance_vector);
+  atom_list_[index].SetRelativePosition(atom_list_[index].GetRelativePosition()
+                                            - ElementFloor(atom_list_[index].GetRelativePosition()));
+  atom_list_[index].SetCartesianPosition(atom_list_[index].GetRelativePosition() * basis_);
 }
 
 // void Config::MoveAbsoluteDistance(const Vector3 &distance_vector) {
@@ -85,6 +94,28 @@ void Config::MoveOneAtomRelativeDistance(const int &index,
 //   WrapAbsolutePosition();
 // }
 
+const double kMean = 0;
+const double kStandardDeviation = 0.15;
+const double kPerturbCutOff = 0.4;
+
+void Config::Perturb(std::mt19937_64 &generator) {
+  std::normal_distribution<double> distribution(kMean, kStandardDeviation);
+  auto add_displacement = [&generator, &distribution](double &coordinate) {
+    double displacement = distribution(generator);
+    while (std::abs(displacement) > kPerturbCutOff) {
+      displacement = distribution(generator);
+    }
+    coordinate += displacement;
+  };
+  for (auto &atom : atom_list_) {
+    auto cartesian_position = atom.GetCartesianPosition();
+    for (const auto kDim : All_Dimensions) {
+      add_displacement(cartesian_position[kDim]);
+    }
+    atom.SetCartesianPosition(cartesian_position);
+  }
+  WrapAtomCartesian();
+}
 
 int Config::GetNumAtoms() const {
   return atom_list_.size();
@@ -96,7 +127,7 @@ const Matrix33 &Config::GetBasis() const {
 
 void Config::AppendAtom(const Atom &atom) {
   atom_list_.push_back(atom);
-  element_list_map_[atom.type_].emplace_back(atom.id_);
+  element_list_map_[atom.GetType()].emplace_back(atom.GetId());
 }
 
 const std::vector<Atom> &Config::GetAtomList() const {
@@ -110,9 +141,24 @@ const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const
 bool Config::IsNeighborFound() const {
   return neighbor_found_;
 }
-
 void Config::SetNeighborFound(bool neighbor_found) {
   neighbor_found_ = neighbor_found;
 }
 
+
+std::map<Bond, int> CountAllBonds(Config &config) {
+  std::map<Bond, int> bonds_count_map;
+  std::string type1, type2;
+  auto atom_list = config.GetAtomList();
+  for (const auto &atom : atom_list) {
+    type1 = atom.GetType();
+    for (const auto &atom2_id : atom.GetFirstNearestNeighborList()) {
+      bonds_count_map[Bond{type1, atom_list[atom2_id].GetType()}]++;
+    }
+  }
+  for (auto &bond_count : bonds_count_map) {
+    bond_count.second /= 2;
+  }
+  return bonds_count_map;
+}
 } // namespace kn

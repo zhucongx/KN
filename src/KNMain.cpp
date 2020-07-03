@@ -1,5 +1,6 @@
 #include "MpiClusters.h"
-#include "ConfigUtility.h"
+#include "ConfigIO.h"
+#include "EncodeGenerator.h"
 #include "KMCSimulation.h"
 #include "ConfigGenerator.h"
 using namespace kn;
@@ -8,16 +9,29 @@ namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
 
-  // ClustersFinder test("0.cfg", "Al", 3, 3);
-  // test.FindClustersAndOutput();
-  ConfigGenerator a(4.046,
-                    {4, 4, 4},
-                    "Al",
-                    {{"Al", 200}, {"Mg", 30}, {"Zn", 25}, {"X", 1}},
-                    "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
-  a.CreateRandom(1);
+  // EncodeGenerator dw("log.txt");
+  // dw.PrintOutEncode();
+
+  Config test = ConfigIO::ReadConfig("0.cfg", true);
+
+  auto asd = EncodeGenerator::Encode(test, {82, 83});
+
+  for (auto &&a:asd) {
+    for (auto &&b:a)
+      cout << b << "   ";
+    cout << '\n';
+  }
+
+  auto asd1 = EncodeGenerator::Encode(test, {83, 82});
+  for (auto &&a:asd1) {
+    for (auto it = a.rbegin(); it != a.rend(); it ++)
+      cout << *it << "   ";
+    cout << '\n';
+  }
+
+
   // test.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
-  //                      Al_const::kSecondNearestNeighborsCutoff);
+  //                      Al_const::kNearNeighborsCutoff);
   // ConfigIO::WriteConfig(test, "0_f.cfg", false);
   // MpiClusters test(370000000, 1000000, 6252000000,
   //                  "Al", 3, 3);

@@ -28,10 +28,10 @@ class ConfigGenerator {
     // static Config GenerateBCC(double lattice_constant_a,
     //                           const std::string &element,
     //                           const Factor_t &factors);
-    // static Config GenerateHCP(double lattice_constant_a,
-    //                           double lattice_constant_c,
-    //                           const std::string &element,
-    //                           const Factor_t &factors);
+    static Config GenerateHCP(double lattice_constant_a,
+                              double lattice_constant_c,
+                              const std::string &element,
+                              const Factor_t &factors);
     // Anti-phase Configuration
     static Config GenerateL10(double lattice_constant_a,
                               const std::vector<std::string> &element_list,

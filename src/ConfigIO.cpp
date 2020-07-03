@@ -51,7 +51,7 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
   return config;
 }
 
-Config ConfigIO::ReadConfig(const std::string &filename) {
+Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
@@ -104,22 +104,22 @@ Config ConfigIO::ReadConfig(const std::string &filename) {
               relative_position_Z * scale);
     if (ifs.peek() != '\n') {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
-      atom.first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
-      atom.second_nearest_neighbor_list_.reserve(Al_const::kNumSecondNearestNeighbors);
       for (int i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
         ifs >> index;
-        atom.first_nearest_neighbor_list_.push_back(index);
+        atom.AppendFirstNearestNeighborList(index);
       }
-      for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
+      for (int i = 0; i < Al_const::kNumNearNeighbors; ++i) {
         ifs >> index;
-        atom.second_nearest_neighbor_list_.push_back(index);
+        atom.AppendNearNeighborList(index);
       }
       neighbor_found = true;
     }
     config.AppendAtom(atom);
   }
   config.ConvertRelativeToCartesian();
-  config.SetNeighborFound(neighbor_found);
+  config.SetNeighborFound(neighbor_found) ;
+  if (!neighbor_found && update_neighbors)
+    config.UpdateNeighbors();
   return config;
 }
 
@@ -142,7 +142,7 @@ void ConfigIO::WritePOSCAR(const Config &config,
   for (const auto &[element, element_list] : config.GetElementListMap()) {
     if (show_vacancy_option || element != "X") {
       for (auto index : element_list) {
-        ofs << config.GetAtomList()[index].relative_position_ << '\n';
+        ofs << config.GetAtomList()[index].GetRelativePosition() << '\n';
       }
     }
   }
@@ -165,15 +165,15 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bo
   ofs << ".NO_VELOCITY.\n";
   ofs << "entry_count = 3\n";
   for (const auto &atom : config.GetAtomList()) {
-    ofs << atom.mass_ << '\n'
-        << atom.type_ << '\n'
-        << atom.relative_position_;
+    ofs << atom.GetMass() << '\n'
+        << atom.GetType() << '\n'
+        << atom.GetRelativePosition();
     if (neighbors_info) {
       ofs << " #";
-      for (auto neighbor_index : atom.first_nearest_neighbor_list_) {
+      for (auto neighbor_index : atom.GetFirstNearestNeighborList()) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index : atom.second_nearest_neighbor_list_) {
+      for (auto neighbor_index : atom.GetNearNeighborList()) {
         ofs << neighbor_index << ' ';
       }
     }

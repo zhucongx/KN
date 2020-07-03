@@ -7,12 +7,25 @@
 
 namespace Al_const {
 constexpr double kFirstNearestNeighborCutoff = 3.5;
-constexpr double kSecondNearestNeighborsCutoff = 4.1;
+constexpr double kSecondNearestNeighborsCutoff= 4.1;
+constexpr double kThirdNearestNeighborCutoff = 5.0;
+
+constexpr double kNearNeighborsCutoff = kThirdNearestNeighborCutoff;
+
+
 
 // For FCC the first nearest neighbor is 12
 constexpr int kNumFirstNearestNeighbors = 12;
-// For FCC the second nearest neighbor is 18
+// For FCC the second nearest neighbor is 6
 constexpr int kNumSecondNearestNeighbors = 6;
+// For FCC the third nearest neighbor is 6
+constexpr int kNumThirdNearestNeighbors = 24;
+
+constexpr int kNumNearNeighbors = kNumSecondNearestNeighbors + kNumThirdNearestNeighbors;
+
+
+
+constexpr int kLengthOfEncodes = 59;
 } // namespace Al_const
 
 
@@ -83,10 +96,6 @@ inline double FindMass(const std::string &elem) {
   /*this "it" is indeed a iterator*/
   auto it = std::find(element_list.begin(), element_list.end(), elem);
   return mass_list[std::distance(element_list.begin(), it)];
-}
-
-inline double FindMass(int atomicNum) {
-  return mass_list[atomicNum];
 }
 }// namespace elem_info
 
