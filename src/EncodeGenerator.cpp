@@ -49,9 +49,10 @@ Matrix33 GetJumpMatrixHelper(const Config &config,
 
   return {-pair_direction, -vertical_vector, Normalize(Cross(pair_direction, vertical_vector))};
 }
-std::vector<std::string> RotateAtomsAndGetCodeHelper(const std::string &jump_type,
-                                                     std::vector<Atom> &atom_list,
-                                                     const Matrix33 &rotation_matrix) {
+std::array<std::string, Al_const::kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
+    const std::string &jump_type,
+    std::vector<Atom> &atom_list,
+    const Matrix33 &rotation_matrix) {
   const auto move_distance_after_rotation = Vector3{0.5, 0.5, 0.5}
       - (Vector3{0.5, 0.5, 0.5} * rotation_matrix);
   for (auto &atom : atom_list) {
@@ -68,19 +69,19 @@ std::vector<std::string> RotateAtomsAndGetCodeHelper(const std::string &jump_typ
             [](const Atom &first_atom, const Atom &second_atom) {
               return first_atom.GetRelativePosition() < second_atom.GetRelativePosition();
             });
-  std::vector<std::string> string_codes;
-  string_codes.reserve(Al_const::kLengthOfEncodes);
-  string_codes.push_back(jump_type);
+  std::array<std::string, Al_const::kLengthOfEncodes> string_codes;
+  string_codes[0] = jump_type;
+  size_t index = 0;
   for (const auto &atom : atom_list) {
-    string_codes.push_back(atom.GetType());
+    string_codes.at(++index) = atom.GetType();
   }
 
   return string_codes;
 }
-std::vector<std::vector<std::string>> EncodeGenerator::Encode(
+std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator::Encode(
     const Config &config,
     const std::pair<int, int> &jump_pair) {
-  std::vector<std::vector<std::string>> result;
+  std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> result;
 
   // put jump type and environment atoms' index into a set to avoid duplicate
   std::unordered_set<int> id_set;
@@ -101,7 +102,7 @@ std::vector<std::vector<std::string>> EncodeGenerator::Encode(
 
   std::vector<Atom> atom_list;
   atom_list.reserve(temporary_id.size());
-for (int index : temporary_id) {
+  for (int index : temporary_id) {
     atom_list.push_back(config.GetAtomList()[index]);
   }
 

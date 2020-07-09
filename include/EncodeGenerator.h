@@ -11,8 +11,9 @@ class EncodeGenerator {
   public:
     EncodeGenerator(std::string reference_filename);
     void PrintOutEncode();
-    static std::vector<std::vector<std::string>> Encode(const Config &config,
-                                                        const std::pair<int, int> &jump_pair);
+    static std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> Encode(
+        const Config &config,
+        const std::pair<int, int> &jump_pair);
   private:
     std::string reference_filename_;
 };
