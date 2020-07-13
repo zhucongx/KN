@@ -9,7 +9,7 @@
 namespace kn {
 class EncodeGenerator {
   public:
-    EncodeGenerator(std::string reference_filename);
+    explicit EncodeGenerator(std::string reference_filename);
     void PrintOutEncode();
     static std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> Encode(
         const Config &config,

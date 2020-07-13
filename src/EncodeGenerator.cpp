@@ -73,7 +73,7 @@ std::array<std::string, Al_const::kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
   string_codes[0] = jump_type;
   size_t index = 0;
   for (const auto &atom : atom_list) {
-    string_codes.at(++index) = atom.GetType();
+    string_codes[++index] = atom.GetType();
   }
 
   return string_codes;
@@ -81,7 +81,6 @@ std::array<std::string, Al_const::kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
 std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator::Encode(
     const Config &config,
     const std::pair<int, int> &jump_pair) {
-  std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> result;
 
   // put jump type and environment atoms' index into a set to avoid duplicate
   std::unordered_set<int> id_set;
@@ -122,7 +121,8 @@ std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator
   }
 
   const auto &jump_type = config.GetAtomList()[jump_pair.second].GetType();
-
+  std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> result;
+  result.reserve(4);
   // First Rotation
   result.push_back(RotateAtomsAndGetCodeHelper(jump_type, atom_list,
                                                InverseMatrix33(GetJumpMatrixHelper(config,
