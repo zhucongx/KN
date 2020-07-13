@@ -34,8 +34,6 @@ class KMCSimulation {
     // Running parameters
     mutable boost::mpi::environment env_;
     mutable boost::mpi::communicator world_;
-    int mpi_rank_;
-    int mpi_size_;
     mutable std::mt19937_64 generator_;
     mutable std::ofstream ofs_;
 };

@@ -1,8 +1,13 @@
 #include "KMCSimulation.h"
 #include <chrono>
 
+#include <tensorflow/c/c_api.h>
+#include "Model.h"
+#include "Tensor.h"
+
 #include "ConfigIO.h"
 #include "EncodeGenerator.h"
+#include "LRUCache.h"
 namespace kn {
 
 KMCSimulation::KMCSimulation(const std::string &cfg_filename,
@@ -10,10 +15,8 @@ KMCSimulation::KMCSimulation(const std::string &cfg_filename,
                              double second_nearest_neighbors_distance) :
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {
   config_ = ConfigIO::ReadConfig(cfg_filename, true);
-  mpi_rank_ = world_.rank();
-  mpi_size_ = world_.size();
-  if (mpi_rank_ == 0) {
-    std::cout << "Using " << mpi_size_ << " processes." << std::endl;
+  if (world_.rank() == 0) {
+    std::cout << "Using " << world_.size() << " processes." << std::endl;
     ofs_.open("kmc.txt", std::ofstream::out | std::ofstream::app);
   }
 }
