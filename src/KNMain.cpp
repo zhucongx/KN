@@ -8,10 +8,9 @@ namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
 
-  // EncodeGenerator dw("log.txt");
-  // dw.PrintOutEncode();
+  // EncodeGenerator::PrintOutEncode("log.txt");
 
-  Config test = Config::ReadConfig("0.cfg", true);
+  Config test = Config::ReadConfig("start.cfg", true);
 
   auto asd = EncodeGenerator::Encode(test, {82, 83});
 

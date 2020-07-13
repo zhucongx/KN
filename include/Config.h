@@ -20,8 +20,7 @@ class Config {
                          double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff,
                          double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff);
 
-    // update both atoms' relative and absolute positions according to periodic
-    // boundary condition
+    // update both atoms' relative and cartesian positions according to periodic boundary condition
     void WrapAtomRelative();
     void WrapAtomCartesian();
     void MoveRelativeDistance(const Vector3 &distance_vector);

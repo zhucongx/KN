@@ -29,7 +29,6 @@ class Atom {
     void AppendFirstNearestNeighborList(int index);
     void AppendSecondNearestNeighborList(int index);
     void AppendThirdNearestNeighborList(int index);
-    friend Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
   private:
     // absolute position
     Vector3 cartesian_position_{};
@@ -48,5 +47,7 @@ class Atom {
     double mass_{};
     std::string type_;
 };
+
+Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
 } // namespace kn
 #endif //KN_SRC_ATOM_H_
