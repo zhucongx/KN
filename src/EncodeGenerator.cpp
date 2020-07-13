@@ -4,11 +4,8 @@
 #include <unordered_set>
 #include "ConfigIO.h"
 namespace kn {
-EncodeGenerator::EncodeGenerator(std::string reference_filename) :
-    reference_filename_(std::move(reference_filename)) {
-}
 
-Vector3 GetPairCenterHelper(const Config &config,
+static Vector3 GetPairCenterHelper(const Config &config,
                             const std::pair<int, int> &jump_pair) {
   Vector3 center_position;
   for (const auto kDim : All_Dimensions) {
@@ -28,8 +25,8 @@ Vector3 GetPairCenterHelper(const Config &config,
   }
   return center_position;
 }
-Matrix33 GetJumpMatrixHelper(const Config &config,
-                             const std::pair<int, int> &jump_pair) {
+static Matrix33 GetJumpMatrixHelper(const Config &config,
+                             const std::pair<int, int> &jump_pair)  {
   const Vector3 pair_direction = Normalize(GetRelativeDistanceVector(
       config.GetAtomList()[jump_pair.first],
       config.GetAtomList()[jump_pair.second]));
@@ -40,7 +37,7 @@ Matrix33 GetJumpMatrixHelper(const Config &config,
     const double dot_prod = Dot(pair_direction, jump_vector);
     if (abs(dot_prod) < 1e-6) {
       double absolute_distance_square = Inner(jump_vector * config.GetBasis());
-      if (absolute_distance_square < pow(Al_const::kFirstNearestNeighborCutoff, 2)) {
+      if (absolute_distance_square < pow(Al_const::kFirstNearestNeighborsCutoff, 2)) {
         vertical_vector = Normalize(jump_vector);
         break;
       }
@@ -49,7 +46,7 @@ Matrix33 GetJumpMatrixHelper(const Config &config,
 
   return {-pair_direction, -vertical_vector, Normalize(Cross(pair_direction, vertical_vector))};
 }
-std::array<std::string, Al_const::kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
+static std::array<std::string, Al_const::kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
     const std::string &jump_type,
     std::vector<Atom> &atom_list,
     const Matrix33 &rotation_matrix) {
@@ -78,7 +75,7 @@ std::array<std::string, Al_const::kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
 
   return string_codes;
 }
-std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator::Encode(
+std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator::Encode (
     const Config &config,
     const std::pair<int, int> &jump_pair) {
 
@@ -150,8 +147,8 @@ std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator
 
   return result;
 }
-void EncodeGenerator::PrintOutEncode() {
-  std::ifstream ifs(reference_filename_, std::ifstream::in);
+void EncodeGenerator::PrintOutEncode(const std::string& reference_filename) {
+  std::ifstream ifs(reference_filename, std::ifstream::in);
   std::ofstream ofs("encode.txt", std::ofstream::out);
   std::string buffer;
   while (ifs >> buffer) {
