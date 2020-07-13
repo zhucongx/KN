@@ -26,29 +26,36 @@ void Config::ConvertCartesianToRelative() {
   }
 }
 
-void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff) {
+void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff, double third_r_cutoff) {
   if (neighbor_found_)
     return;
 
   double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
+  double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
+
   for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
       Vector3 absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
-      if (absolute_distance_vector[kXDimension] > second_r_cutoff_square)
+      if (absolute_distance_vector[kXDimension] > third_r_cutoff_square)
         continue;
-      if (absolute_distance_vector[kYDimension] > second_r_cutoff_square)
+      if (absolute_distance_vector[kYDimension] > third_r_cutoff_square)
         continue;
-      if (absolute_distance_vector[kZDimension] > second_r_cutoff_square)
+      if (absolute_distance_vector[kZDimension] > third_r_cutoff_square)
         continue;
       double absolute_distance_square = Inner(absolute_distance_vector);
-      if (absolute_distance_square <= second_r_cutoff_square) {
-        if (absolute_distance_square <= first_r_cutoff_square) {
-          it1->AppendFirstNearestNeighborList(it2->GetId());
-          it2->AppendFirstNearestNeighborList(it1->GetId());
-        } else {
-          it1->AppendNearNeighborList(it2->GetId());
-          it2->AppendNearNeighborList(it1->GetId());
+      if (absolute_distance_square <= third_r_cutoff_square){
+        if (absolute_distance_square <= second_r_cutoff_square) {
+          if (absolute_distance_square <= first_r_cutoff_square) {
+            it1->AppendFirstNearestNeighborList(it2->GetId());
+            it2->AppendFirstNearestNeighborList(it1->GetId());
+          } else {
+            it1->AppendSecondNearestNeighborList(it2->GetId());
+            it2->AppendSecondNearestNeighborList(it1->GetId());
+          }
+        } else{
+          it1->AppendThirdNearestNeighborList(it2->GetId());
+          it2->AppendThirdNearestNeighborList(it1->GetId());
         }
       }
     }
@@ -144,7 +151,6 @@ bool Config::IsNeighborFound() const {
 void Config::SetNeighborFound(bool neighbor_found) {
   neighbor_found_ = neighbor_found;
 }
-
 
 std::map<Bond, int> CountAllBonds(Config &config) {
   std::map<Bond, int> bonds_count_map;

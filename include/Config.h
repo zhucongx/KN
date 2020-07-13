@@ -12,13 +12,15 @@ namespace kn {
 class Config {
     /// Todo output neighbor information
   public:
+
     Config();
     Config(const Matrix33 &basis, int atom_size);
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
-    virtual void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborCutoff,
-                                 double second_r_cutoff = Al_const::kNearNeighborsCutoff);
+    void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
+                         double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff,
+                         double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff);
 
     // update both atoms' relative and absolute positions according to periodic
     // boundary condition

@@ -88,7 +88,9 @@ std::vector<std::array<std::string, Al_const::kLengthOfEncodes>> EncodeGenerator
                          config.GetAtomList()[jump_pair.second]}) {
     for (const int neighbor_index : atom.GetFirstNearestNeighborList())
       id_set.insert(neighbor_index);
-    for (const int neighbor_index : atom.GetNearNeighborList())
+    for (const int neighbor_index : atom.GetSecondNearestNeighborList())
+      id_set.insert(neighbor_index);
+    for (const int neighbor_index : atom.GetThirdNearestNeighborList())
       id_set.insert(neighbor_index);
   }
   // convert set to vector and don't keep the jump type

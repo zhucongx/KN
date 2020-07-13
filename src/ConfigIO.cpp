@@ -108,16 +108,20 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
         ifs >> index;
         atom.AppendFirstNearestNeighborList(index);
       }
-      for (int i = 0; i < Al_const::kNumNearNeighbors; ++i) {
+      for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
         ifs >> index;
-        atom.AppendNearNeighborList(index);
+        atom.AppendSecondNearestNeighborList(index);
+      }
+      for (int i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendThirdNearestNeighborList(index);
       }
       neighbor_found = true;
     }
     config.AppendAtom(atom);
   }
   config.ConvertRelativeToCartesian();
-  config.SetNeighborFound(neighbor_found) ;
+  config.SetNeighborFound(neighbor_found);
   if (!neighbor_found && update_neighbors)
     config.UpdateNeighbors();
   return config;
@@ -168,12 +172,15 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bo
     ofs << atom.GetMass() << '\n'
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
-    if (neighbors_info) {
+    if (neighbors_info && config.IsNeighborFound()) {
       ofs << " #";
       for (auto neighbor_index : atom.GetFirstNearestNeighborList()) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index : atom.GetNearNeighborList()) {
+      for (auto neighbor_index : atom.GetSecondNearestNeighborList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetThirdNearestNeighborList()) {
         ofs << neighbor_index << ' ';
       }
     }
