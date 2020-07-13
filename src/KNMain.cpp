@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   }
 
 
-  // test.UpdateNeighbors(Al_const::kFirstNearestNeighborCutoff,
+  // test.UpdateNeighbors(Al_const::kFirstNearestNeighborsCutoff,
   //                      Al_const::kNearNeighborsCutoff);
   // ConfigIO::WriteConfig(test, "0_f.cfg", false);
   // MpiClusters test(370000000, 1000000, 6252000000,

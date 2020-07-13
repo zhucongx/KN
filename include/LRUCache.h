@@ -6,7 +6,7 @@ namespace kn {
 class LRUCache {
   public:
   private:
-    std::list<std::pair<>>
+    // std::list<std::pair<>>
 };
 } // namespace kn
 

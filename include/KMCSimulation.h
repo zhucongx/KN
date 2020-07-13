@@ -10,9 +10,7 @@
 namespace kn {
 class KMCSimulation {
   public:
-    KMCSimulation(const std::string& cfg_filename,
-                  double first_nearest_neighbors_distance = Al_const::kFirstNearestNeighborCutoff,
-                  double second_nearest_neighbors_distance = Al_const::kNearNeighborsCutoff);
+    KMCSimulation(const std::string& cfg_filename);
     void RunSimulation();
     std::vector<double> CalculateBarrierAndEnergyDifference(const std::pair<int,
                                                                             int> &jump_pair) const;
@@ -22,8 +20,6 @@ class KMCSimulation {
     Config config_;
     long long config_dump_{};
     long long log_dump_{};
-    double first_cutoff_ = Al_const::kFirstNearestNeighborCutoff;
-    double second_cutoff_ = Al_const::kNearNeighborsCutoff;
 
     // Statistical info
     double time_{};

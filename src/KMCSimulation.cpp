@@ -10,9 +10,7 @@
 #include "LRUCache.h"
 namespace kn {
 
-KMCSimulation::KMCSimulation(const std::string &cfg_filename,
-                             double first_nearest_neighbors_distance,
-                             double second_nearest_neighbors_distance) :
+KMCSimulation::KMCSimulation(const std::string &cfg_filename) :
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {
   config_ = ConfigIO::ReadConfig(cfg_filename, true);
   if (world_.rank() == 0) {
