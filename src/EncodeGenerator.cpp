@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_set>
-#include "ConfigIO.h"
 namespace kn {
 
 static Vector3 GetPairCenterHelper(const Config &config,
@@ -160,7 +159,7 @@ void EncodeGenerator::PrintOutEncode(const std::string& reference_filename) {
     // config 0 end 0 pair: 248 218
     ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
 
-    auto config = ConfigIO::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg",
+    auto config = Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg",
                                        true);
     auto encode_result = Encode(config, {jump_pair_first, jump_pair_second});
     for (const auto &image_encode : encode_result) {

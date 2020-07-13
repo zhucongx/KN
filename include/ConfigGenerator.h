@@ -48,7 +48,6 @@ class ConfigGenerator {
     static Config GenerateZ1(double lattice_constant_a,
                              const std::vector<std::string> &element_list,
                              const Factor_t &factors);
-
   private:
     double lattice_const_;
     Factor_t factors_;

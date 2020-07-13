@@ -5,14 +5,13 @@
 #include "Model.h"
 #include "Tensor.h"
 
-#include "ConfigIO.h"
 #include "EncodeGenerator.h"
 #include "LRUCache.h"
 namespace kn {
 
 KMCSimulation::KMCSimulation(const std::string &cfg_filename) :
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {
-  config_ = ConfigIO::ReadConfig(cfg_filename, true);
+  config_ = Config::ReadConfig(cfg_filename, true);
   if (world_.rank() == 0) {
     std::cout << "Using " << world_.size() << " processes." << std::endl;
     ofs_.open("kmc.txt", std::ofstream::out | std::ofstream::app);

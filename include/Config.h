@@ -10,9 +10,7 @@
 #include "Bond.h"
 namespace kn {
 class Config {
-    /// Todo output neighbor information
   public:
-
     Config();
     Config(const Matrix33 &basis, int atom_size);
     bool operator<(const Config &rhs) const;
@@ -39,9 +37,19 @@ class Config {
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
 
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
-    [[nodiscard]] bool IsNeighborFound() const;
-    void SetNeighborFound(bool neighbor_found);
 
+    static Config ReadPOSCAR(const std::string &filename);
+    static Config ReadConfig(const std::string &filename, bool update_neighbors);
+
+    // Write Configuration out as POSCAR file. If the show_vacancy_option is
+    // true, output will have "X" for visualization. If false, vacancies will be
+    // ignored for VASP calculation.
+    static  void WritePOSCAR(const Config &config,
+                            const std::string &filename,
+                            bool show_vacancy_option = false);
+    static void WriteConfig(const Config &config,
+                            const std::string &filename,
+                            bool neighbors_info = true);
   protected:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;

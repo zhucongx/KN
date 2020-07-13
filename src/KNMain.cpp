@@ -1,5 +1,4 @@
 #include "MpiClusters.h"
-#include "ConfigIO.h"
 #include "EncodeGenerator.h"
 #include "KMCSimulation.h"
 #include "ConfigGenerator.h"
@@ -12,7 +11,7 @@ int main(int argc, char *argv[]) {
   // EncodeGenerator dw("log.txt");
   // dw.PrintOutEncode();
 
-  Config test = ConfigIO::ReadConfig("0.cfg", true);
+  Config test = Config::ReadConfig("0.cfg", true);
 
   auto asd = EncodeGenerator::Encode(test, {82, 83});
 

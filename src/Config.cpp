@@ -145,13 +145,6 @@ const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const
   return element_list_map_;
 }
 
-bool Config::IsNeighborFound() const {
-  return neighbor_found_;
-}
-void Config::SetNeighborFound(bool neighbor_found) {
-  neighbor_found_ = neighbor_found;
-}
-
 std::map<Bond, int> CountAllBonds(Config &config) {
   std::map<Bond, int> bonds_count_map;
   std::string type1, type2;
