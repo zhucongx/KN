@@ -25,8 +25,8 @@ std::vector<double> KMCSimulation::CalculateBarrierAndEnergyDifference(
     const std::pair<int, int> &jump_pair) const {
   const auto[first, second] = jump_pair;
   std::vector<std::string> codes; // atom location in the original atom list
-  const auto input_forward = EncodeGenerator::Encode(config_, jump_pair);
-  int num_row = input_forward.size();
+  // const auto input_forward = EncodeGenerator::Encode(config_,jump_pair);
+  // int num_row = input_forward.size();
 
   // const auto &  = encodes;
 

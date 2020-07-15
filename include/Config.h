@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <random>
 #include "Atom.h"
 #include "Bond.h"
@@ -43,7 +44,7 @@ class Config {
     // Write Configuration out as POSCAR file. If the show_vacancy_option is
     // true, output will have "X" for visualization. If false, vacancies will be
     // ignored for VASP calculation.
-    static  void WritePOSCAR(const Config &config,
+    static void WritePOSCAR(const Config &config,
                             const std::string &filename,
                             bool show_vacancy_option = false);
     static void WriteConfig(const Config &config,
@@ -74,7 +75,7 @@ class Config {
     std::map<std::string, std::vector<int>> element_list_map_;
 };
 
-std::map<Bond, int> CountAllBonds(Config &config);
-
+std::map<Bond, int> CountAllBonds(const Config &config);
+std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config);
 } // namespace kn
 #endif //KN_INCLUDE_CONFIG_H_

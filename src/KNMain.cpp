@@ -7,25 +7,34 @@ using namespace std;
 namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
+  const unordered_map<string, int> aaaa{{"Al", 0}, {"Mg", 1}, {"Zn", 2}, {"X", 3}};
+  EncodeGenerator::PrintOutEncode("log.txt", aaaa);
 
-  // EncodeGenerator::PrintOutEncode("log.txt");
+  // Config test = Config::ReadConfig("start.cfg", true);
+  // auto asd = EncodeGenerator::Encode(test, {82, 83}, aaaa);
 
-  Config test = Config::ReadConfig("start.cfg", true);
-
-  auto asd = EncodeGenerator::Encode(test, {82, 83});
-
-  for (auto &&a:asd) {
-    for (auto &&b:a)
-      cout << b << "   ";
-    cout << '\n';
-  }
-
-  auto asd1 = EncodeGenerator::Encode(test, {83, 82});
-  for (auto &&a:asd1) {
-    for (auto it = a.rbegin(); it != a.rend(); it ++)
-      cout << *it << "   ";
-    cout << '\n';
-  }
+  // for (auto &&a:asd) {
+  //   for (auto &&b:a)
+  //     cout << b << " ";
+  //   cout << '\n';
+  //
+  //   auto aa = EncodeGenerator::GetBackwardEncode(a);
+  //   for (auto &&b:aa)
+  //     cout << b << " ";
+  //   cout << '\n';
+  // }
+  //
+  // auto asd1 = EncodeGenerator::Encode(test, {83, 82}, aaaa);
+  // for (auto &&a:asd1) {
+  //   for (auto &&b:a)
+  //     cout << b << " ";
+  //   cout << '\n';
+  //
+  //   auto aa = EncodeGenerator::GetBackwardEncode(a);
+  //   for (auto &&b:aa)
+  //     cout << b << " ";
+  //   cout << '\n';
+  // }
 
 
   // test.UpdateNeighbors(Al_const::kFirstNearestNeighborsCutoff,

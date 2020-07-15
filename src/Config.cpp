@@ -44,7 +44,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff, doub
       if (absolute_distance_vector[kZDimension] > third_r_cutoff_square)
         continue;
       double absolute_distance_square = Inner(absolute_distance_vector);
-      if (absolute_distance_square <= third_r_cutoff_square){
+      if (absolute_distance_square <= third_r_cutoff_square) {
         if (absolute_distance_square <= second_r_cutoff_square) {
           if (absolute_distance_square <= first_r_cutoff_square) {
             it1->AppendFirstNearestNeighborList(it2->GetId());
@@ -53,7 +53,7 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff, doub
             it1->AppendSecondNearestNeighborList(it2->GetId());
             it2->AppendSecondNearestNeighborList(it1->GetId());
           }
-        } else{
+        } else {
           it1->AppendThirdNearestNeighborList(it2->GetId());
           it2->AppendThirdNearestNeighborList(it1->GetId());
         }
@@ -145,7 +145,7 @@ const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const
   return element_list_map_;
 }
 
-std::map<Bond, int> CountAllBonds(Config &config) {
+std::map<Bond, int> CountAllBonds(const Config &config) {
   std::map<Bond, int> bonds_count_map;
   std::string type1, type2;
   auto atom_list = config.GetAtomList();
@@ -159,5 +159,13 @@ std::map<Bond, int> CountAllBonds(Config &config) {
     bond_count.second /= 2;
   }
   return bonds_count_map;
+}
+std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config) {
+  int count = 1;
+  std::unordered_map<std::string, int> type_category_hashmap;
+  for (const auto& element_list : config.GetElementListMap()){
+    type_category_hashmap[element_list.first] = count++;
+  }
+  return type_category_hashmap;
 }
 } // namespace kn

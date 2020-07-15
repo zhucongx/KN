@@ -67,7 +67,7 @@ const std::vector<int> &Atom::GetThirdNearestNeighborList() const {
 }
 
 Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second) {
-  Vector3 relative_distance_vector = first.GetRelativePosition() - second.GetRelativePosition();
+  Vector3 relative_distance_vector = second.GetRelativePosition() - first.GetRelativePosition();
   auto check_periodic = [](double &distance) {
     if (distance >= 0.5)
       distance -= 1;
