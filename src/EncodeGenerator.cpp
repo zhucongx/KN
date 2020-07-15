@@ -284,7 +284,7 @@ void EncodeGenerator::PrintOutEncode(
     auto forward_encode_result =
         Encode(config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
     for (const auto &image_forward_encode : forward_encode_result) {
-      ofs << "config " << config_index << " end " << image_index << ": ";
+      ofs << "config " << config_index << " end " << image_index << "  ";
       for (const auto &code : image_forward_encode) {
         ofs << code << " ";
       }
