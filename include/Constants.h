@@ -6,11 +6,11 @@
 #include <algorithm>
 
 namespace Al_const {
-constexpr double kFirstNearestNeighborCutoff = 3.5;
-constexpr double kSecondNearestNeighborsCutoff= 4.1;
-constexpr double kThirdNearestNeighborCutoff = 5.0;
+constexpr double kFirstNearestNeighborsCutoff = 3.5;
+constexpr double kSecondNearestNeighborsCutoff = 4.1;
+constexpr double kThirdNearestNeighborsCutoff = 5.0;
 
-constexpr double kNearNeighborsCutoff = kThirdNearestNeighborCutoff;
+// constexpr double kNearNeighborsCutoff = kThirdNearestNeighborsCutoff;
 
 
 
@@ -20,12 +20,6 @@ constexpr int kNumFirstNearestNeighbors = 12;
 constexpr int kNumSecondNearestNeighbors = 6;
 // For FCC the third nearest neighbor is 6
 constexpr int kNumThirdNearestNeighbors = 24;
-
-constexpr int kNumNearNeighbors = kNumSecondNearestNeighbors + kNumThirdNearestNeighbors;
-
-
-
-constexpr int kLengthOfEncodes = 59;
 } // namespace Al_const
 
 

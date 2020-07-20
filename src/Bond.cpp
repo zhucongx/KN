@@ -1,5 +1,4 @@
 #include "Bond.h"
-
 namespace kn {
 
 Bond::Bond(std::string type1, std::string type2)

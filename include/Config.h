@@ -5,23 +5,23 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <random>
 #include "Atom.h"
 #include "Bond.h"
 namespace kn {
 class Config {
-    /// Todo output neighbor information
   public:
     Config();
     Config(const Matrix33 &basis, int atom_size);
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
-    virtual void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborCutoff,
-                                 double second_r_cutoff = Al_const::kNearNeighborsCutoff);
+    void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
+                         double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff,
+                         double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff);
 
-    // update both atoms' relative and absolute positions according to periodic
-    // boundary condition
+    // update both atoms' relative and cartesian positions according to periodic boundary condition
     void WrapAtomRelative();
     void WrapAtomCartesian();
     void MoveRelativeDistance(const Vector3 &distance_vector);
@@ -37,9 +37,19 @@ class Config {
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
 
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
-    [[nodiscard]] bool IsNeighborFound() const;
-    void SetNeighborFound(bool neighbor_found);
 
+    static Config ReadPOSCAR(const std::string &filename);
+    static Config ReadConfig(const std::string &filename, bool update_neighbors);
+
+    // Write Configuration out as POSCAR file. If the show_vacancy_option is
+    // true, output will have "X" for visualization. If false, vacancies will be
+    // ignored for VASP calculation.
+    static void WritePOSCAR(const Config &config,
+                            const std::string &filename,
+                            bool show_vacancy_option = false);
+    static void WriteConfig(const Config &config,
+                            const std::string &filename,
+                            bool neighbors_info = true);
   protected:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;
@@ -65,7 +75,7 @@ class Config {
     std::map<std::string, std::vector<int>> element_list_map_;
 };
 
-std::map<Bond, int> CountAllBonds(Config &config);
-
+std::map<Bond, int> CountAllBonds(const Config &config);
+std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config);
 } // namespace kn
 #endif //KN_INCLUDE_CONFIG_H_

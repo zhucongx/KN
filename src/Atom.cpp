@@ -9,9 +9,9 @@ Atom::Atom(int id, double mass, std::string type, double x, double y, double z) 
     mass_(mass),
     type_(std::move(type)) {
   first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
-  near_neighbor_list_.reserve(Al_const::kNumNearNeighbors);
+  second_nearest_neighbor_list_.reserve(Al_const::kNumSecondNearestNeighbors);
+  third_nearest_neighbor_list_.reserve(Al_const::kNumThirdNearestNeighbors);
 }
-
 Atom::Atom(int id, double mass, std::string type, Vector3 position) :
     cartesian_position_(position),
     relative_position_(position),
@@ -19,7 +19,8 @@ Atom::Atom(int id, double mass, std::string type, Vector3 position) :
     mass_(mass),
     type_(std::move(type)) {
   first_nearest_neighbor_list_.reserve(Al_const::kNumFirstNearestNeighbors);
-  near_neighbor_list_.reserve(Al_const::kNumNearNeighbors);
+  second_nearest_neighbor_list_.reserve(Al_const::kNumSecondNearestNeighbors);
+  third_nearest_neighbor_list_.reserve(Al_const::kNumThirdNearestNeighbors);
 }
 const Vector3 &Atom::GetCartesianPosition() const {
   return cartesian_position_;
@@ -30,12 +31,8 @@ void Atom::SetCartesianPosition(const Vector3 &cartesian_position) {
 const Vector3 &Atom::GetRelativePosition() const {
   return relative_position_;
 }
-
 void Atom::SetRelativePosition(const Vector3 &relative_position) {
   relative_position_ = relative_position;
-}
-const std::vector<int> &Atom::GetNearNeighborList() const {
-  return near_neighbor_list_;
 }
 const std::vector<int> &Atom::GetFirstNearestNeighborList() const {
   return first_nearest_neighbor_list_;
@@ -53,14 +50,24 @@ const std::string &Atom::GetType() const {
 void Atom::SetType(const std::string &type) {
   type_ = type;
 }
-void Atom::AppendNearNeighborList(int index) {
-  near_neighbor_list_.emplace_back(index);
-}
 void Atom::AppendFirstNearestNeighborList(int index) {
   first_nearest_neighbor_list_.emplace_back(index);
 }
+void Atom::AppendSecondNearestNeighborList(int index) {
+  second_nearest_neighbor_list_.emplace_back(index);
+}
+void Atom::AppendThirdNearestNeighborList(int index) {
+  third_nearest_neighbor_list_.emplace_back(index);
+}
+const std::vector<int> &Atom::GetSecondNearestNeighborList() const {
+  return second_nearest_neighbor_list_;
+}
+const std::vector<int> &Atom::GetThirdNearestNeighborList() const {
+  return third_nearest_neighbor_list_;
+}
+
 Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second) {
-  Vector3 relative_distance_vector = first.relative_position_ - second.relative_position_;
+  Vector3 relative_distance_vector = second.GetRelativePosition() - first.GetRelativePosition();
   auto check_periodic = [](double &distance) {
     if (distance >= 0.5)
       distance -= 1;
@@ -73,6 +80,5 @@ Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second) {
   }
   return relative_distance_vector;
 }
-
 
 } // namespace kn

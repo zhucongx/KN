@@ -19,29 +19,35 @@ class Atom {
     void SetCartesianPosition(const Vector3 &cartesian_position);
     [[nodiscard]] const Vector3 &GetRelativePosition() const;
     void SetRelativePosition(const Vector3 &relative_position);
-    [[nodiscard]] const std::vector<int> &GetNearNeighborList() const;
     [[nodiscard]] const std::vector<int> &GetFirstNearestNeighborList() const;
+    [[nodiscard]] const std::vector<int> &GetSecondNearestNeighborList() const;
+    [[nodiscard]] const std::vector<int> &GetThirdNearestNeighborList() const;
     [[nodiscard]] int GetId() const;
     [[nodiscard]] double GetMass() const;
     [[nodiscard]] const std::string &GetType() const;
     void SetType(const std::string &type);
-    void AppendNearNeighborList(int index);
     void AppendFirstNearestNeighborList(int index);
-
-    friend Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
+    void AppendSecondNearestNeighborList(int index);
+    void AppendThirdNearestNeighborList(int index);
   private:
     // absolute position
     Vector3 cartesian_position_{};
     // relative position in the box
     Vector3 relative_position_{};
-    // near neighbor list
-    std::vector<int> near_neighbor_list_;
+    // // near neighbor list
+    // std::vector<int> near_neighbor_list_;
     // First nearest neighbor list
     std::vector<int> first_nearest_neighbor_list_;
+    // Second nearest neighbor list
+    std::vector<int> second_nearest_neighbor_list_;
+    // Third nearest neighbor list
+    std::vector<int> third_nearest_neighbor_list_;
     // atom id which is an unique Rank for every atom indexed form 0
     int id_{};
     double mass_{};
     std::string type_;
 };
+
+Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
 } // namespace kn
 #endif //KN_SRC_ATOM_H_

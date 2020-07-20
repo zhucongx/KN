@@ -2,7 +2,6 @@
 #include <chrono>
 #include <filesystem>
 #include <utility>
-#include "ConfigIO.h"
 namespace kn {
 ConfigGenerator::ConfigGenerator(double lattice_const,
                                  const ConfigGenerator::Factor_t &factors,
@@ -41,9 +40,9 @@ void ConfigGenerator::CreateRandom(int num_configs) {
   for (int i = 0; i < num_configs; i++) {
     std::string start_path("config" + std::to_string(i) + "/s");
     std::filesystem::create_directories(start_path);
-    ConfigIO::WriteConfig(config_start, start_path + "/start.cfg", false);
+    Config::WriteConfig(config_start, start_path + "/start.cfg", false);
     config_start.Perturb(generator_);
-    ConfigIO::WritePOSCAR(config_start, "config" + std::to_string(i) + "/s/POSCAR", false);
+    Config::WritePOSCAR(config_start, "config" + std::to_string(i) + "/s/POSCAR", false);
     PrepareVASPFiles(start_path);
   }
   // const Config config_start = config_start

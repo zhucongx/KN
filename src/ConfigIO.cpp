@@ -1,10 +1,10 @@
-#include "ConfigIO.h"
+#include "Config.h"
 #include <fstream>
 #include <sstream>
 
 namespace kn {
 
-Config ConfigIO::ReadPOSCAR(const std::string &filename) {
+Config Config::ReadPOSCAR(const std::string &filename) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // #comment
@@ -51,7 +51,7 @@ Config ConfigIO::ReadPOSCAR(const std::string &filename) {
   return config;
 }
 
-Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) {
+Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
@@ -108,24 +108,28 @@ Config ConfigIO::ReadConfig(const std::string &filename, bool update_neighbors) 
         ifs >> index;
         atom.AppendFirstNearestNeighborList(index);
       }
-      for (int i = 0; i < Al_const::kNumNearNeighbors; ++i) {
+      for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
         ifs >> index;
-        atom.AppendNearNeighborList(index);
+        atom.AppendSecondNearestNeighborList(index);
+      }
+      for (int i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendThirdNearestNeighborList(index);
       }
       neighbor_found = true;
     }
     config.AppendAtom(atom);
   }
   config.ConvertRelativeToCartesian();
-  config.SetNeighborFound(neighbor_found) ;
+  config.neighbor_found_ = neighbor_found;
   if (!neighbor_found && update_neighbors)
     config.UpdateNeighbors();
   return config;
 }
 
-void ConfigIO::WritePOSCAR(const Config &config,
-                           const std::string &filename,
-                           bool show_vacancy_option) {
+void Config::WritePOSCAR(const Config &config,
+                         const std::string &filename,
+                         bool show_vacancy_option) {
   std::ofstream ofs(filename, std::ofstream::out);
   ofs << "#comment\n1.0\n";
   ofs << config.GetBasis() << '\n';
@@ -148,7 +152,7 @@ void ConfigIO::WritePOSCAR(const Config &config,
   }
 }
 
-void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bool neighbors_info) {
+void Config::WriteConfig(const Config &config, const std::string &filename, bool neighbors_info) {
   std::ofstream ofs(filename, std::ofstream::out);
   ofs << "Number of particles = " << config.GetNumAtoms() << '\n';
   ofs << "A = 1.0 Angstrom (basic length-scale)\n";
@@ -168,12 +172,15 @@ void ConfigIO::WriteConfig(const Config &config, const std::string &filename, bo
     ofs << atom.GetMass() << '\n'
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
-    if (neighbors_info) {
+    if (neighbors_info && config.neighbor_found_) {
       ofs << " #";
       for (auto neighbor_index : atom.GetFirstNearestNeighborList()) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index : atom.GetNearNeighborList()) {
+      for (auto neighbor_index : atom.GetSecondNearestNeighborList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetThirdNearestNeighborList()) {
         ofs << neighbor_index << ' ';
       }
     }

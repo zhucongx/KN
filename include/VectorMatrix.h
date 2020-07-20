@@ -22,15 +22,8 @@ const std::array<Dimension, 3> All_Dimensions{kXDimension, kYDimension, kZDimens
 using Vector3 = std::array<double, kDimension>;
 using Matrix33 = std::array<Vector3, kDimension>;
 
-
 inline std::ostream &operator<<(std::ostream &os, const Vector3 &vector) {
-#ifndef NDEBUG
-  os << std::setprecision(16) <<
-     vector[kXDimension] << ' ' << std::setprecision(16) << vector[kYDimension] << ' '
-     << std::setprecision(16) << vector[kZDimension];
-#else
   os << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
-#endif
   return os;
 }
 
@@ -255,11 +248,14 @@ inline double Determinant(const Matrix33 &input) {
       - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
           * input[kZDimension][kXDimension]);
 }
-// inline Matrix33 Normalize(const Matrix33 &input) {
-//   std::cout <<Determinant(input)<<'\n';
-//   double factor = 1.0 / Determinant(input);
-//   return input * factor;
-// }
+inline Matrix33 TransposeMatrix33(const Matrix33 &input) {
+  return {{{input[kXDimension][kXDimension], input[kYDimension][kXDimension],
+            input[kZDimension][kXDimension]},
+           {input[kXDimension][kYDimension], input[kYDimension][kYDimension],
+            input[kZDimension][kYDimension]},
+           {input[kXDimension][kZDimension], input[kYDimension][kZDimension],
+            input[kZDimension][kZDimension]}}};
+}
 inline Matrix33 InverseMatrix33(const Matrix33 &input) {
   // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
   //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
