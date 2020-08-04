@@ -1,36 +1,37 @@
 #include "MpiClusters.h"
-#include "EncodeGenerator.h"
-#include "KMCSimulation.h"
+#include "Encode.h"
 #include "ConfigGenerator.h"
+#include "DftAnalysis.h"
 using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
-  const unordered_map<string, int> aaaa{{"Al", 0}, {"Mg", 1}, {"Zn", 2}, {"X", 3}};
-  EncodeGenerator::PrintOutEncode("log.txt", aaaa);
+  DftAnalysis::PrintOutEncode("log.txt", {{"Al", 0}, {"Mg", 1}, {"Zn", 2}, {"X", 3}});
+  DftAnalysis::PrintOutBond("log.txt", {"Al","Mg","Zn"});
+
 
   // Config test = Config::ReadConfig("start.cfg", true);
-  // auto asd = EncodeGenerator::Encode(test, {82, 83}, aaaa);
+  // auto asd = Encode::GetFirstNearestEnvironment(test, {82, 83});
 
   // for (auto &&a:asd) {
   //   for (auto &&b:a)
   //     cout << b << " ";
   //   cout << '\n';
   //
-  //   auto aa = EncodeGenerator::GetBackwardEncode(a);
+  //   auto aa = Encode::GetBackwardEncode(a);
   //   for (auto &&b:aa)
   //     cout << b << " ";
   //   cout << '\n';
   // }
   //
-  // auto asd1 = EncodeGenerator::Encode(test, {83, 82}, aaaa);
+  // auto asd1 = Encode::Encode(test, {83, 82}, aaaa);
   // for (auto &&a:asd1) {
   //   for (auto &&b:a)
   //     cout << b << " ";
   //   cout << '\n';
   //
-  //   auto aa = EncodeGenerator::GetBackwardEncode(a);
+  //   auto aa = Encode::GetBackwardEncode(a);
   //   for (auto &&b:aa)
   //     cout << b << " ";
   //   cout << '\n';

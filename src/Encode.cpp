@@ -1,10 +1,7 @@
-#include "EncodeGenerator.h"
-#include <fstream>
-#include <sstream>
-#include <unordered_set>
-namespace kn {
+#include "Encode.h"
 
-static std::array<Atom, EncodeGenerator::kLengthOfEncodes> GetAtomListHelper(
+namespace kn::Encode {
+static std::array<Atom, kLengthOfEncodes> GetAtomListHelper(
     const Config &config,
     const std::pair<int, int> &jump_pair) {
   std::unordered_set<int> atom1_first_neighbors_set(
@@ -31,7 +28,7 @@ static std::array<Atom, EncodeGenerator::kLengthOfEncodes> GetAtomListHelper(
       config.GetAtomList()[jump_pair.second].GetThirdNearestNeighborList().begin(),
       config.GetAtomList()[jump_pair.second].GetThirdNearestNeighborList().end());
 
-  std::array<std::unordered_set<int>, EncodeGenerator::kNumOfSubEncode> sub_encode_sets;
+  std::array<std::unordered_set<int>, kNumOfSubEncode> sub_encode_sets;
   sub_encode_sets[0] = {jump_pair.second};
   for (const int index:atom1_first_neighbors_set) {
     if (atom2_first_neighbors_set.find(index) != atom2_first_neighbors_set.end()) {
@@ -117,7 +114,7 @@ static std::array<Atom, EncodeGenerator::kLengthOfEncodes> GetAtomListHelper(
     sub_encode_sets[9].insert(index);
   }
 
-  std::array<Atom, EncodeGenerator::kLengthOfEncodes> atom_list;
+  std::array<Atom, kLengthOfEncodes> atom_list;
   int count = 0;
   for (const auto &sub_encode_set:sub_encode_sets) {
     for (const auto &index:sub_encode_set) {
@@ -170,10 +167,10 @@ static Matrix33 GetJumpMatrixHelper(const Config &config,
   return TransposeMatrix33({pair_direction, vertical_vector,
                             Cross(pair_direction, vertical_vector)});
 }
-static std::array<int, 59> RotateAtomsAndGetCodeHelper(
-    std::array<Atom, EncodeGenerator::kLengthOfEncodes> &atom_list,
-    const Matrix33 &rotation_matrix,
-    const std::unordered_map<std::string, int> &type_category_hashmap) {
+template<size_t DataSize>
+static void RotateAndSort(
+    std::array<Atom, DataSize> &atom_list,
+    const Matrix33 &rotation_matrix) {
   const auto move_distance_after_rotation = Vector3{0.5, 0.5, 0.5}
       - (Vector3{0.5, 0.5, 0.5} * rotation_matrix);
   for (auto &atom : atom_list) {
@@ -186,18 +183,30 @@ static std::array<int, 59> RotateAtomsAndGetCodeHelper(
 
     atom.SetRelativePosition(relative_position);
   }
+  //sort
   auto first_it = atom_list.begin();
-  std::array<Atom, EncodeGenerator::kLengthOfEncodes>::iterator second_it;
-  for (const auto kSubCodeLength : EncodeGenerator::All_Encode_Length) {
+  typename std::array<Atom, DataSize>::iterator second_it;
+  for (auto kSubCodeLength:All_Encode_Length) {
     second_it = first_it + kSubCodeLength;
     std::sort(first_it, second_it,
               [](const Atom &first_atom, const Atom &second_atom) {
                 return first_atom.GetRelativePosition() < second_atom.GetRelativePosition();
               });
     first_it = second_it;
+    // stop in case that using a part of neighbors
+    if (first_it >= atom_list.end())
+      break;
   }
+}
 
-  std::array<int, EncodeGenerator::kLengthOfEncodes> encode{};
+static std::array<int, kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
+    std::array<Atom, kLengthOfEncodes> &atom_list,
+    const Matrix33 &rotation_matrix,
+    const std::unordered_map<std::string, int> &type_category_hashmap) {
+
+  RotateAndSort(atom_list, rotation_matrix);
+  // encode
+  std::array<int, kLengthOfEncodes> encode{};
   size_t index = 0;
   for (const auto &atom : atom_list) {
     encode[index++] = type_category_hashmap.at(atom.GetType());
@@ -205,7 +214,7 @@ static std::array<int, 59> RotateAtomsAndGetCodeHelper(
   return encode;
 }
 
-std::vector<std::array<int, EncodeGenerator::kLengthOfEncodes>> EncodeGenerator::Encode(
+std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
     const Config &config,
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, int> &type_category_hashmap) {
@@ -248,14 +257,14 @@ std::vector<std::array<int, EncodeGenerator::kLengthOfEncodes>> EncodeGenerator:
 
   return result;
 }
-std::array<int, EncodeGenerator::kLengthOfEncodes> EncodeGenerator::GetBackwardEncode(
+std::array<int, kLengthOfEncodes> GetBackwardEncode(
     const std::array<int, kLengthOfEncodes> &forward_encode) {
 
   std::array<int, kLengthOfEncodes> backward_encode{};
   auto first_it = const_cast<int *>(forward_encode.begin());
   std::array<int, kLengthOfEncodes>::iterator second_it;
   auto insert_it = backward_encode.begin();
-  for (const auto kSubCodeLength : EncodeGenerator::All_Encode_Length) {
+  for (const auto kSubCodeLength : All_Encode_Length) {
     second_it = first_it + kSubCodeLength;
     std::reverse_copy(first_it, second_it, insert_it);
     insert_it += kSubCodeLength;
@@ -264,37 +273,132 @@ std::array<int, EncodeGenerator::kLengthOfEncodes> EncodeGenerator::GetBackwardE
   return backward_encode;
 }
 
-void EncodeGenerator::PrintOutEncode(
-    const std::string &reference_filename,
-    const std::unordered_map<std::string, int> &type_category_hashmap) {
-  std::ifstream ifs(reference_filename, std::ifstream::in);
-  std::ofstream ofs("encode.txt", std::ofstream::out);
-  std::string buffer;
-  while (ifs >> buffer) {
-    if (buffer != "config") {
-      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+static std::array<Atom, kLengthOfFirstNeighbors> GetFirstAtomListHelper(
+    const Config &config,
+    const std::pair<int, int> &jump_pair) {
+  std::unordered_set<int> atom1_first_neighbors_set(
+      config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().end());
+  atom1_first_neighbors_set.erase(jump_pair.second);
+
+  const std::unordered_set<int> atom1_second_neighbors_set(
+      config.GetAtomList()[jump_pair.first].GetSecondNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.first].GetSecondNearestNeighborList().end());
+  const std::unordered_set<int> atom1_third_neighbors_set(
+      config.GetAtomList()[jump_pair.first].GetThirdNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.first].GetThirdNearestNeighborList().end());
+
+  std::unordered_set<int> atom2_first_neighbors_set(
+      config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().end());
+  atom2_first_neighbors_set.erase(jump_pair.first);
+
+  const std::unordered_set<int> atom2_second_neighbors_set(
+      config.GetAtomList()[jump_pair.second].GetSecondNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.second].GetSecondNearestNeighborList().end());
+  const std::unordered_set<int> atom2_third_neighbors_set(
+      config.GetAtomList()[jump_pair.second].GetThirdNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.second].GetThirdNearestNeighborList().end());
+
+  std::array<std::unordered_set<int>, 5> sub_encode_sets;
+  sub_encode_sets[0] = {jump_pair.second};
+  for (const int index:atom1_first_neighbors_set) {
+    if (atom2_first_neighbors_set.find(index) != atom2_first_neighbors_set.end()) {
+      sub_encode_sets[1].insert(index);
       continue;
     }
-    int config_index, image_index, jump_pair_first, jump_pair_second;
-    // config 0 end 0 pair: 248 218
-    ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
+    if (atom2_second_neighbors_set.find(index) != atom2_second_neighbors_set.end()) {
+      sub_encode_sets[2].insert(index);
+      continue;
+    }
+    if (atom2_third_neighbors_set.find(index) != atom2_third_neighbors_set.end()) {
+      sub_encode_sets[3].insert(index);
+      continue;
+    }
+    sub_encode_sets[4].insert(index);
+  }
+  for (const int index:atom2_first_neighbors_set) {
+    if (atom1_first_neighbors_set.find(index) != atom1_first_neighbors_set.end()) {
+      continue;
+    }
+    if (atom1_second_neighbors_set.find(index) != atom1_second_neighbors_set.end()) {
+      sub_encode_sets[2].insert(index);
+      continue;
+    }
+    if (atom1_third_neighbors_set.find(index) != atom1_third_neighbors_set.end()) {
+      sub_encode_sets[3].insert(index);
+      continue;
+    }
+    sub_encode_sets[4].insert(index);
+  }
 
-    auto config = Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg",
-                                     true);
-    auto forward_encode_result =
-        Encode(config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
-    for (const auto &image_forward_encode : forward_encode_result) {
-      ofs << "config " << config_index << " end " << image_index << "  ";
-      for (const auto &code : image_forward_encode) {
-        ofs << code << " ";
-      }
-      for (const auto &code : GetBackwardEncode(image_forward_encode)) {
-        ofs << code << " ";
-      }
-      ofs << '\n';
+  std::array<Atom, kLengthOfFirstNeighbors> atom_list;
+  int count = 0;
+  for (const auto &sub_encode_set:sub_encode_sets) {
+    for (const auto &index:sub_encode_set) {
+      atom_list[count++] = config.GetAtomList()[index];
     }
   }
+  return atom_list;
 }
 
+std::pair<std::map<Bond, int>, std::map<Bond, int>> GetBondAroundPair(
+    const Config &config,
+    const std::pair<int, int> &jump_pair) {
 
-} // namespace kn
+  std::unordered_set<int> atom1_first_neighbors_set(
+      config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().end());
+  atom1_first_neighbors_set.erase(jump_pair.second);
+
+  std::unordered_set<int> atom2_first_neighbors_set(
+      config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().begin(),
+      config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().end());
+  atom2_first_neighbors_set.erase(jump_pair.first);
+
+  std::map<Bond, int> bonds_around_first, bonds_around_second;
+
+  const auto &atom_list = config.GetAtomList();
+  for (const int index:atom1_first_neighbors_set) {
+    if (atom2_first_neighbors_set.find(index) != atom2_first_neighbors_set.end()) {
+      continue;
+    }
+    bonds_around_first[{atom_list[jump_pair.second].GetType(), atom_list[index].GetType()}]++;
+  }
+  for (const int index:atom2_first_neighbors_set) {
+    if (atom1_first_neighbors_set.find(index) != atom1_first_neighbors_set.end()) {
+      continue;
+    }
+    bonds_around_second[{atom_list[jump_pair.second].GetType(), atom_list[index].GetType()}]++;;
+  }
+  return std::make_pair(bonds_around_first, bonds_around_second);
+}
+
+// std::unordered_map<std::string, double> GetFirstNearestEnvironment(
+//     const kn::Config &config,
+//     const std::pair<int, int> &jump_pair) {
+//   auto atom_list = GetFirstAtomListHelper(config, jump_pair);
+//
+//   const auto move_distance = Vector3{0.5, 0.5, 0.5} - GetPairCenterHelper(config, jump_pair);
+//   for (auto &atom : atom_list) {
+//     // move to center
+//     auto relative_position = atom.GetRelativePosition();
+//     relative_position += move_distance;
+//     relative_position -= ElementFloor(relative_position);
+//
+//     atom.SetRelativePosition(relative_position);
+//   }
+//   const auto rotation_matrix = GetJumpMatrixHelper(config, jump_pair);
+//   RotateAndSort(atom_list, rotation_matrix);
+//
+//   // std::unordered_map<std::string, Vector3> element_mean_position_hashmap;
+//   // decompose the force along x direction and radius direction
+//   // for (auto length:First_Neighbors_Encode_length) {
+//   //   for (int i = 0; i < length / 2; i++) {
+//   //
+//   //   }
+//   // }
+//
+//   return std::unordered_map<std::string, double>();
+// }
+} // namespace kn::Encode
