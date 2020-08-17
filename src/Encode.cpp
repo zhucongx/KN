@@ -342,37 +342,38 @@ static std::array<Atom, kLengthOfFirstNeighbors> GetFirstAtomListHelper(
   return atom_list;
 }
 
-std::pair<std::map<Bond, int>, std::map<Bond, int>> GetBondAroundPair(
-    const Config &config,
-    const std::pair<int, int> &jump_pair) {
-
-  std::unordered_set<int> atom1_first_neighbors_set(
-      config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().begin(),
-      config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().end());
-  atom1_first_neighbors_set.erase(jump_pair.second);
-
-  std::unordered_set<int> atom2_first_neighbors_set(
-      config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().begin(),
-      config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().end());
-  atom2_first_neighbors_set.erase(jump_pair.first);
-
-  std::map<Bond, int> bonds_around_first, bonds_around_second;
-
-  const auto &atom_list = config.GetAtomList();
-  for (const int index:atom1_first_neighbors_set) {
-    if (atom2_first_neighbors_set.find(index) != atom2_first_neighbors_set.end()) {
-      continue;
-    }
-    bonds_around_first[{atom_list[jump_pair.second].GetType(), atom_list[index].GetType()}]++;
-  }
-  for (const int index:atom2_first_neighbors_set) {
-    if (atom1_first_neighbors_set.find(index) != atom1_first_neighbors_set.end()) {
-      continue;
-    }
-    bonds_around_second[{atom_list[jump_pair.second].GetType(), atom_list[index].GetType()}]++;;
-  }
-  return std::make_pair(bonds_around_first, bonds_around_second);
-}
+//
+// std::pair<std::unordered_map<Bond, int>, std::unordered_map<Bond, int>> GetBondAroundPair(
+//     const Config &config,
+//     const std::pair<int, int> &jump_pair) {
+//
+//   std::unordered_set<int> atom1_first_neighbors_set(
+//       config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().begin(),
+//       config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborList().end());
+//   atom1_first_neighbors_set.erase(jump_pair.second);
+//
+//   std::unordered_set<int> atom2_first_neighbors_set(
+//       config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().begin(),
+//       config.GetAtomList()[jump_pair.second].GetFirstNearestNeighborList().end());
+//   atom2_first_neighbors_set.erase(jump_pair.first);
+//
+//   std::unordered_map<Bond, int> bonds_around_first, bonds_around_second;
+//
+//   const auto &atom_list = config.GetAtomList();
+//   for (const int index:atom1_first_neighbors_set) {
+//     if (atom2_first_neighbors_set.find(index) != atom2_first_neighbors_set.end()) {
+//       continue;
+//     }
+//     bonds_around_first[{atom_list[jump_pair.second].GetType(), atom_list[index].GetType()}]++;
+//   }
+//   for (const int index:atom2_first_neighbors_set) {
+//     if (atom1_first_neighbors_set.find(index) != atom1_first_neighbors_set.end()) {
+//       continue;
+//     }
+//     bonds_around_second[{atom_list[jump_pair.second].GetType(), atom_list[index].GetType()}]++;;
+//   }
+//   return std::make_pair(bonds_around_first, bonds_around_second);
+// }
 
 // std::unordered_map<std::string, double> GetFirstNearestEnvironment(
 //     const kn::Config &config,

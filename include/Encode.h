@@ -73,13 +73,5 @@ std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
 std::array<int, kLengthOfEncodes> GetBackwardEncode(
     const std::array<int, kLengthOfEncodes> &forward_encode);
 
-std::pair<std::map<Bond,int>, std::map<Bond,int>> GetBondAroundPair(
-    const Config &config,
-    const std::pair<int, int> &jump_pair);
-
-// [[maybe_unused]]std::unordered_map<std::string, double> GetFirstNearestEnvironment(
-//     const Config &config,
-//     const std::pair<int, int> &jump_pair);
-
 } // namespace kn::Encode
 #endif //KN_INCLUDE_ENCODE_H_
