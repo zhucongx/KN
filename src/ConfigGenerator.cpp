@@ -64,7 +64,7 @@ Config GenerateUnitCell(
   return config;
 }
 
-Config Duplicate(const Config &in_config,
+static Config Duplicate(const Config &in_config,
                  const std::array<int, kDimension> &factors) {
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
