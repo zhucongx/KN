@@ -48,50 +48,50 @@ void DftAnalysis::PrintOutEncode(
   }
 }
 
-void DftAnalysis::PrintOutBond(const std::string &reference_name,
-                               const std::unordered_set<std::string> &type_hashset) {
-  std::ifstream ifs(reference_name, std::ifstream::in);
-  std::ofstream ofs("bond.txt", std::ofstream::out);
-  std::string buffer;
-  std::set<Bond> bonds_set;
-  for (const auto &element_type1 : type_hashset) {
-    for (const auto &element_type2 : type_hashset) {
-      bonds_set.insert({element_type1, element_type2});
-    }
-  }
-  ofs << "config image element ";
-  for (const auto &bond : bonds_set) {
-    ofs << bond << "_before ";
-  }
-  for (const auto &bond : bonds_set) {
-    ofs << bond << "_after ";
-  }
-  ofs << '\n';
-
-  while (ifs >> buffer) {
-    if (buffer != "config") {
-      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      continue;
-    }
-    int config_index, image_index, jump_pair_first, jump_pair_second;
-    // config 0 end 0 pair: 248 218
-    ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
-
-    auto config = Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg",
-                                     true);
-    auto[bond_map_before, bond_map_after] = Encode::GetBondAroundPair(
-        config, {jump_pair_first, jump_pair_second});
-
-    ofs << config_index << "  " << image_index << "  ";
-    ofs << config.GetAtomList()[jump_pair_second].GetType() << "  ";
-    for (const auto &bond : bonds_set) {
-      ofs << bond_map_before[bond] << " ";
-    }
-    for (const auto &bond : bonds_set) {
-      ofs << bond_map_after[bond] << " ";
-    }
-    ofs << '\n';
-  }
-}
+// void DftAnalysis::PrintOutBond(const std::string &reference_name,
+//                                const std::unordered_set<std::string> &type_hashset) {
+//   std::ifstream ifs(reference_name, std::ifstream::in);
+//   std::ofstream ofs("bond.txt", std::ofstream::out);
+//   std::string buffer;
+//   std::set<Bond> bonds_set;
+//   for (const auto &element_type1 : type_hashset) {
+//     for (const auto &element_type2 : type_hashset) {
+//       bonds_set.insert({element_type1, element_type2});
+//     }
+//   }
+//   ofs << "config image element ";
+//   for (const auto &bond : bonds_set) {
+//     ofs << bond << "_before ";
+//   }
+//   for (const auto &bond : bonds_set) {
+//     ofs << bond << "_after ";
+//   }
+//   ofs << '\n';
+//
+//   while (ifs >> buffer) {
+//     if (buffer != "config") {
+//       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+//       continue;
+//     }
+//     int config_index, image_index, jump_pair_first, jump_pair_second;
+//     // config 0 end 0 pair: 248 218
+//     ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
+//
+//     auto config = Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg",
+//                                      true);
+//     auto[bond_map_before, bond_map_after] = Encode::GetBondAroundPair(
+//         config, {jump_pair_first, jump_pair_second});
+//
+//     ofs << config_index << "  " << image_index << "  ";
+//     ofs << config.GetAtomList()[jump_pair_second].GetType() << "  ";
+//     for (const auto &bond : bonds_set) {
+//       ofs << bond_map_before[bond] << " ";
+//     }
+//     for (const auto &bond : bonds_set) {
+//       ofs << bond_map_after[bond] << " ";
+//     }
+//     ofs << '\n';
+//   }
+// }
 
 } // namespace kn

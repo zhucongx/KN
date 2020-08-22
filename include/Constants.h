@@ -7,8 +7,8 @@
 
 namespace Al_const {
 constexpr double kFirstNearestNeighborsCutoff = 3.5;
-constexpr double kSecondNearestNeighborsCutoff = 4.1;
-constexpr double kThirdNearestNeighborsCutoff = 5.0;
+constexpr double kSecondNearestNeighborsCutoff = 4.5;
+constexpr double kThirdNearestNeighborsCutoff = 5.3;
 
 // constexpr double kNearNeighborsCutoff = kThirdNearestNeighborsCutoff;
 

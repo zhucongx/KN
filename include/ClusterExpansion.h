@@ -5,7 +5,9 @@
 #include "Config.h"
 
 namespace kn::ClusterExpansion {
+// initial and final state
 
+// transition state
 } // namespace kn::ClusterExpansion
 
 #endif //KN_INCLUDE_CLUSTEREXPANSION_H_

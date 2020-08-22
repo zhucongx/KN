@@ -10,9 +10,9 @@ namespace kn::DftAnalysis {
 void PrintOutEncode(const std::string &reference_filename,
                     const std::unordered_map<std::string, int> &type_category_hashmap);
 
-// Generate bond change file according to the log.txt file and generated config files
-void PrintOutBond(const std::string &reference_name,
-                  const std::unordered_set<std::string> &type_hashset);
+// // Generate bond change file according to the log.txt file and generated config files
+// void PrintOutBond(const std::string &reference_name,
+//                   const std::unordered_set<std::string> &type_hashset);
 } // namespace kn::DftAnalysis
 
 #endif //KN_INCLUDE_DFTANALYSIS_H_

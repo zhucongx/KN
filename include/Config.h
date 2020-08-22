@@ -14,6 +14,12 @@ class Config {
   public:
     Config();
     Config(const Matrix33 &basis, int atom_size);
+    // virtual ~Config();
+    // Config(const Config &);
+    // Config &operator=(const Config &);
+    // Config(Config &&) noexcept;
+    // Config &operator=(Config &&) noexcept;
+
     bool operator<(const Config &rhs) const;
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
@@ -38,7 +44,7 @@ class Config {
 
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
 
-    static Config ReadPOSCAR(const std::string &filename);
+    static Config ReadPOSCAR(const std::string &filename, bool update_neighbors);
     static Config ReadConfig(const std::string &filename, bool update_neighbors);
 
     // Write Configuration out as POSCAR file. If the show_vacancy_option is
@@ -50,7 +56,7 @@ class Config {
     static void WriteConfig(const Config &config,
                             const std::string &filename,
                             bool neighbors_info = true);
-  protected:
+  private:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;
     // length of three edges

@@ -2,18 +2,66 @@
 #include "Encode.h"
 #include "ConfigGenerator.h"
 #include "DftAnalysis.h"
+#include "NebDistance.h"
 using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
-  DftAnalysis::PrintOutEncode("log.txt", {{"Al", 0}, {"Mg", 1}, {"Zn", 2}, {"X", 3}});
-  DftAnalysis::PrintOutBond("log.txt", {"Al","Mg","Zn"});
+  NebDistance::PrintTheDistanceFromTwoPOSCARFiles("POSCAR0", "POSCAR1");
+  // DftAnalysis::PrintOutEncode("log.txt", {{"Al", 0}, {"Mg", 1}, {"Zn", 2}, {"X", 3}});
+  // DftAnalysis::PrintOutBond("log.txt", {"Al","Mg","Zn"});
 
+  // cout << "L10\n";
+  // auto A = ConfigGenerator::GenerateL10(4.046, {"Al", "Mg"}, {1, 1, 1});
+  // A.UpdateNeighbors();
+  // auto a = CountAllBonds(A);
+  // for (const auto &[bond, count] : a) {
+  //   cout << bond << ' ' << count << '\n';
+  // }
+  // cout << '\n';
+  // Config::WritePOSCAR(A, "L10");
+  //
+  //
+  // cout << "L12\n";
+  // auto C = ConfigGenerator::GenerateL12(4.046, {"Al", "Mg"}, {1, 1, 1});
+  // C.UpdateNeighbors();
+  // auto c = CountAllBonds(C);
+  // for (const auto &[bond, count] : c) {
+  //   cout << bond << ' ' << count << '\n';
+  // }
+  // Config::WritePOSCAR(C, "L12");
+  //
+  // cout << '\n';
+  // cout << "L12inv\n";
+  // auto D = ConfigGenerator::GenerateL12(4.046, {"Mg", "Al"}, {1, 1, 1});
+  // D.UpdateNeighbors();
+  // auto d = CountAllBonds(D);
+  // for (const auto &[bond, count] : d) {
+  //   cout << bond << ' ' << count << '\n';
+  // }
+  // Config::WritePOSCAR(D, "L12inv");
+  //
+  // cout << '\n';
+  // cout << "L12star\n";
+  // auto E = ConfigGenerator::GenerateL12star(4.046, {"Al", "Mg"}, {1, 1, 1});
+  // E.UpdateNeighbors();
+  // auto e = CountAllBonds(E);
+  // for (const auto &[bond, count] : e) {
+  //   cout << bond << ' ' << count << '\n';
+  // }
+  // cout << '\n';
+  // cout << "Z1\n";
+  // auto F = ConfigGenerator::GenerateZ1(4.046, {"Al", "Mg"}, {1, 1, 1});
+  // F.UpdateNeighbors();
+  // auto f = CountAllBonds(F);
+  // for (const auto &[bond, count] : f) {
+  //   cout << bond << ' ' << count << '\n';
+  // }
 
   // Config test = Config::ReadConfig("start.cfg", true);
   // auto asd = Encode::GetFirstNearestEnvironment(test, {82, 83});
-
+  //
   // for (auto &&a:asd) {
   //   for (auto &&b:a)
   //     cout << b << " ";
@@ -21,7 +69,6 @@ int main(int argc, char *argv[]) {
   //
   //   auto aa = Encode::GetBackwardEncode(a);
   //   for (auto &&b:aa)
-  //     cout << b << " ";
   //   cout << '\n';
   // }
   //
@@ -49,7 +96,8 @@ int main(int argc, char *argv[]) {
   // test.IterateToRun();
 
   // long long start = 0;
-  // long long interval = 1000000;
+
+  //     cout << b << " ";  // long long interval = 1000000;
   // long long end = 264000000;
   // // end = 0;
   // // map<Bond, double> bond_energy{{{"Al", "Al"}, {-0.60648589}},
