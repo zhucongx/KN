@@ -8,6 +8,11 @@ Config::Config() = default;
 Config::Config(const Matrix33 &basis, int atom_size) : basis_(basis) {
   atom_list_.reserve(atom_size);
 }
+// Config::~Config() = default;
+// Config::Config(const Config &) = default;
+// Config &Config::operator=(const Config &) = default;
+// Config::Config(Config &&) = default;
+// Config &Config::operator=(Config &&) = default;
 
 bool Config::operator<(const Config &rhs) const {
   return energy_ < rhs.energy_;
@@ -163,7 +168,7 @@ std::map<Bond, int> CountAllBonds(const Config &config) {
 std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config) {
   int count = 1;
   std::unordered_map<std::string, int> type_category_hashmap;
-  for (const auto& element_list : config.GetElementListMap()){
+  for (const auto &element_list : config.GetElementListMap()) {
     type_category_hashmap[element_list.first] = count++;
   }
   return type_category_hashmap;

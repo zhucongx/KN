@@ -68,15 +68,12 @@ const std::vector<int> &Atom::GetThirdNearestNeighborList() const {
 
 Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second) {
   Vector3 relative_distance_vector = second.GetRelativePosition() - first.GetRelativePosition();
-  auto check_periodic = [](double &distance) {
-    if (distance >= 0.5)
-      distance -= 1;
-    else if (distance < -0.5)
-      distance += 1;
-  };
   // periodic boundary conditions
   for (const auto kDim : All_Dimensions) {
-    check_periodic(relative_distance_vector[kDim]);
+    if (relative_distance_vector[kDim] >= 0.5)
+      relative_distance_vector[kDim] -= 1;
+    else if (relative_distance_vector[kDim] < -0.5)
+      relative_distance_vector[kDim] += 1;
   }
   return relative_distance_vector;
 }

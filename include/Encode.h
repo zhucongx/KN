@@ -1,12 +1,15 @@
-#ifndef KN_INCLUDE_ENCODEGENERATOR_H_
-#define KN_INCLUDE_ENCODEGENERATOR_H_
+#ifndef KN_INCLUDE_ENCODE_H_
+#define KN_INCLUDE_ENCODE_H_
 
 #include <vector>
 #include <map>
+#include <unordered_set>
+#include <unordered_map>
+
 #include "Bond.h"
 #include "Config.h"
 
-namespace kn ::EncodeGenerator {
+namespace kn::Encode {
 // 0. Atom2
 //
 // 1. Atom1.First && Atom2.First 4
@@ -34,31 +37,41 @@ enum LengthOfEncodes {
   kLengthOfEighthEncodes = 4,
   kLengthOfNinthEncodes = 28,
 };
-const std::array<LengthOfEncodes, kNumOfSubEncode> All_Encode_Length{kLengthOfZerothEncodes,
-                                                                     kLengthOfFirstEncodes,
-                                                                     kLengthOfSecondEncodes,
-                                                                     kLengthOfThirdEncodes,
-                                                                     kLengthOfFourthEncodes,
-                                                                     kLengthOfFifthEncodes,
-                                                                     kLengthOfSixthEncodes,
-                                                                     kLengthOfSeventhEncodes,
-                                                                     kLengthOfEighthEncodes,
-                                                                     kLengthOfNinthEncodes};
+const std::array<LengthOfEncodes, kNumOfSubEncode>
+    First_Neighbors_Encode_length{kLengthOfZerothEncodes,
+                                  kLengthOfFirstEncodes,
+                                  kLengthOfSecondEncodes,
+                                  kLengthOfThirdEncodes,
+                                  kLengthOfFourthEncodes};
 
+const std::array<LengthOfEncodes, kNumOfSubEncode>
+    All_Encode_Length{kLengthOfZerothEncodes,
+                      kLengthOfFirstEncodes,
+                      kLengthOfSecondEncodes,
+                      kLengthOfThirdEncodes,
+                      kLengthOfFourthEncodes,
+                      kLengthOfFifthEncodes,
+                      kLengthOfSixthEncodes,
+                      kLengthOfSeventhEncodes,
+                      kLengthOfEighthEncodes,
+                      kLengthOfNinthEncodes};
+
+constexpr int kLengthOfFirstNeighbors =
+    kLengthOfZerothEncodes + kLengthOfFirstEncodes + kLengthOfSecondEncodes + kLengthOfThirdEncodes
+        + kLengthOfFourthEncodes;
 constexpr int kLengthOfEncodes =
     kLengthOfZerothEncodes + kLengthOfFirstEncodes + kLengthOfSecondEncodes + kLengthOfThirdEncodes
         + kLengthOfFourthEncodes + kLengthOfFifthEncodes + kLengthOfSixthEncodes
         + kLengthOfSeventhEncodes + kLengthOfEighthEncodes + kLengthOfNinthEncodes;
 
-std::vector<std::array<int, kLengthOfEncodes>> Encode(
+std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
     const Config &config,
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, int> &type_category_hashmap);
 
+// Give the backward encode from the input forward encode
 std::array<int, kLengthOfEncodes> GetBackwardEncode(
     const std::array<int, kLengthOfEncodes> &forward_encode);
 
-void PrintOutEncode(const std::string &reference_filename,
-                    const std::unordered_map<std::string, int> &type_category_hashmap);
-} // namespace kn
-#endif //KN_INCLUDE_ENCODEGENERATOR_H_
+} // namespace kn::Encode
+#endif //KN_INCLUDE_ENCODE_H_

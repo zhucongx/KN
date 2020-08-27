@@ -4,7 +4,7 @@
 
 namespace kn {
 
-Config Config::ReadPOSCAR(const std::string &filename) {
+Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // #comment
@@ -48,6 +48,8 @@ Config Config::ReadPOSCAR(const std::string &filename) {
   else
     config.ConvertCartesianToRelative();
 
+  if (update_neighbors)
+    config.UpdateNeighbors();
   return config;
 }
 
@@ -187,4 +189,5 @@ void Config::WriteConfig(const Config &config, const std::string &filename, bool
     ofs << '\n';
   }
 }
+
 } // namespace kn
