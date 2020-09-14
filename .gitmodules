@@ -1,3 +1,6 @@
 [submodule "external/cppflow"]
 	path = external/cppflow
 	url = https://github.com/zhucongx/cppflow.git
+[submodule "config_tools"]
+	path = config_tools
+	url = https://github.com/zhucongx/config_tools.git
