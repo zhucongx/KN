@@ -32,8 +32,8 @@ void Config::ConvertCartesianToRelative() {
 }
 
 void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff, double third_r_cutoff) {
-  if (neighbor_found_)
-    return;
+  for (auto &atom:atom_list_)
+    atom.CleanNeighborsLists();
 
   double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
@@ -52,20 +52,19 @@ void Config::UpdateNeighbors(double first_r_cutoff, double second_r_cutoff, doub
       if (absolute_distance_square <= third_r_cutoff_square) {
         if (absolute_distance_square <= second_r_cutoff_square) {
           if (absolute_distance_square <= first_r_cutoff_square) {
-            it1->AppendFirstNearestNeighborList(it2->GetId());
-            it2->AppendFirstNearestNeighborList(it1->GetId());
+            it1->AppendFirstNearestNeighborsList(it2->GetId());
+            it2->AppendFirstNearestNeighborsList(it1->GetId());
           } else {
-            it1->AppendSecondNearestNeighborList(it2->GetId());
-            it2->AppendSecondNearestNeighborList(it1->GetId());
+            it1->AppendSecondNearestNeighborsList(it2->GetId());
+            it2->AppendSecondNearestNeighborsList(it1->GetId());
           }
         } else {
-          it1->AppendThirdNearestNeighborList(it2->GetId());
-          it2->AppendThirdNearestNeighborList(it1->GetId());
+          it1->AppendThirdNearestNeighborsList(it2->GetId());
+          it2->AppendThirdNearestNeighborsList(it1->GetId());
         }
       }
     }
   }
-  neighbor_found_ = true;
 }
 void Config::WrapAtomRelative() {
   for (auto &atom : atom_list_) {
@@ -137,9 +136,15 @@ const Matrix33 &Config::GetBasis() const {
   return basis_;
 }
 
-void Config::AppendAtom(const Atom &atom) {
+void Config::AppendAtomWithoutChangingAtomID(const Atom &atom) {
   atom_list_.push_back(atom);
   element_list_map_[atom.GetType()].emplace_back(atom.GetId());
+}
+
+void Config::AppendAtomWithChangingAtomID(Atom atom) {
+  atom.SetId(atom_list_.size());
+  element_list_map_[atom.GetType()].emplace_back(atom.GetId());
+  atom_list_.push_back(std::move(atom));
 }
 
 const std::vector<Atom> &Config::GetAtomList() const {
@@ -150,13 +155,17 @@ const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const
   return element_list_map_;
 }
 
+void Config::AtomsJump(int lhs, int rhs) {
+  kn:: AtomsJump(atom_list_[lhs], atom_list_[rhs]);
+}
+
 std::map<Bond, int> CountAllBonds(const Config &config) {
   std::map<Bond, int> bonds_count_map;
   std::string type1, type2;
   auto atom_list = config.GetAtomList();
   for (const auto &atom : atom_list) {
     type1 = atom.GetType();
-    for (const auto &atom2_id : atom.GetFirstNearestNeighborList()) {
+    for (const auto &atom2_id : atom.GetFirstNearestNeighborsList()) {
       bonds_count_map[Bond{type1, atom_list[atom2_id].GetType()}]++;
     }
   }
@@ -173,4 +182,5 @@ std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config
   }
   return type_category_hashmap;
 }
+
 } // namespace kn

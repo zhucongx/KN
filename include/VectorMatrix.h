@@ -7,6 +7,9 @@
 #include <iostream>
 #include <numeric>
 #include <iomanip>
+
+#include <boost/functional/hash.hpp>
+
 // #define ARMA_ALLOW_FAKE_GCC
 // #define ARMA_DONT_USE_WRAPPER
 // Uncomment this line if there is a compilation error
@@ -32,16 +35,18 @@ inline std::istream &operator>>(std::istream &is, Vector3 &vector) {
   return is;
 }
 
+const double kEpsilon = 1e-12;
+
 inline bool operator==(const Vector3 &lhs, const Vector3 &rhs) {
-  return lhs[kXDimension] == rhs[kXDimension] &&
-      lhs[kYDimension] == rhs[kYDimension] &&
-      lhs[kZDimension] == rhs[kZDimension];
+  return abs(lhs[kXDimension] - rhs[kXDimension]) < kEpsilon &&
+      abs(lhs[kYDimension] - rhs[kYDimension]) < kEpsilon &&
+      abs(lhs[kZDimension] - rhs[kZDimension]) < kEpsilon;
 }
+
 inline bool operator!=(const Vector3 &lhs, const Vector3 &rhs) {
   return !(rhs == lhs);
 }
 
-const double kEpsilon = 1e-12;
 inline bool operator<(const Vector3 &lhs, const Vector3 &rhs) {
   const double x_diff = lhs[kXDimension] - rhs[kXDimension];
   if (x_diff < -kEpsilon)
@@ -56,6 +61,17 @@ inline bool operator<(const Vector3 &lhs, const Vector3 &rhs) {
 
   return lhs[kZDimension] < rhs[kZDimension] - kEpsilon;
 }
+
+// namespace std {
+// template<>
+// struct hash<Vector3> {
+//   std::size_t operator()(const Vector3 &k) const {
+//     boost::hash<Vector3> hasher;
+//     return hasher(k);
+//   }
+// };
+// }
+
 
 inline Vector3 operator-(const Vector3 &vector) {
   return {-vector[kXDimension],

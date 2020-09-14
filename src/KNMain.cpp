@@ -2,14 +2,26 @@
 #include "Encode.h"
 #include "ConfigGenerator.h"
 #include "DftAnalysis.h"
+#include "ClusterExpansion.h"
 using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
+  // set<ClusterExpansion::Pair> a;
 
 
-
+  unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
+                                                        {"Mg", -1},
+                                                        {"Zn", 2},
+                                                        {"X", 0}};
+  DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
+  // auto cfg = ClusterExpansion::GetAverageClusterFunctions(Config::ReadConfig("0.cfg"),
+  //                                                   {82, 83},
+  //                                                   type_category_hashmap);
+  // for (auto kI : cfg) {
+  //   cout << kI << " ";
+  // }
 
 
   // NebDistance::PrintTheDistanceFromTwoPOSCARFiles("POSCAR0", "POSCAR1");

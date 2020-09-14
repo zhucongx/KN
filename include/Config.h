@@ -39,13 +39,18 @@ class Config {
 
     [[nodiscard]] const Matrix33 &GetBasis() const;
 
-    void AppendAtom(const Atom &atom);
+    void AppendAtomWithoutChangingAtomID(const Atom &atom);
+    void AppendAtomWithChangingAtomID(Atom atom);
+
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
 
     [[nodiscard]] const std::map<std::string, std::vector<int>> &GetElementListMap() const;
 
-    static Config ReadPOSCAR(const std::string &filename, bool update_neighbors);
-    static Config ReadConfig(const std::string &filename, bool update_neighbors);
+    void AtomsJump(int lhs, int rhs);
+
+
+    static Config ReadPOSCAR(const std::string &filename, bool update_neighbors = true);
+    static Config ReadConfig(const std::string &filename, bool update_neighbors = true);
 
     // Write Configuration out as POSCAR file. If the show_vacancy_option is
     // true, output will have "X" for visualization. If false, vacancies will be
@@ -56,6 +61,8 @@ class Config {
     static void WriteConfig(const Config &config,
                             const std::string &filename,
                             bool neighbors_info = true);
+
+
   private:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;
@@ -74,8 +81,6 @@ class Config {
     double energy_{};
     // The index of atom in the vector is not always same as of the id of the atom
     std::vector<Atom> atom_list_;
-    // indicate if the Config has found Atoms' neighbor list
-    bool neighbor_found_{};
 
     // using map data structure because we want to keep the order
     std::map<std::string, std::vector<int>> element_list_map_;

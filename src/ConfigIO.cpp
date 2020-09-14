@@ -38,8 +38,9 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
     double mass = elem_info::FindMass(element_name);
     for (int j = 0; j < count; ++j) {
       ifs >> position_X >> position_Y >> position_Z;
-      config.AppendAtom({id_count, mass, element_name,
-                         position_X * scale, position_Y * scale, position_Z * scale});
+      config.AppendAtomWithoutChangingAtomID({id_count, mass, element_name,
+                                              position_X * scale, position_Y * scale,
+                                              position_Z * scale});
       ++id_count;
     }
   }
@@ -108,22 +109,21 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
       for (int i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
         ifs >> index;
-        atom.AppendFirstNearestNeighborList(index);
+        atom.AppendFirstNearestNeighborsList(index);
       }
       for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
         ifs >> index;
-        atom.AppendSecondNearestNeighborList(index);
+        atom.AppendSecondNearestNeighborsList(index);
       }
       for (int i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
         ifs >> index;
-        atom.AppendThirdNearestNeighborList(index);
+        atom.AppendThirdNearestNeighborsList(index);
       }
       neighbor_found = true;
     }
-    config.AppendAtom(atom);
+    config.AppendAtomWithoutChangingAtomID(atom);
   }
   config.ConvertRelativeToCartesian();
-  config.neighbor_found_ = neighbor_found;
   if (!neighbor_found && update_neighbors)
     config.UpdateNeighbors();
   return config;
@@ -174,20 +174,21 @@ void Config::WriteConfig(const Config &config, const std::string &filename, bool
     ofs << atom.GetMass() << '\n'
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
-    if (neighbors_info && config.neighbor_found_) {
+    if (neighbors_info) {
       ofs << " #";
-      for (auto neighbor_index : atom.GetFirstNearestNeighborList()) {
+      for (auto neighbor_index : atom.GetFirstNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index : atom.GetSecondNearestNeighborList()) {
+      for (auto neighbor_index : atom.GetSecondNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
-      for (auto neighbor_index : atom.GetThirdNearestNeighborList()) {
+      for (auto neighbor_index : atom.GetThirdNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
     }
     ofs << '\n';
   }
 }
+
 
 } // namespace kn

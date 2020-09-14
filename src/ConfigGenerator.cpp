@@ -30,7 +30,7 @@ Config ConfigGenerator::ShuffleConfig(const Config &config) const {
   shuffle(atom_index_list_copy.begin(), atom_index_list_copy.end(), generator_);
   for (auto atom : config.GetAtomList()) {
     atom.SetType(atom_index_list_copy[atom.GetId()]);
-    config_out.AppendAtom(atom);
+    config_out.AppendAtomWithoutChangingAtomID(atom);
   }
   return config_out;
 }
@@ -58,7 +58,8 @@ Config GenerateUnitCell(
   Config config(basis_matrix, type_position_list.size());
   int atoms_counter = 0;
   for (const auto &[type, relative_position] : type_position_list) {
-    config.AppendAtom({atoms_counter++, elem_info::FindMass(type), type, relative_position});
+    config.AppendAtomWithoutChangingAtomID({atoms_counter++, elem_info::FindMass(type), type,
+                                            relative_position});
   }
   config.ConvertRelativeToCartesian();
   return config;
@@ -84,11 +85,18 @@ static Config Duplicate(const Config &in_config,
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
         for (const auto &atom : atom_list_of_input) {
-          out_config.AppendAtom({atoms_counter++, atom.GetMass(), atom.GetType(),
-                                 (x_reference + atom.GetRelativePosition()[kXDimension]) / x_length,
-                                 (y_reference + atom.GetRelativePosition()[kYDimension]) / y_length,
-                                 (z_reference + atom.GetRelativePosition()[kZDimension]) / z_length
-                                });
+          out_config.AppendAtomWithoutChangingAtomID({atoms_counter++, atom.GetMass(),
+                                                      atom.GetType(),
+                                                      (x_reference
+                                                          + atom.GetRelativePosition()[kXDimension])
+                                                          / x_length,
+                                                      (y_reference
+                                                          + atom.GetRelativePosition()[kYDimension])
+                                                          / y_length,
+                                                      (z_reference
+                                                          + atom.GetRelativePosition()[kZDimension])
+                                                          / z_length
+                                                     });
         }
       }
     }
@@ -115,30 +123,30 @@ Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
-        config.AppendAtom({
-                              atoms_counter++, mass, element,
-                              x_reference / x_length,
-                              y_reference / y_length,
-                              z_reference / z_length
-                          });
-        config.AppendAtom({
-                              atoms_counter++, mass, element,
-                              (x_reference + 0.5) / x_length,
-                              (y_reference + 0.5) / y_length,
-                              z_reference / z_length
-                          });
-        config.AppendAtom({
-                              atoms_counter++, mass, element,
-                              (x_reference + 0.5) / x_length,
-                              y_reference / y_length,
-                              (z_reference + 0.5) / z_length
-                          });
-        config.AppendAtom({
-                              atoms_counter++, mass, element,
-                              x_reference / x_length,
-                              (y_reference + 0.5) / y_length,
-                              (z_reference + 0.5) / z_length
-                          });
+        config.AppendAtomWithoutChangingAtomID({
+                                                   atoms_counter++, mass, element,
+                                                   x_reference / x_length,
+                                                   y_reference / y_length,
+                                                   z_reference / z_length
+                                               });
+        config.AppendAtomWithoutChangingAtomID({
+                                                   atoms_counter++, mass, element,
+                                                   (x_reference + 0.5) / x_length,
+                                                   (y_reference + 0.5) / y_length,
+                                                   z_reference / z_length
+                                               });
+        config.AppendAtomWithoutChangingAtomID({
+                                                   atoms_counter++, mass, element,
+                                                   (x_reference + 0.5) / x_length,
+                                                   y_reference / y_length,
+                                                   (z_reference + 0.5) / z_length
+                                               });
+        config.AppendAtomWithoutChangingAtomID({
+                                                   atoms_counter++, mass, element,
+                                                   x_reference / x_length,
+                                                   (y_reference + 0.5) / y_length,
+                                                   (z_reference + 0.5) / z_length
+                                               });
       }
     }
   }
@@ -164,13 +172,13 @@ Config ConfigGenerator::GenerateFCC(double lattice_constant_a,
 //         auto x_reference = static_cast<double>(i);
 //         auto y_reference = static_cast<double>(j);
 //         auto z_reference = static_cast<double>(k);
-//         config.AppendAtom({
+//         config.AppendAtomWithoutChangingAtomID({
 //                               atoms_counter++, mass, element,
 //                               x_reference / x_length,
 //                               y_reference / y_length,
 //                               z_reference / z_length
 //                           });
-//         config.AppendAtom({
+//         config.AppendAtomWithoutChangingAtomID({
 //                               atoms_counter++, mass, element,
 //                               (x_reference + 0.5) / x_length,
 //                               (y_reference + 0.5) / y_length,
@@ -205,18 +213,18 @@ Config ConfigGenerator::GenerateHCP(double lattice_constant_a,
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
-        config.AppendAtom({
-                              atoms_counter++, mass, element,
-                              x_reference / x_length,
-                              y_reference / y_length,
-                              z_reference / z_length
-                          });
-        config.AppendAtom({
-                              atoms_counter, mass, element,
-                              (x_reference + 1.0 / 3.0) / x_length,
-                              (y_reference + 2.0 / 3.0) / y_length,
-                              (z_reference + 0.5) / z_length
-                          });
+        config.AppendAtomWithoutChangingAtomID({
+                                                   atoms_counter++, mass, element,
+                                                   x_reference / x_length,
+                                                   y_reference / y_length,
+                                                   z_reference / z_length
+                                               });
+        config.AppendAtomWithoutChangingAtomID({
+                                                   atoms_counter, mass, element,
+                                                   (x_reference + 1.0 / 3.0) / x_length,
+                                                   (y_reference + 2.0 / 3.0) / y_length,
+                                                   (z_reference + 0.5) / z_length
+                                               });
       }
     }
   }
