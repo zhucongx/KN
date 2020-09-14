@@ -43,14 +43,14 @@ else ()
             CACHE INTERNAL "")
 endif ()
 
-file(GLOB KN_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
-set(KN_INCLUDE "${PROJECT_SOURCE_DIR}/include")
+file(GLOB PROJECT_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
+set(PROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/include")
 
 file(GLOB EXTERNAL_SRC ${PROJECT_SOURCE_DIR}/external/cppflow/src/*.cpp)
 set(EXTERNAL_INCLUDE "${PROJECT_SOURCE_DIR}/external/cppflow/include")
 
-add_executable(${PROJECT_NAME} ${KN_SRC} ${EXTERNAL_SRC})
-target_include_directories(${PROJECT_NAME} PUBLIC ${KN_INCLUDE} ${EXTERNAL_INCLUDE})
+add_executable(${PROJECT_NAME} ${PROJECT_SRC} ${EXTERNAL_SRC})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE} ${EXTERNAL_INCLUDE})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 

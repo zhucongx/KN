@@ -3,6 +3,7 @@
 #include "ConfigGenerator.h"
 #include "DftAnalysis.h"
 #include "ClusterExpansion.h"
+// #include "NebDistance.h"
 using namespace kn;
 using namespace std;
 namespace mpi = boost::mpi;
