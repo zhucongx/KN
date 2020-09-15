@@ -18,7 +18,7 @@ ClustersFinder::ClustersFinder(std::string cfg_filename,
 ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
 
-  Config config_out(config_.GetBasis(), config_.GetNumAtoms());
+  cfg::Config config_out(config_.GetBasis(), config_.GetNumAtoms());
   std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
   for (auto &atom_list : cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
@@ -37,7 +37,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto output_name(cfg_filename_);
   auto const pos = output_name.find_last_of('.');
   output_name.insert(pos,"_cluster" );
-  Config::WriteConfig(config_out, output_name, false);
+  cfg::Config::WriteConfig(config_out, output_name, false);
   return num_atom_in_clusters_set;
 }
 
@@ -54,7 +54,7 @@ void ClustersFinder::PrintLog(const std::string &filename,
 }
 
 void ClustersFinder::ReadFileAndUpdateNeighbor() {
-  config_ = Config::ReadConfig(cfg_filename_, true);
+  config_ = cfg::Config::ReadConfig(cfg_filename_, true);
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == "X")
       continue;

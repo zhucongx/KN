@@ -9,7 +9,7 @@
 #include <random>
 #include "Atom.h"
 #include "Bond.h"
-namespace kn {
+namespace cfg {
 class Config {
   public:
     Config();
@@ -88,5 +88,5 @@ class Config {
 
 std::map<Bond, int> CountAllBonds(const Config &config);
 std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config);
-} // namespace kn
+} // namespace cfg
 #endif //KN_INCLUDE_CONFIG_H_

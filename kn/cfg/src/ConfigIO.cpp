@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace kn {
+namespace cfg {
 
 Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
@@ -191,4 +191,4 @@ void Config::WriteConfig(const Config &config, const std::string &filename, bool
 }
 
 
-} // namespace kn
+} // namespace cfg

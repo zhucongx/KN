@@ -1,7 +1,7 @@
 #include "ClusterExpansion.h"
 #include <unordered_set>
 namespace kn::ClusterExpansion {
-static Vector3 GetPairCenterHelper(const Config &config,
+static Vector3 GetPairCenterHelper(const cfg::Config &config,
                                    const std::pair<int, int> &jump_pair) {
   Vector3 center_position;
   for (const auto kDim : All_Dimensions) {
@@ -22,12 +22,12 @@ static Vector3 GetPairCenterHelper(const Config &config,
   return center_position;
 }
 
-static Matrix33 GetJumpMatrixHelper(const Config &config,
+static Matrix33 GetJumpMatrixHelper(const cfg::Config &config,
                                     const std::pair<int, int> &jump_pair) {
   const Vector3 pair_direction = Normalize(GetRelativeDistanceVector(
       config.GetAtomList()[jump_pair.first],
       config.GetAtomList()[jump_pair.second]));
-  const Atom &first_atom = config.GetAtomList()[jump_pair.first];
+  const auto &first_atom = config.GetAtomList()[jump_pair.first];
   Vector3 vertical_vector;
   for (const int index : first_atom.GetFirstNearestNeighborsList()) {
     const Vector3 jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
@@ -63,7 +63,7 @@ static Matrix33 GetJumpMatrixHelper(const Config &config,
 /// be considered same positions
 
 
-static bool AreSameSymmetrically(const Atom &lhs, const Atom &rhs) {
+static bool AreSameSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
   return abs(relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension]) < kEpsilon &&
@@ -86,7 +86,7 @@ static bool AreSameSymmetrically(const Triplet &lhs, const Triplet &rhs) {
 //       abs(abs(relative_position_lhs[kYDimension] - 0.5) - abs(relative_position_rhs[kYDimension] - 0.5)) < kEpsilon &&
 //       abs(abs(relative_position_lhs[kZDimension] - 0.5) - abs(relative_position_rhs[kZDimension] - 0.5)) < kEpsilon;
 // }
-static bool IsSmallerSymmetrically(const Atom &lhs, const Atom &rhs) {
+static bool IsSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
 
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
@@ -129,7 +129,7 @@ static bool IsSmallerSymmetrically(const Triplet &lhs, const Triplet &rhs) {
 }
 
 static void RotateHelper(
-    std::vector<Atom> &atom_list,
+    std::vector<cfg::Atom> &atom_list,
     const Matrix33 &rotation_matrix) {
   const auto move_distance_after_rotation = Vector3{0.5, 0.5, 0.5}
       - (Vector3{0.5, 0.5, 0.5} * rotation_matrix);
@@ -146,7 +146,7 @@ static void RotateHelper(
 
 }
 
-static Config GetRotatedCenteredSortedConfig(const Config &config,
+static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
                                              const std::pair<int, int> &jump_pair) {
   // # First, second, third nearest neighbors of the jump pairs
   constexpr int kNumOfAtoms = 60;
@@ -157,10 +157,10 @@ static Config GetRotatedCenteredSortedConfig(const Config &config,
 
   const auto move_distance = Vector3{0.5, 0.5, 0.5} - GetPairCenterHelper(config, jump_pair);
 
-  std::vector<Atom> atom_list;
+  std::vector<cfg::Atom> atom_list;
   atom_list.reserve(kNumOfAtoms);
   for (int id : atom_id_set) {
-    Atom atom = config.GetAtomList()[id];
+    cfg::Atom atom = config.GetAtomList()[id];
 
     // move to center
     auto relative_position = atom.GetRelativePosition();
@@ -176,18 +176,18 @@ static Config GetRotatedCenteredSortedConfig(const Config &config,
 
   //sort
   std::sort(atom_list.begin(), atom_list.end(),
-            [](const Atom &lhs, const Atom &rhs) {
+            [](const auto &lhs, const cfg::Atom &rhs) {
               return IsSmallerSymmetrically(lhs, rhs);
             });
 
-  Config config_out(config.GetBasis(), kNumOfAtoms);
-  for (const Atom &atom : atom_list) {
+  cfg::Config config_out(config.GetBasis(), kNumOfAtoms);
+  for (const cfg::Atom &atom : atom_list) {
     config_out.AppendAtomWithChangingAtomID(atom);
   }
   config_out.UpdateNeighbors();
 
 #ifndef NDEBUG
-  Config::WriteConfig(config_out, "1.cfg");
+  cfg::Config::WriteConfig(config_out, "1.cfg");
 #endif
 
   return config_out;
@@ -196,11 +196,11 @@ static Config GetRotatedCenteredSortedConfig(const Config &config,
 // static void GetAverageClusterFunctionsOfSinglets(const Config &reference_config,
 //                                                  );
 std::vector<double> GetAverageClusterFunctions(
-    const Config &config,
+    const cfg::Config &config,
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
 
-  Config transformed_config = GetRotatedCenteredSortedConfig(config, jump_pair);
+  cfg::Config transformed_config = GetRotatedCenteredSortedConfig(config, jump_pair);
 
   // Get near neighbors atom list, sorted using mm2 group point
   const auto &atom_list_reference = transformed_config.GetAtomList();
@@ -214,19 +214,19 @@ std::vector<double> GetAverageClusterFunctions(
 
   /// singlets
   // start to point at atoms in the first range
-  std::vector<Atom>::const_iterator lower_it_singlet, upper_it_singlet;
+  std::vector<cfg::Atom>::const_iterator lower_it_singlet, upper_it_singlet;
   lower_it_singlet = atom_list_reference.cbegin();
   do {
     upper_it_singlet = std::upper_bound(lower_it_singlet, atom_list_reference.cend(),
                                         *lower_it_singlet,
-                                        [](const Atom &lhs, const Atom &rhs) {
+                                        [](const auto &lhs, const auto &rhs) {
                                           return IsSmallerSymmetrically(lhs, rhs);
                                         });
     // add singlets
     average_cluster_functions_vector.push_back(
         std::accumulate(lower_it_singlet, upper_it_singlet, 0.0,
                         [&type_category_hashmap = std::as_const(type_category_hashmap)](
-                            double current_sum, const Atom &rhs) {
+                            double current_sum, const auto &rhs) {
                           return current_sum
                               + type_category_hashmap.at(rhs.GetType());
                         }) / std::distance(lower_it_singlet, upper_it_singlet)
@@ -344,7 +344,7 @@ std::vector<double> GetAverageClusterFunctions(
 }
 
 std::vector<double> GetAverageClusterFunctionsBack(
-    const Config &config,
+    const cfg::Config &config,
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
   auto back_config = config;

@@ -1,8 +1,8 @@
 #include "Encode.h"
 
 namespace kn::Encode {
-static std::array<Atom, kLengthOfEncodes> GetAtomListHelper(
-    const Config &config,
+static std::array<cfg::Atom, kLengthOfEncodes> GetAtomListHelper(
+    const cfg::Config &config,
     const std::pair<int, int> &jump_pair) {
   std::unordered_set<int> atom1_first_neighbors_set(
       config.GetAtomList()[jump_pair.first].GetFirstNearestNeighborsList().begin(),
@@ -114,7 +114,7 @@ static std::array<Atom, kLengthOfEncodes> GetAtomListHelper(
     sub_encode_sets[9].insert(index);
   }
 
-  std::array<Atom, kLengthOfEncodes> atom_list;
+  std::array<cfg::Atom, kLengthOfEncodes> atom_list;
   int count = 0;
   for (const auto &sub_encode_set:sub_encode_sets) {
     for (const auto &index:sub_encode_set) {
@@ -123,7 +123,7 @@ static std::array<Atom, kLengthOfEncodes> GetAtomListHelper(
   }
   return atom_list;
 }
-static Vector3 GetPairCenterHelper(const Config &config,
+static Vector3 GetPairCenterHelper(const cfg::Config &config,
                                    const std::pair<int, int> &jump_pair) {
   Vector3 center_position;
   for (const auto kDim : All_Dimensions) {
@@ -143,12 +143,12 @@ static Vector3 GetPairCenterHelper(const Config &config,
   }
   return center_position;
 }
-static Matrix33 GetJumpMatrixHelper(const Config &config,
+static Matrix33 GetJumpMatrixHelper(const cfg::Config &config,
                                     const std::pair<int, int> &jump_pair) {
   const Vector3 pair_direction = Normalize(GetRelativeDistanceVector(
       config.GetAtomList()[jump_pair.first],
       config.GetAtomList()[jump_pair.second]));
-  const Atom &first_atom = config.GetAtomList()[jump_pair.first];
+  const cfg::Atom &first_atom = config.GetAtomList()[jump_pair.first];
   Vector3 vertical_vector;
   for (const int index : first_atom.GetFirstNearestNeighborsList()) {
     const Vector3 jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
@@ -169,7 +169,7 @@ static Matrix33 GetJumpMatrixHelper(const Config &config,
 }
 template<size_t DataSize>
 static void RotateAndSort(
-    std::array<Atom, DataSize> &atom_list,
+    std::array<cfg::Atom, DataSize> &atom_list,
     const Matrix33 &rotation_matrix) {
   const auto move_distance_after_rotation = Vector3{0.5, 0.5, 0.5}
       - (Vector3{0.5, 0.5, 0.5} * rotation_matrix);
@@ -185,11 +185,11 @@ static void RotateAndSort(
   }
   //sort
   auto first_it = atom_list.begin();
-  typename std::array<Atom, DataSize>::iterator second_it;
+  typename std::array<cfg::Atom, DataSize>::iterator second_it;
   for (auto kSubCodeLength:All_Encode_Length) {
     second_it = first_it + kSubCodeLength;
     std::sort(first_it, second_it,
-              [](const Atom &first_atom, const Atom &second_atom) {
+              [](const cfg::Atom &first_atom, const cfg::Atom &second_atom) {
                 return first_atom.GetRelativePosition() < second_atom.GetRelativePosition();
               });
     first_it = second_it;
@@ -200,7 +200,7 @@ static void RotateAndSort(
 }
 
 static std::array<int, kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
-    std::array<Atom, kLengthOfEncodes> &atom_list,
+    std::array<cfg::Atom, kLengthOfEncodes> &atom_list,
     const Matrix33 &rotation_matrix,
     const std::unordered_map<std::string, int> &type_category_hashmap) {
 
@@ -215,7 +215,7 @@ static std::array<int, kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
 }
 
 std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
-    const Config &config,
+    const cfg::Config &config,
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, int> &type_category_hashmap) {
   auto atom_list = GetAtomListHelper(config, jump_pair);

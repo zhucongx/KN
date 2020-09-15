@@ -65,7 +65,7 @@ constexpr int kLengthOfEncodes =
         + kLengthOfSeventhEncodes + kLengthOfEighthEncodes + kLengthOfNinthEncodes;
 
 std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
-    const Config &config,
+    const cfg::Config &config,
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, int> &type_category_hashmap);
 

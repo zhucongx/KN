@@ -16,13 +16,13 @@ int main(int argc, char *argv[]) {
                                                         {"Mg", -1},
                                                         {"Zn", 2},
                                                         {"X", 0}};
-  DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-  // auto cfg = ClusterExpansion::GetAverageClusterFunctions(Config::ReadConfig("0.cfg"),
-  //                                                   {82, 83},
-  //                                                   type_category_hashmap);
-  // for (auto kI : cfg) {
-  //   cout << kI << " ";
-  // }
+  // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
+  auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("0.cfg"),
+                                                    {82, 83},
+                                                    type_category_hashmap);
+  for (auto kI : cfg) {
+    cout << kI << " ";
+  }
 
 
   // NebDistance::PrintTheDistanceFromTwoPOSCARFiles("POSCAR0", "POSCAR1");

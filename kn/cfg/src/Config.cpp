@@ -3,7 +3,7 @@
 #include <iostream>
 #include <utility>
 
-namespace kn {
+namespace cfg {
 Config::Config() = default;
 Config::Config(const Matrix33 &basis, int atom_size) : basis_(basis) {
   atom_list_.reserve(atom_size);
@@ -156,7 +156,7 @@ const std::map<std::string, std::vector<int>> &Config::GetElementListMap() const
 }
 
 void Config::AtomsJump(int lhs, int rhs) {
-  kn:: AtomsJump(atom_list_[lhs], atom_list_[rhs]);
+  cfg:: AtomsJump(atom_list_[lhs], atom_list_[rhs]);
 }
 
 std::map<Bond, int> CountAllBonds(const Config &config) {
@@ -183,4 +183,4 @@ std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config
   return type_category_hashmap;
 }
 
-} // namespace kn
+} // namespace cfg

@@ -1,7 +1,7 @@
 #include "ConfigGenerator.h"
 #include <fstream>
 
-namespace kn {
+namespace neb {
 const int kP = 9;
 void PrepareINCAR(const std::string &path) {
   std::string filename = path + "/INCAR";
@@ -134,4 +134,4 @@ void ConfigGenerator::PrepareVASPFiles(const std::string &file_path) {
   PrepareSUBMITGL(file_path);
   PrepareSUBMITSTAMPEDE2(file_path);
 }
-}// namespace kn
+}// namespace cfg

@@ -4,7 +4,7 @@
 
 #include <boost/functional/hash.hpp>
 
-namespace kn {
+namespace cfg {
 
 
 
@@ -49,17 +49,17 @@ class Bond {
 
 
 
-} // namespace kn
+} // namespace cfg
 
 
 // namespace std {
 // template<>
-// struct hash<kn::Bond> {
-//   // std::size_t operator()(const kn::Bond &k) const {
+// struct hash<cfg::Bond> {
+//   // std::size_t operator()(const cfg::Bond &k) const {
 //   //   return (std::hash<std::string>()(k.GetType1())) ^ (std::hash<std::string>()(k.GetType2()));
 //   // }
 //
-//   std::size_t operator()(const kn::Bond &k) const {
+//   std::size_t operator()(const cfg::Bond &k) const {
 //     boost::hash<std::pair<std::string,std::string>> hasher;
 //     return hasher({k.GetType1(),k.GetType2()});
 //   }

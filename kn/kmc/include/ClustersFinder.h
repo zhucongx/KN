@@ -27,7 +27,7 @@ class ClustersFinder {
     [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClusters() const;
 
     std::string cfg_filename_;
-    Config config_;
+    cfg::Config config_;
     std::string solvent_element_;
     std::set<std::string> element_set_;
     int smallest_cluster_criteria_{};

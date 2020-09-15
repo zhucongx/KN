@@ -9,7 +9,7 @@
 #include "Constants.h"
 #include "VectorMatrix.h"
 
-namespace kn {
+namespace cfg {
 class Atom;
 Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
 void AtomsJump(Atom &lhs, Atom &rhs);
@@ -44,7 +44,7 @@ class Atom {
 
     void CleanNeighborsLists();
 
-    friend void kn::AtomsJump(Atom &lhs, Atom &rhs);
+    friend void cfg::AtomsJump(Atom &lhs, Atom &rhs);
   private:
     int id_{};
     double mass_{};
@@ -66,5 +66,5 @@ class Atom {
     // std::vector<int> fourth_nearest_neighbors_list_;
     // atom id which is an unique Rank for every atom indexed form 0
 };
-} // namespace kn
+} // namespace cfg
 #endif //KN_SRC_ATOM_H_

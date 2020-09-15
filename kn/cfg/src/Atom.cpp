@@ -1,5 +1,5 @@
 #include "Atom.h"
-namespace kn {
+namespace cfg {
 Atom::Atom() = default;
 
 Atom::Atom(int id, double mass, std::string type, double x, double y, double z) :
@@ -149,4 +149,4 @@ Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second) {
   return relative_distance_vector;
 }
 
-} // namespace kn
+} // namespace cfg

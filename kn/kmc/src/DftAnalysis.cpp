@@ -32,7 +32,7 @@ void DftAnalysis::PrintOutEncode(
     ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
 
     auto forward_encode_result = Encode::GetEncode(
-        Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true),
+        cfg::Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true),
         {jump_pair_first, jump_pair_second},
         type_category_hashmap);
     for (const auto &image_forward_encode : forward_encode_result) {
@@ -72,7 +72,7 @@ void DftAnalysis::PrintOutClusterExpansionAverage(
     ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
 
     const auto
-        config = Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true);
+        config = cfg::Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true);
     auto cluster_expansion_average_code = ClusterExpansion::GetAverageClusterFunctions(
         config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
     auto cluster_expansion_average_code_back = ClusterExpansion::GetAverageClusterFunctionsBack(
