@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_VECTORMATRIX_H_
-#define KN_INCLUDE_VECTORMATRIX_H_
+#ifndef KN_KN_CFG_INCLUDE_VECTORMATRIX_HPP_
+#define KN_KN_CFG_INCLUDE_VECTORMATRIX_HPP_
 
 #include <cmath>
 
@@ -8,46 +8,41 @@
 #include <numeric>
 #include <iomanip>
 
-#include <boost/functional/hash.hpp>
-
-// #define ARMA_ALLOW_FAKE_GCC
-// #define ARMA_DONT_USE_WRAPPER
-// Uncomment this line if there is a compilation error
-// #include <armadillo>
-#include "Constants.h"
-const int kDimension = 3;
+#include "Constants.hpp"
+const size_t kDimension = 3;
 
 enum Dimension { kXDimension, kYDimension, kZDimension };
 const std::array<Dimension, 3> All_Dimensions{kXDimension, kYDimension, kZDimension};
 
 
 // By default, it is always a 1 by 3 vector
-using Vector3 = std::array<double, kDimension>;
-using Matrix33 = std::array<Vector3, kDimension>;
+using Vector_t = std::array<double, kDimension>;
+using Matrix_t = std::array<Vector_t, kDimension>;
+using Factor_t = std::array<int, kDimension>;
 
-inline std::ostream &operator<<(std::ostream &os, const Vector3 &vector) {
+inline std::ostream &operator<<(std::ostream &os, const Vector_t &vector) {
   os << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
   return os;
 }
 
-inline std::istream &operator>>(std::istream &is, Vector3 &vector) {
+inline std::istream &operator>>(std::istream &is, Vector_t &vector) {
   is >> vector[kXDimension] >> vector[kYDimension] >> vector[kZDimension];
   return is;
 }
 
 const double kEpsilon = 1e-12;
 
-inline bool operator==(const Vector3 &lhs, const Vector3 &rhs) {
+inline bool operator==(const Vector_t &lhs, const Vector_t &rhs) {
   return abs(lhs[kXDimension] - rhs[kXDimension]) < kEpsilon &&
       abs(lhs[kYDimension] - rhs[kYDimension]) < kEpsilon &&
       abs(lhs[kZDimension] - rhs[kZDimension]) < kEpsilon;
 }
 
-inline bool operator!=(const Vector3 &lhs, const Vector3 &rhs) {
+inline bool operator!=(const Vector_t &lhs, const Vector_t &rhs) {
   return !(rhs == lhs);
 }
 
-inline bool operator<(const Vector3 &lhs, const Vector3 &rhs) {
+inline bool operator<(const Vector_t &lhs, const Vector_t &rhs) {
   const double x_diff = lhs[kXDimension] - rhs[kXDimension];
   if (x_diff < -kEpsilon)
     return true;
@@ -62,102 +57,91 @@ inline bool operator<(const Vector3 &lhs, const Vector3 &rhs) {
   return lhs[kZDimension] < rhs[kZDimension] - kEpsilon;
 }
 
-// namespace std {
-// template<>
-// struct hash<Vector3> {
-//   std::size_t operator()(const Vector3 &k) const {
-//     boost::hash<Vector3> hasher;
-//     return hasher(k);
-//   }
-// };
-// }
-
-
-inline Vector3 operator-(const Vector3 &vector) {
+inline Vector_t operator-(const Vector_t &vector) {
   return {-vector[kXDimension],
           -vector[kYDimension],
           -vector[kZDimension]};
 }
 
-inline Vector3 &operator+=(Vector3 &lhs, const Vector3 &rhs) {
+inline Vector_t &operator+=(Vector_t &lhs, const Vector_t &rhs) {
   lhs[kXDimension] += rhs[kXDimension];
   lhs[kYDimension] += rhs[kYDimension];
   lhs[kZDimension] += rhs[kZDimension];
   return lhs;
 }
 
-inline Vector3 &operator-=(Vector3 &lhs, const Vector3 &rhs) {
+inline Vector_t &operator-=(Vector_t &lhs, const Vector_t &rhs) {
   lhs[kXDimension] -= rhs[kXDimension];
   lhs[kYDimension] -= rhs[kYDimension];
   lhs[kZDimension] -= rhs[kZDimension];
   return lhs;
 }
 
-inline Vector3 &operator*=(Vector3 &lhs, double factor) {
+inline Vector_t &operator*=(Vector_t &lhs, double factor) {
   lhs[kXDimension] *= factor;
   lhs[kYDimension] *= factor;
   lhs[kZDimension] *= factor;
   return lhs;
 }
 
-inline Vector3 &operator/=(Vector3 &lhs, double divisor) {
+inline Vector_t &operator/=(Vector_t &lhs, double divisor) {
   lhs[kXDimension] /= divisor;
   lhs[kYDimension] /= divisor;
   lhs[kZDimension] /= divisor;
   return lhs;
 }
 
-inline Vector3 operator+(const Vector3 &lhs, const Vector3 &rhs) {
-  Vector3 temp(lhs);
+inline Vector_t operator+(const Vector_t &lhs, const Vector_t &rhs) {
+  Vector_t temp(lhs);
   return (temp += rhs);
 }
 
-inline Vector3 operator-(const Vector3 &lhs, const Vector3 &rhs) {
-  Vector3 temp(lhs);
+inline Vector_t operator-(const Vector_t &lhs, const Vector_t &rhs) {
+  Vector_t temp(lhs);
   return (temp -= rhs);
 }
 
-inline Vector3 operator*(const Vector3 &vector, double factor) {
-  Vector3 temp(vector);
+inline Vector_t operator*(const Vector_t &vector, double factor) {
+  Vector_t temp(vector);
   return (temp *= factor);
 }
 
-inline Vector3 operator*(double factor, const Vector3 &vector) {
+inline Vector_t operator*(double factor, const Vector_t &vector) {
   return operator*(vector, factor);
 }
 
-inline Vector3 operator/(const Vector3 &vector, double divisor) {
-  Vector3 temp(vector);
+inline Vector_t operator/(const Vector_t &vector, double divisor) {
+  Vector_t temp(vector);
   return (temp /= divisor);
 }
 
-inline double Max(const Vector3 &vector) {
+inline double Max(const Vector_t &vector) {
   return std::max(std::max(vector[kXDimension], vector[kYDimension]), vector[kZDimension]);
 }
 
-inline double Min(const Vector3 &vector) {
+inline double Min(const Vector_t &vector) {
   return std::min(std::min(vector[kXDimension], vector[kYDimension]), vector[kZDimension]);
 }
 
-inline double Sum(const Vector3 &vector) {
+inline double Sum(const Vector_t &vector) {
   return vector[kXDimension] + vector[kYDimension] + vector[kZDimension];
 }
 
-inline Vector3 ElementAbs(const Vector3 &vector) {
+inline Vector_t ElementAbs(const Vector_t &vector) {
   return {
       std::abs(vector[kXDimension]), std::abs(vector[kYDimension]),
       std::abs(vector[kZDimension])
   };
 }
 
-inline Vector3 ElementFloor(const Vector3 &vector) {
+inline Vector_t ElementFloor(const Vector_t &vector) {
   return {
       std::floor(vector[kXDimension]), std::floor(vector[kYDimension]),
       std::floor(vector[kZDimension])
   };
 }
 
-inline Vector3 Cross(const Vector3 &first, const Vector3 &second) {
+inline Vector_t Cross(const Vector_t &first, const Vector_t &second) {
   return {
       first[kYDimension] * second[kZDimension] - first[kZDimension] * second[kYDimension],
       first[kZDimension] * second[kXDimension] - first[kXDimension] * second[kZDimension],
@@ -165,24 +149,24 @@ inline Vector3 Cross(const Vector3 &first, const Vector3 &second) {
   };
 }
 
-inline double Dot(const Vector3 &first, const Vector3 &second) {
+inline double Dot(const Vector_t &first, const Vector_t &second) {
   return first[kXDimension] * second[kXDimension] + first[kYDimension] * second[kYDimension]
       + first[kZDimension] * second[kZDimension];
 }
 
-inline double Inner(const Vector3 &vector) {
+inline double Inner(const Vector_t &vector) {
   return vector[kXDimension] * vector[kXDimension] + vector[kYDimension] * vector[kYDimension]
       + vector[kZDimension] * vector[kZDimension];
 }
 
-inline Vector3 ElementProduct(const Vector3 &first, const Vector3 &second) {
+inline Vector_t ElementProduct(const Vector_t &first, const Vector_t &second) {
   return {
       first[kXDimension] * second[kXDimension], first[kYDimension] * second[kYDimension],
       first[kZDimension] * second[kZDimension]
   };
 }
 
-inline Vector3 ElementDivide(const Vector3 &dividend, const Vector3 &divisor) {
+inline Vector_t ElementDivide(const Vector_t &dividend, const Vector_t &divisor) {
   return {
       dividend[kXDimension] / divisor[kXDimension],
       dividend[kYDimension] / divisor[kYDimension],
@@ -190,54 +174,54 @@ inline Vector3 ElementDivide(const Vector3 &dividend, const Vector3 &divisor) {
   };
 }
 
-inline double ScalarLength(const Vector3 &vector) {
+inline double ScalarLength(const Vector_t &vector) {
   return std::sqrt(Inner(vector));
 }
 
-inline Vector3 Normalize(const Vector3 &vector) {
+inline Vector_t Normalize(const Vector_t &vector) {
   double factor = 1.0 / ScalarLength(vector);
   return vector * factor;
 }
 
-inline std::ostream &operator<<(std::ostream &os, const Matrix33 &matrix) {
+inline std::ostream &operator<<(std::ostream &os, const Matrix_t &matrix) {
   os << matrix[kXDimension] << '\n' << matrix[kYDimension] << '\n' << matrix[kZDimension];
   return os;
 }
 
-inline std::istream &operator>>(std::istream &is, Matrix33 &matrix) {
+inline std::istream &operator>>(std::istream &is, Matrix_t &matrix) {
   is >> matrix[kXDimension] >> matrix[kYDimension] >> matrix[kZDimension];
   return is;
 }
 
-inline Matrix33 &operator*=(Matrix33 &lhs, double factor) {
+inline Matrix_t &operator*=(Matrix_t &lhs, double factor) {
   lhs[kXDimension] *= factor;
   lhs[kYDimension] *= factor;
   lhs[kZDimension] *= factor;
   return lhs;
 }
 
-inline Matrix33 &operator/=(Matrix33 &lhs, double divisor) {
+inline Matrix_t &operator/=(Matrix_t &lhs, double divisor) {
   lhs[kXDimension] /= divisor;
   lhs[kYDimension] /= divisor;
   lhs[kZDimension] /= divisor;
   return lhs;
 }
 
-inline Matrix33 operator*(const Matrix33 &matrix, double factor) {
-  Matrix33 temp(matrix);
+inline Matrix_t operator*(const Matrix_t &matrix, double factor) {
+  Matrix_t temp(matrix);
   return (temp *= factor);
 }
 
-inline Matrix33 operator*(double factor, const Matrix33 &matrix) {
+inline Matrix_t operator*(double factor, const Matrix_t &matrix) {
   return operator*(matrix, factor);
 }
 
-inline Matrix33 operator/(const Matrix33 &matrix, double divisor) {
-  Matrix33 temp(matrix);
+inline Matrix_t operator/(const Matrix_t &matrix, double divisor) {
+  Matrix_t temp(matrix);
   return (temp /= divisor);
 }
 
-inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs) {
+inline Vector_t operator*(const Vector_t &lhs, const Matrix_t &rhs) {
   return {
       lhs[kXDimension] * rhs[kXDimension][kXDimension]
           + lhs[kYDimension] * rhs[kYDimension][kXDimension]
@@ -250,7 +234,7 @@ inline Vector3 operator*(const Vector3 &lhs, const Matrix33 &rhs) {
           + lhs[kZDimension] * rhs[kZDimension][kZDimension]
   };
 }
-inline double Determinant(const Matrix33 &input) {
+inline double Determinant(const Matrix_t &input) {
   return (input[kXDimension][kXDimension] * input[kYDimension][kYDimension]
       * input[kZDimension][kZDimension]
       - input[kXDimension][kXDimension] * input[kYDimension][kZDimension]
@@ -264,7 +248,7 @@ inline double Determinant(const Matrix33 &input) {
       - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
           * input[kZDimension][kXDimension]);
 }
-inline Matrix33 TransposeMatrix33(const Matrix33 &input) {
+inline Matrix_t TransposeMatrix33(const Matrix_t &input) {
   return {{{input[kXDimension][kXDimension], input[kYDimension][kXDimension],
             input[kZDimension][kXDimension]},
            {input[kXDimension][kYDimension], input[kYDimension][kYDimension],
@@ -272,7 +256,7 @@ inline Matrix33 TransposeMatrix33(const Matrix33 &input) {
            {input[kXDimension][kZDimension], input[kYDimension][kZDimension],
             input[kZDimension][kZDimension]}}};
 }
-inline Matrix33 InverseMatrix33(const Matrix33 &input) {
+inline Matrix_t InverseMatrix33(const Matrix_t &input) {
   // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
   //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
   //                        {input[kZDimension][kXDimension], input[kZDimension][kYDimension], input[kZDimension][kZDimension]}};
@@ -310,4 +294,4 @@ inline Matrix33 InverseMatrix33(const Matrix33 &input) {
       }
   };
 }
-#endif //KN_INCLUDE_VECTORMATRIX_H_
+#endif //KN_KN_CFG_INCLUDE_VECTORMATRIX_HPP_

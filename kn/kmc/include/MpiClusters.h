@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_MPICLUSTERS_H_
-#define KN_INCLUDE_MPICLUSTERS_H_
+#ifndef KN_KN_KMC_INCLUDE_MPICLUSTERS_H_
+#define KN_KN_KMC_INCLUDE_MPICLUSTERS_H_
 
 #include "MpiIterator.h"
 namespace kn {
@@ -22,4 +22,4 @@ class MpiClusters : public MpiIterator {
 }// namespace kn
 
 
-#endif //KN_INCLUDE_MPICLUSTERS_H_
+#endif //KN_KN_KMC_INCLUDE_MPICLUSTERS_H_

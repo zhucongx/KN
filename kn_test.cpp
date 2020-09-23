@@ -1,28 +1,33 @@
 #include "MpiClusters.h"
 #include "Encode.h"
-#include "ConfigGenerator.h"
+// #include "ConfigGenerator.h"
 #include "DftAnalysis.h"
 #include "ClusterExpansion.h"
 // #include "NebDistance.h"
+#include "ClusterConfigGenerator.h"
 using namespace kn;
 using namespace std;
-namespace mpi = boost::mpi;
+// namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
   // set<ClusterExpansion::Pair> a;
+  // std::multiset<cfg::Atom, decltype()> test;
+  neb::ClusterConfigGenerator a(4.046,{4, 4, 4},
+                              "Al",{"Al","Mg","Zn"},
+                              "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
 
-
-  unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
-                                                        {"Mg", -1},
-                                                        {"Zn", 2},
-                                                        {"X", 0}};
-  // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-  auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("0.cfg"),
-                                                    {82, 83},
-                                                    type_category_hashmap);
-  for (auto kI : cfg) {
-    cout << kI << " ";
-  }
+  a.CreateConfigs();
+  // unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
+  //                                                          {"Mg", -1},
+  //                                                          {"Zn", 2},
+  //                                                          {"X", 0}};
+  // // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
+  // auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
+  //                                                         {83, 82},
+  //                                                         type_category_hashmap);
+  // for (auto kI : cfg) {
+  //   cout << kI << " ";
+  // }
 
 
   // NebDistance::PrintTheDistanceFromTwoPOSCARFiles("POSCAR0", "POSCAR1");

@@ -2,7 +2,7 @@
 #define KN_INCLUDE_BONDCOUNTER_H_
 
 #include <set>
-#include "Config.h"
+#include "Cfg.hpp"
 #include "Bond.h"
 namespace kn {
 class BondCounter {

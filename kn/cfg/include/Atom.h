@@ -1,59 +1,51 @@
-#ifndef KN_SRC_ATOM_H_
-#define KN_SRC_ATOM_H_
-
+#ifndef KN_KN_CFG_INCLUDE_ATOM_H_
+#define KN_KN_CFG_INCLUDE_ATOM_H_
 #include <fstream>
 #include <array>
 #include <vector>
 #include <unordered_set>
 
-#include "Constants.h"
-#include "VectorMatrix.h"
-
+#include "VectorMatrix.hpp"
+#include "Config.h"
 namespace cfg {
-class Atom;
-Vector3 GetRelativeDistanceVector(const Atom &first, const Atom &second);
-void AtomsJump(Atom &lhs, Atom &rhs);
-
-
+class Config;
 class Atom {
   public:
+    /// Constructor
     Atom();
     // Set both relative and absolute position, but will be corrected later
     Atom(int id, double mass, std::string type, double x, double y, double z);
-    Atom(int id, double mass, std::string type, Vector3 position);
-    friend bool operator==(const Atom &lhs, const Atom &rhs);
-    friend bool operator<(const Atom &lhs, const Atom &rhs);
-    [[nodiscard]] const Vector3 &GetCartesianPosition() const;
-    void SetCartesianPosition(const Vector3 &cartesian_position);
-    [[nodiscard]] const Vector3 &GetRelativePosition() const;
-    void SetRelativePosition(const Vector3 &relative_position);
+    Atom(int id, double mass, std::string type, Vector_t position);
+    /// Getter
+    [[nodiscard]] const Vector_t &GetCartesianPosition() const;
+    [[nodiscard]] const Vector_t &GetRelativePosition() const;
     [[nodiscard]] int GetId() const;
-    void SetId(int id);
     [[nodiscard]] double GetMass() const;
     [[nodiscard]] const std::string &GetType() const;
-    void SetType(const std::string &type);
     [[nodiscard]] const std::vector<int> &GetFirstNearestNeighborsList() const;
     [[nodiscard]] const std::vector<int> &GetSecondNearestNeighborsList() const;
     [[nodiscard]] const std::vector<int> &GetThirdNearestNeighborsList() const;
-    [[nodiscard]]  std::unordered_set<int> GetFirstAndSecondNeighborsSet() const;
-    [[nodiscard]]  std::unordered_set<int> GetFirstAndSecondThirdNeighborsSet() const;
-
+    [[nodiscard]] std::unordered_set<int> GetFirstAndSecondThirdNeighborsSet() const;
+    /// Operators
+    // bool operator<(const Atom &rhs) const;
+    /// Setter
+    void SetCartesianPosition(const Vector_t &cartesian_position);
+    void SetRelativePosition(const Vector_t &relative_position);
+    void SetId(int id);
+    void SetType(const std::string &type);
+    /// Function related to neighbors list
     void AppendFirstNearestNeighborsList(int index);
     void AppendSecondNearestNeighborsList(int index);
     void AppendThirdNearestNeighborsList(int index);
-
     void CleanNeighborsLists();
-
-    friend void cfg::AtomsJump(Atom &lhs, Atom &rhs);
   private:
     int id_{};
     double mass_{};
     std::string type_;
-
     // absolute position
-    Vector3 cartesian_position_{};
+    Vector_t cartesian_position_{};
     // relative position in the box
-    Vector3 relative_position_{};
+    Vector_t relative_position_{};
     // near neighbor hashset
     std::unordered_set<int> near_neighbor_hashset_;
     // First nearest neighbor list
@@ -65,6 +57,12 @@ class Atom {
     // Fourth nearest neighbor list
     // std::vector<int> fourth_nearest_neighbors_list_;
     // atom id which is an unique Rank for every atom indexed form 0
+  public:
+    /// Friend function
+    friend void AtomsJump(Config &config, int lhs, int rhs);
 };
-} // namespace cfg
-#endif //KN_SRC_ATOM_H_
+Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second);
+double FindMass(const std::string &elem);
+
+}// namespace cfg
+#endif //KN_KN_CFG_INCLUDE_ATOM_H_

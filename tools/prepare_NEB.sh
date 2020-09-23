@@ -6,7 +6,7 @@ read_E() {
   rm tmp1 tmp2
 }
 main() {
-  max=$(ls | sed 's/e_//' | sort -n | tail -1)
+  max=$(ls | sed 's/e_//' | sed 's/s//' | sort -n | tail -1)
   for i in $(seq 0 "${max}"); do
     mkdir -p NEB_$i/00 NEB_$i/06
     cp s/CONTCAR NEB_$i/POSCAR0
@@ -77,7 +77,7 @@ EOF
 #SBATCH -N 2
 #SBATCH -p normal
 #SBATCH -t 12:00:00
-#SBATCH -A  TG-MSS160003
+#SBATCH -A  TG-DMR190035
 
 #TG-MSS160003 TG-DMR190035
 
@@ -106,8 +106,3 @@ EOF
   done
 }
 time main
-
-nebbarrier.pl
-nebspline.pl
-gnuplot /Users/zhucongx/Program/goali/vtstscripts-947/nebplot.gnu
-vfin.pl stored

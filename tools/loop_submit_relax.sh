@@ -4,7 +4,7 @@ do
     for j in $(ls -d */)
     do
         cd ${j}
-        sbatch submit.stampede2
+        sbatch submit_stampede2.sh
         cd ..
     done
     cd ..

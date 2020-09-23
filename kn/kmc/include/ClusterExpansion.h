@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_CLUSTEREXPANSION_H_
-#define KN_INCLUDE_CLUSTEREXPANSION_H_
+#ifndef KN_KN_KMC_INCLUDE_CLUSTEREXPANSION_H_
+#define KN_KN_KMC_INCLUDE_CLUSTEREXPANSION_H_
 
 #include <utility>
 #include <vector>
@@ -9,10 +9,10 @@
 
 #include <boost/functional/hash.hpp>
 
-#include "Bond.h"
 #include "Config.h"
 
 namespace kn::ClusterExpansion {
+// Todo rewrite this namespace
 // initial and final state
 // this function rotate and sort the config in a particular way, basically from center to outside
 std::vector<double> GetAverageClusterFunctions(
@@ -28,18 +28,18 @@ std::vector<double> GetAverageClusterFunctionsBack(
 class Pair {
   public:
     Pair(cfg::Atom atom1, cfg::Atom atom2) : atom1_(std::move(atom1)), atom2_(std::move(atom2)) {
-      if (atom2_ < atom1_) std::swap(atom1_, atom2_);
+      if (atom2_.GetId() < atom1_.GetId()) std::swap(atom1_, atom2_);
     }
     bool operator==(const Pair &rhs) const {
-      return atom1_ == rhs.atom1_ &&
-          atom2_ == rhs.atom2_;
+      return atom1_.GetId() == rhs.atom1_.GetId() &&
+          atom2_.GetId() == rhs.atom2_.GetId();
     }
     bool operator<(const Pair &rhs) const {
-      if (atom1_ < rhs.atom1_)
+      if (atom1_.GetId() < rhs.atom1_.GetId())
         return true;
-      if (rhs.atom1_ < atom1_)
+      if (rhs.atom1_.GetId() < atom1_.GetId())
         return false;
-      return atom2_ < rhs.atom2_;
+      return atom2_.GetId() < rhs.atom2_.GetId();
     }
     [[nodiscard]] const cfg::Atom &GetAtom1() const {
       return atom1_;
@@ -47,8 +47,8 @@ class Pair {
     [[nodiscard]] const cfg::Atom &GetAtom2() const {
       return atom2_;
     }
-    friend std::size_t hash_value(Pair const &pair) {
-      std::size_t seed = 0;
+    friend size_t hash_value(Pair const &pair) {
+      size_t seed = 0;
       boost::hash_combine(seed, pair.atom1_.GetId());
       boost::hash_combine(seed, pair.atom2_.GetId());
       return seed;
@@ -63,25 +63,25 @@ class Triplet {
   public:
     Triplet(cfg::Atom atom1, cfg::Atom atom2, cfg::Atom atom3)
         : atom1_(std::move(atom1)), atom2_(std::move(atom2)), atom3_(std::move(atom3)) {
-      if (atom2_ < atom1_) std::swap(atom1_, atom2_);
-      if (atom3_ < atom2_) std::swap(atom2_, atom3_);
-      if (atom2_ < atom1_) std::swap(atom1_, atom2_);
+      if (atom2_.GetId() < atom1_.GetId()) std::swap(atom1_, atom2_);
+      if (atom3_.GetId() < atom2_.GetId()) std::swap(atom2_, atom3_);
+      if (atom2_.GetId() < atom1_.GetId()) std::swap(atom1_, atom2_);
     }
     bool operator==(const Triplet &rhs) const {
-      return atom1_ == rhs.atom1_ &&
-          atom2_ == rhs.atom2_ &&
-          atom3_ == rhs.atom3_;
+      return atom1_.GetId() == rhs.atom1_.GetId() &&
+          atom2_.GetId() == rhs.atom2_.GetId() &&
+          atom3_.GetId() == rhs.atom3_.GetId();
     }
     bool operator<(const Triplet &rhs) const {
-      if (atom1_ < rhs.atom1_)
+      if (atom1_.GetId() < rhs.atom1_.GetId())
         return true;
-      if (rhs.atom1_ < atom1_)
+      if (rhs.atom1_.GetId() < atom1_.GetId())
         return false;
-      if (atom2_ < rhs.atom2_)
+      if (atom2_.GetId() < rhs.atom2_.GetId())
         return true;
-      if (rhs.atom2_ < atom2_)
+      if (rhs.atom2_.GetId() < atom2_.GetId())
         return false;
-      return atom3_ < rhs.atom3_;
+      return atom3_.GetId() < rhs.atom3_.GetId();
     }
     [[nodiscard]] const cfg::Atom &GetAtom1() const {
       return atom1_;
@@ -92,8 +92,8 @@ class Triplet {
     [[nodiscard]] const cfg::Atom &GetAtom3() const {
       return atom3_;
     }
-    friend std::size_t hash_value(Triplet const &triplet) {
-      std::size_t seed = 0;
+    friend size_t hash_value(Triplet const &triplet) {
+      size_t seed = 0;
       boost::hash_combine(seed, triplet.atom1_.GetId());
       boost::hash_combine(seed, triplet.atom2_.GetId());
       boost::hash_combine(seed, triplet.atom3_.GetId());
@@ -107,4 +107,4 @@ class Triplet {
 };
 
 }
-#endif //KN_INCLUDE_CLUSTEREXPANSION_H_
+#endif //KN_KN_KMC_INCLUDE_CLUSTEREXPANSION_H_

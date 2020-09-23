@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_KMCEVENT_H_
-#define KN_INCLUDE_KMCEVENT_H_
+#ifndef KN_KN_KMC_INCLUDE_KMCEVENT_H_
+#define KN_KN_KMC_INCLUDE_KMCEVENT_H_
 #include <utility>
 
 namespace kn {
@@ -30,4 +30,4 @@ class KMCEvent {
 };
 } // namespace kn
 
-#endif //KN_INCLUDE_KMCEVENT_H_
+#endif //KN_KN_KMC_INCLUDE_KMCEVENT_H_

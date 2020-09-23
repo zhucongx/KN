@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_DFTANALYSIS_H_
-#define KN_INCLUDE_DFTANALYSIS_H_
+#ifndef KN_KN_KMC_INCLUDE_DFTANALYSIS_H_
+#define KN_KN_KMC_INCLUDE_DFTANALYSIS_H_
 
 #include <unordered_map>
 #include <unordered_set>
@@ -20,4 +20,4 @@ void PrintOutClusterExpansionAverage(
 //                   const std::unordered_set<std::string> &type_hashset);
 } // namespace kn::DftAnalysis
 
-#endif //KN_INCLUDE_DFTANALYSIS_H_
+#endif //KN_KN_KMC_INCLUDE_DFTANALYSIS_H_

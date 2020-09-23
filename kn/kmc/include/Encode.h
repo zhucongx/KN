@@ -1,12 +1,11 @@
-#ifndef KN_INCLUDE_ENCODE_H_
-#define KN_INCLUDE_ENCODE_H_
+#ifndef KN_KN_KMC_INCLUDE_ENCODE_H_
+#define KN_KN_KMC_INCLUDE_ENCODE_H_
 
 #include <vector>
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
 
-#include "Bond.h"
 #include "Config.h"
 
 namespace kn::Encode {
@@ -74,4 +73,4 @@ std::array<int, kLengthOfEncodes> GetBackwardEncode(
     const std::array<int, kLengthOfEncodes> &forward_encode);
 
 } // namespace kn::Encode
-#endif //KN_INCLUDE_ENCODE_H_
+#endif //KN_KN_KMC_INCLUDE_ENCODE_H_

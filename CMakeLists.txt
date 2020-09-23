@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 
-#set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
-#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
+set(CMAKE_C_COMPILER "gcc") # {gcc, mpicc, icc}
+set(CMAKE_CXX_COMPILER "g++") # {g++, mpicxx, icc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
@@ -39,35 +39,30 @@ else ()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_GLIBCXX_PARALLEL"
             CACHE INTERNAL "")
 endif ()
-
-add_executable(${PROJECT_NAME} kn_test.cpp)
+##############################################################################################
+#add_executable(${PROJECT_NAME} kn_test.cpp)
+#add_subdirectory(kn/cfg)
+#add_subdirectory(kn/neb)
+#add_subdirectory(kn/kmc)
+#target_link_libraries(${PROJECT_NAME} PUBLIC cfg neb kmc)
+##############################################################################################
+file(GLOB PROJECT_SRC
+        ${PROJECT_SOURCE_DIR}/kn/cfg/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/kn/neb/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/kn/kmc/src/*.cpp
+        )
+set(PROJECT_INCLUDE
+        ${PROJECT_SOURCE_DIR}/kn/cfg/include
+        ${PROJECT_SOURCE_DIR}/kn/neb/include
+        ${PROJECT_SOURCE_DIR}/kn/kmc/include
+        )
+add_executable(${PROJECT_NAME} kn_test.cpp ${PROJECT_SRC})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
-
-
-add_subdirectory(kn/cfg)
-add_subdirectory(kn/neb)
-add_subdirectory(kn/kmc)
-
-target_link_libraries(${PROJECT_NAME} PUBLIC cfg neb kmc)
-
-
-#file(GLOB PROJECT_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
-#set(PROJECT_INCLUDE "${PROJECT_SOURCE_DIR}/include")
-
-#file(GLOB EXTERNAL_SRC
-#        ${PROJECT_SOURCE_DIR}/external/cppflow/src/*.cpp
-#        ${PROJECT_SOURCE_DIR}/cfg/src/*.cpp
-#        )
-#set(EXTERNAL_INCLUDE
-#        ${PROJECT_SOURCE_DIR}/external/cppflow/include
-#        ${PROJECT_SOURCE_DIR}/cfg/include
-#        )
-#add_executable(${PROJECT_NAME} ${PROJECT_SRC} ${EXTERNAL_SRC})
-#target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE} ${EXTERNAL_INCLUDE})
-
-
-
-
+find_package(Boost COMPONENTS mpi serialization REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
+##############################################################################################
 
 #find_package(EIGEN3 REQUIRED)
 #include_directories(${EIGEN3_INCLUDE_DIR})

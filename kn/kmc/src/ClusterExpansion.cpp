@@ -1,50 +1,6 @@
 #include "ClusterExpansion.h"
 #include <unordered_set>
 namespace kn::ClusterExpansion {
-static Vector3 GetPairCenterHelper(const cfg::Config &config,
-                                   const std::pair<int, int> &jump_pair) {
-  Vector3 center_position;
-  for (const auto kDim : All_Dimensions) {
-    double first_relative = config.GetAtomList()[jump_pair.first].GetRelativePosition()[kDim];
-    const double
-        second_relative = config.GetAtomList()[jump_pair.second].GetRelativePosition()[kDim];
-
-    double distance = first_relative - second_relative;
-    int period = static_cast<int>(distance / 0.5);
-    // make sure distance is the range (0, 0.5)
-    while (period != 0) {
-      first_relative -= static_cast<double>(period);
-      distance = first_relative - second_relative;
-      period = static_cast<int>(distance / 0.5);
-    }
-    center_position[kDim] = 0.5 * (first_relative + second_relative);
-  }
-  return center_position;
-}
-
-static Matrix33 GetJumpMatrixHelper(const cfg::Config &config,
-                                    const std::pair<int, int> &jump_pair) {
-  const Vector3 pair_direction = Normalize(GetRelativeDistanceVector(
-      config.GetAtomList()[jump_pair.first],
-      config.GetAtomList()[jump_pair.second]));
-  const auto &first_atom = config.GetAtomList()[jump_pair.first];
-  Vector3 vertical_vector;
-  for (const int index : first_atom.GetFirstNearestNeighborsList()) {
-    const Vector3 jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
-    const double dot_prod = Dot(pair_direction, jump_vector);
-    if (abs(dot_prod) < 1e-6) {
-      double absolute_distance_square = Inner(jump_vector * config.GetBasis());
-      if (absolute_distance_square < pow(Al_const::kFirstNearestNeighborsCutoff, 2)) {
-        vertical_vector = Normalize(jump_vector);
-        break;
-      }
-    }
-  }
-  // The third row is normalized since it is a cross product of two normalized vectors.
-  // We use transposed matrix here because transpose of an orthogonal matrix equals its inverse
-  return TransposeMatrix33({pair_direction, vertical_vector,
-                            Cross(pair_direction, vertical_vector)});
-}
 // mm2 group point:
 // mirror perpendicular to xz plane
 // {1 0 0
@@ -61,8 +17,6 @@ static Matrix33 GetJumpMatrixHelper(const cfg::Config &config,
 /// When we treat this vector, we don't care the sign of y and z, and y and z should be
 /// indistinguishable. If sum and diff of abs of y and abs of z are same, these atoms should
 /// be considered same positions
-
-
 static bool AreSameSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
@@ -81,7 +35,7 @@ static bool AreSameSymmetrically(const Triplet &lhs, const Triplet &rhs) {
       AreSameSymmetrically(lhs.GetAtom2(), rhs.GetAtom2()) &&
       AreSameSymmetrically(lhs.GetAtom3(), rhs.GetAtom3());
 }
-// static bool AreSameSymmetrically(const Vector3 &relative_position_lhs, const Vector3 &relative_position_rhs) {
+// static bool AreSameSymmetrically(const Vector_t &relative_position_lhs, const Vector_t &relative_position_rhs) {
 //   return abs(relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension]) < kEpsilon &&
 //       abs(abs(relative_position_lhs[kYDimension] - 0.5) - abs(relative_position_rhs[kYDimension] - 0.5)) < kEpsilon &&
 //       abs(abs(relative_position_lhs[kZDimension] - 0.5) - abs(relative_position_rhs[kZDimension] - 0.5)) < kEpsilon;
@@ -128,34 +82,16 @@ static bool IsSmallerSymmetrically(const Triplet &lhs, const Triplet &rhs) {
   return IsSmallerSymmetrically(lhs.GetAtom3(), rhs.GetAtom3());
 }
 
-static void RotateHelper(
-    std::vector<cfg::Atom> &atom_list,
-    const Matrix33 &rotation_matrix) {
-  const auto move_distance_after_rotation = Vector3{0.5, 0.5, 0.5}
-      - (Vector3{0.5, 0.5, 0.5} * rotation_matrix);
-  for (auto &atom : atom_list) {
-    auto relative_position = atom.GetRelativePosition();
-    // rotate
-    relative_position = relative_position * rotation_matrix;
-    // move to new center
-    relative_position += move_distance_after_rotation;
-    relative_position -= ElementFloor(relative_position);
-
-    atom.SetRelativePosition(relative_position);
-  }
-
-}
-
 static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
                                              const std::pair<int, int> &jump_pair) {
-  // # First, second, third nearest neighbors of the jump pairs
+  // First, second, third nearest neighbors of the jump pairs
   constexpr int kNumOfAtoms = 60;
 
   std::unordered_set<int> atom_id_set;
   atom_id_set.merge(config.GetAtomList()[jump_pair.first].GetFirstAndSecondThirdNeighborsSet());
   atom_id_set.merge(config.GetAtomList()[jump_pair.second].GetFirstAndSecondThirdNeighborsSet());
 
-  const auto move_distance = Vector3{0.5, 0.5, 0.5} - GetPairCenterHelper(config, jump_pair);
+  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
 
   std::vector<cfg::Atom> atom_list;
   atom_list.reserve(kNumOfAtoms);
@@ -172,7 +108,7 @@ static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
     atom_list.push_back(std::move(atom));
   }
 
-  RotateHelper(atom_list, GetJumpMatrixHelper(config, jump_pair));
+  RotateAtomVector(atom_list, GetPairRotationMatrix(config, jump_pair));
 
   //sort
   std::sort(atom_list.begin(), atom_list.end(),
@@ -185,10 +121,6 @@ static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
     config_out.AppendAtomWithChangingAtomID(atom);
   }
   config_out.UpdateNeighbors();
-
-#ifndef NDEBUG
-  cfg::Config::WriteConfig(config_out, "1.cfg");
-#endif
 
   return config_out;
 }
@@ -288,13 +220,6 @@ std::vector<double> GetAverageClusterFunctions(
     } while (upper_it_pair != pairs_vector.cend());
   }
 
-#ifndef NDEBUG
-  // for (const auto &a : neighbors_vectors[0]) {
-  //   std::cout << a.GetAtom1().GetRelativePosition() - Vector3{0.5, 0.5, 0.5}
-  //             << "  ||  " << a.GetAtom2().GetRelativePosition() - Vector3{0.5, 0.5, 0.5}
-  //             << '\n';
-  // }
-#endif
   /// triplets quadruplets quintuplets
   // find all triplets
   std::unordered_set<Triplet, boost::hash<Triplet>> triplets_set;
@@ -348,7 +273,7 @@ std::vector<double> GetAverageClusterFunctionsBack(
     const std::pair<int, int> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
   auto back_config = config;
-  back_config.AtomsJump(jump_pair.first, jump_pair.second);
+  cfg::AtomsJump(back_config, jump_pair.first, jump_pair.second);
   return GetAverageClusterFunctions(back_config, jump_pair, type_category_hashmap);
 
 }

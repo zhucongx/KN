@@ -123,56 +123,13 @@ static std::array<cfg::Atom, kLengthOfEncodes> GetAtomListHelper(
   }
   return atom_list;
 }
-static Vector3 GetPairCenterHelper(const cfg::Config &config,
-                                   const std::pair<int, int> &jump_pair) {
-  Vector3 center_position;
-  for (const auto kDim : All_Dimensions) {
-    double first_relative = config.GetAtomList()[jump_pair.first].GetRelativePosition()[kDim];
-    const double
-        second_relative = config.GetAtomList()[jump_pair.second].GetRelativePosition()[kDim];
 
-    double distance = first_relative - second_relative;
-    int period = static_cast<int>(distance / 0.5);
-    // make sure distance is the range (0, 0.5)
-    while (period != 0) {
-      first_relative -= static_cast<double>(period);
-      distance = first_relative - second_relative;
-      period = static_cast<int>(distance / 0.5);
-    }
-    center_position[kDim] = 0.5 * (first_relative + second_relative);
-  }
-  return center_position;
-}
-static Matrix33 GetJumpMatrixHelper(const cfg::Config &config,
-                                    const std::pair<int, int> &jump_pair) {
-  const Vector3 pair_direction = Normalize(GetRelativeDistanceVector(
-      config.GetAtomList()[jump_pair.first],
-      config.GetAtomList()[jump_pair.second]));
-  const cfg::Atom &first_atom = config.GetAtomList()[jump_pair.first];
-  Vector3 vertical_vector;
-  for (const int index : first_atom.GetFirstNearestNeighborsList()) {
-    const Vector3 jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
-    const double dot_prod = Dot(pair_direction, jump_vector);
-    if (abs(dot_prod) < 1e-6) {
-      double absolute_distance_square = Inner(jump_vector * config.GetBasis());
-      if (absolute_distance_square < pow(Al_const::kFirstNearestNeighborsCutoff, 2)) {
-        vertical_vector = Normalize(jump_vector);
-        break;
-      }
-    }
-  }
-
-  // The third row is normalized since it is a cross product of two normalized vectors.
-  // We use transposed matrix here because transpose of an orthogonal matrix equals its inverse
-  return TransposeMatrix33({pair_direction, vertical_vector,
-                            Cross(pair_direction, vertical_vector)});
-}
 template<size_t DataSize>
 static void RotateAndSort(
     std::array<cfg::Atom, DataSize> &atom_list,
-    const Matrix33 &rotation_matrix) {
-  const auto move_distance_after_rotation = Vector3{0.5, 0.5, 0.5}
-      - (Vector3{0.5, 0.5, 0.5} * rotation_matrix);
+    const Matrix_t &rotation_matrix) {
+  const auto move_distance_after_rotation = Vector_t{0.5, 0.5, 0.5}
+      - (Vector_t{0.5, 0.5, 0.5} * rotation_matrix);
   for (auto &atom : atom_list) {
     auto relative_position = atom.GetRelativePosition();
     // rotate
@@ -201,7 +158,7 @@ static void RotateAndSort(
 
 static std::array<int, kLengthOfEncodes> RotateAtomsAndGetCodeHelper(
     std::array<cfg::Atom, kLengthOfEncodes> &atom_list,
-    const Matrix33 &rotation_matrix,
+    const Matrix_t &rotation_matrix,
     const std::unordered_map<std::string, int> &type_category_hashmap) {
 
   RotateAndSort(atom_list, rotation_matrix);
@@ -220,7 +177,7 @@ std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
     const std::unordered_map<std::string, int> &type_category_hashmap) {
   auto atom_list = GetAtomListHelper(config, jump_pair);
 
-  const auto move_distance = Vector3{0.5, 0.5, 0.5} - GetPairCenterHelper(config, jump_pair);
+  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
   for (auto &atom : atom_list) {
     // move to center
     auto relative_position = atom.GetRelativePosition();
@@ -234,7 +191,7 @@ std::vector<std::array<int, kLengthOfEncodes>> GetEncode(
   result.reserve(4);
   // First Rotation
   result.push_back(RotateAtomsAndGetCodeHelper(atom_list,
-                                               GetJumpMatrixHelper(config, jump_pair),
+                                               GetPairRotationMatrix(config, jump_pair),
                                                type_category_hashmap));
 
   // 2-fold rotation
@@ -380,7 +337,7 @@ std::array<int, kLengthOfEncodes> GetBackwardEncode(
 //     const std::pair<int, int> &jump_pair) {
 //   auto atom_list = GetFirstAtomListHelper(config, jump_pair);
 //
-//   const auto move_distance = Vector3{0.5, 0.5, 0.5} - GetPairCenterHelper(config, jump_pair);
+//   const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenterHelper(config, jump_pair);
 //   for (auto &atom : atom_list) {
 //     // move to center
 //     auto relative_position = atom.GetRelativePosition();
@@ -392,7 +349,7 @@ std::array<int, kLengthOfEncodes> GetBackwardEncode(
 //   const auto rotation_matrix = GetJumpMatrixHelper(config, jump_pair);
 //   RotateAndSort(atom_list, rotation_matrix);
 //
-//   // std::unordered_map<std::string, Vector3> element_mean_position_hashmap;
+//   // std::unordered_map<std::string, Vector_t> element_mean_position_hashmap;
 //   // decompose the force along x direction and radius direction
 //   // for (auto length:First_Neighbors_Encode_length) {
 //   //   for (int i = 0; i < length / 2; i++) {

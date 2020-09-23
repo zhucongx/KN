@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_MPIIterator_H_
-#define KN_INCLUDE_MPIIterator_H_
+#ifndef KN_KN_KMC_INCLUDE_MPIITERATOR_H_
+#define KN_KN_KMC_INCLUDE_MPIITERATOR_H_
 
 #include <boost/mpi.hpp>
 #include <ClustersFinder.h>
@@ -27,4 +27,4 @@ class MpiIterator {
 } // namespace kn
 
 
-#endif //KN_INCLUDE_MPIIterator_H_
+#endif //KN_KN_KMC_INCLUDE_MPIITERATOR_H_

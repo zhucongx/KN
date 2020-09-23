@@ -1,5 +1,5 @@
-#ifndef KN_INCLUDE_CLUSTERSFINDER_H_
-#define KN_INCLUDE_CLUSTERSFINDER_H_
+#ifndef KN_KN_KMC_INCLUDE_CLUSTERSFINDER_H_
+#define KN_KN_KMC_INCLUDE_CLUSTERSFINDER_H_
 #include <vector>
 #include <set>
 #include <unordered_set>
@@ -36,4 +36,4 @@ class ClustersFinder {
 } // namespace kn
 
 
-#endif //KN_INCLUDE_CLUSTERSFINDER_H_
+#endif //KN_KN_KMC_INCLUDE_CLUSTERSFINDER_H_
