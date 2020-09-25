@@ -12,22 +12,23 @@ using namespace std;
 int main(int argc, char *argv[]) {
   // set<ClusterExpansion::Pair> a;
   // std::multiset<cfg::Atom, decltype()> test;
-  neb::ClusterConfigGenerator a(4.046,{4, 4, 4},
-                              "Al",{"Al","Mg","Zn"},
-                              "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
 
-  a.CreateConfigs();
-  // unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
-  //                                                          {"Mg", -1},
-  //                                                          {"Zn", 2},
+
+  // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
+  //                                                          {"Mg", 99},
+  //                                                          {"Zn", 0},
   //                                                          {"X", 0}};
-  // // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
+  // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
   // auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
-  //                                                         {83, 82},
+  //                                                         {82, 83},
   //                                                         type_category_hashmap);
   // for (auto kI : cfg) {
   //   cout << kI << " ";
   // }
+  auto config = cfg::Config::ReadConfig("start.cfg");
+  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, {153,168});
+  config.MoveRelativeDistance(move_distance);
+  cfg::Config::WriteConfig(config,"new.cfg", false);
 
 
   // NebDistance::PrintTheDistanceFromTwoPOSCARFiles("POSCAR0", "POSCAR1");
@@ -99,7 +100,14 @@ int main(int argc, char *argv[]) {
   //
   //  std::map<Bond, int> bonds_changed = test.GetBondChange();
   //
-  //  std::cout << "#" << 0 << endl;
+  // Config cfg;
+  // cfg.GenerateBCC(3.1652, "W", {10, 10, 10});
+  // // cfg.LinearTransform({{0.57735,0.57735,0.57735},{0.408248,0.408248,-0.816497},{0.707107,-0.707107,0}});
+  // cfg.WriteConfig("BCC.cfg");
+  // return 0;
+}
+
+//  std::cout << "#" << 0 << endl;
   //  for (const auto&[key, count] : bonds_changed)
   //  {
   //    std::cout << "#" << key << ' ' << count << '\n';
@@ -108,10 +116,3 @@ int main(int argc, char *argv[]) {
   // Config cfg;
   // cfg.ReadPOSCAR("0.pos");
   // cfg.WritePOSCAR("00.pos");
-
-  // Config cfg;
-  // cfg.GenerateBCC(3.1652, "W", {10, 10, 10});
-  // // cfg.LinearTransform({{0.57735,0.57735,0.57735},{0.408248,0.408248,-0.816497},{0.707107,-0.707107,0}});
-  // cfg.WriteConfig("BCC.cfg");
-  // return 0;
-}

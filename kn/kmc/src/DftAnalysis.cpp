@@ -54,10 +54,10 @@ void DftAnalysis::PrintOutClusterExpansionAverage(
   std::ofstream ofs("cluster_expansion.txt", std::ofstream::out);
   std::string buffer;
   ofs << "config image ";
-  for (int i = 0; i < 13; ++i) {
+  for (int i = 0; i < 194; ++i) {
     ofs << "A" << i << " ";
   }
-  for (int i = 0; i < 13; ++i) {
+  for (int i = 0; i < 194; ++i) {
     ofs << "B" << i << " ";
   }
   ofs << '\n';

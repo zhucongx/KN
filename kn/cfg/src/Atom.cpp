@@ -52,12 +52,12 @@ std::unordered_set<int> Atom::GetFirstAndSecondThirdNeighborsSet() const {
   std::copy(first_nearest_neighbors_list_.begin(),
             first_nearest_neighbors_list_.end(),
             std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  std::copy(second_nearest_neighbors_list_.begin(),
-            second_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  std::copy(third_nearest_neighbors_list_.begin(),
-            third_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
+  // std::copy(second_nearest_neighbors_list_.begin(),
+  //           second_nearest_neighbors_list_.end(),
+  //           std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
+  // std::copy(third_nearest_neighbors_list_.begin(),
+  //           third_nearest_neighbors_list_.end(),
+  //           std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
   return near_neighbors_hashset;
 }
 // bool Atom::operator<(const Atom &rhs) const {

@@ -133,7 +133,9 @@ std::vector<double> GetAverageClusterFunctions(
     const std::unordered_map<std::string, double> &type_category_hashmap) {
 
   cfg::Config transformed_config = GetRotatedCenteredSortedConfig(config, jump_pair);
-
+#ifndef NDEBUG
+  cfg::Config::WriteConfig(transformed_config, "2layers.cfg");
+#endif
   // Get near neighbors atom list, sorted using mm2 group point
   const auto &atom_list_reference = transformed_config.GetAtomList();
 
