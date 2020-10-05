@@ -129,7 +129,7 @@ static void PrepareSUBMITSTAMPEDE2(const std::string &path) {
       << "#SBATCH -n 64\n"
       << "#SBATCH -N 1\n"
       << "#SBATCH -p normal\n"
-      << "#SBATCH -t 32:00:00\n"
+      << "#SBATCH -t 36:00:00\n"
       << "#SBATCH -A TG-DMR190035\n"
       << "\n"
       << "#TG-DMR190035 TG-MSS160003\n"

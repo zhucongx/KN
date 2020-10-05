@@ -14,21 +14,21 @@ int main(int argc, char *argv[]) {
   // std::multiset<cfg::Atom, decltype()> test;
 
 
-  // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
-  //                                                          {"Mg", 99},
-  //                                                          {"Zn", 0},
-  //                                                          {"X", 0}};
+  unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
+                                                           {"Mg", 99},
+                                                           {"Zn", 0},
+                                                           {"X", 0}};
   // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-  // auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
-  //                                                         {82, 83},
-  //                                                         type_category_hashmap);
-  // for (auto kI : cfg) {
-  //   cout << kI << " ";
-  // }
-  auto config = cfg::Config::ReadConfig("start.cfg");
-  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, {153,168});
-  config.MoveRelativeDistance(move_distance);
-  cfg::Config::WriteConfig(config,"new.cfg", false);
+  auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
+                                                          {82, 83},
+                                                          type_category_hashmap);
+  for (auto kI : cfg) {
+    cout << kI << " ";
+  }
+  // auto config = cfg::Config::ReadConfig("start.cfg");
+  // const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, {153,168});
+  // config.MoveRelativeDistance(move_distance);
+  // cfg::Config::WriteConfig(config,"new.cfg", false);
 
 
   // NebDistance::PrintTheDistanceFromTwoPOSCARFiles("POSCAR0", "POSCAR1");

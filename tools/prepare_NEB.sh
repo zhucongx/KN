@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 read_E() {
   grep -i entropy OUTCAR >tmp1
   tail -1 tmp1 >tmp2
@@ -76,7 +76,7 @@ EOF
 #SBATCH -n 60
 #SBATCH -N 2
 #SBATCH -p normal
-#SBATCH -t 12:00:00
+#SBATCH -t 36:00:00
 #SBATCH -A  TG-DMR190035
 
 #TG-MSS160003 TG-DMR190035
@@ -85,9 +85,7 @@ module load vasp/5.4.4
 
 run_mpirun()
 {
-
     ibrun -n 60 vasp_std_vtst > vasp_test.out
-
 }
 
 main()

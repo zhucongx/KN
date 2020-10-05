@@ -1,4 +1,5 @@
-for i in `seq 0 125` 
+#!/usr/bin/env bash
+for i in `seq 0 125`
 do
     cd config$i
     max=`ls | sed 's/e_//' | sort -n | tail -1`

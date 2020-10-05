@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 for i in `seq 0 0`
 do
     cd config$i/

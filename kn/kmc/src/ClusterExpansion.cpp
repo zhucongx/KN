@@ -134,7 +134,7 @@ std::vector<double> GetAverageClusterFunctions(
 
   cfg::Config transformed_config = GetRotatedCenteredSortedConfig(config, jump_pair);
 #ifndef NDEBUG
-  cfg::Config::WriteConfig(transformed_config, "2layers.cfg");
+  cfg::Config::WriteConfig(transformed_config, "1layers.cfg");
 #endif
   // Get near neighbors atom list, sorted using mm2 group point
   const auto &atom_list_reference = transformed_config.GetAtomList();
