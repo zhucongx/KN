@@ -1,6 +1,7 @@
 #include "ClusterConfigGenerator.h"
 
 #include <utility>
+#include <filesystem>
 namespace neb {
 ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const Factor_t &factors,

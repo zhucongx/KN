@@ -1,6 +1,7 @@
 #ifndef KN_KN_KMC_INCLUDE_DFTANALYSIS_H_
 #define KN_KN_KMC_INCLUDE_DFTANALYSIS_H_
 
+#include "string"
 #include <unordered_map>
 #include <unordered_set>
 // This namespace contains some functions that can analyze dft calculations data

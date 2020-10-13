@@ -1,6 +1,7 @@
 #include "ConfigGenerator.h"
 
 #include <utility>
+#include <chrono>
 namespace neb {
 ConfigGenerator::ConfigGenerator(double lattice_constant,
                                  Factor_t factors,
