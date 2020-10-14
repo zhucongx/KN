@@ -20,6 +20,7 @@ class Config {
     [[nodiscard]] int GetNumAtoms() const;
     [[nodiscard]] const Matrix_t &GetBasis() const;
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
+    [[nodiscard]] std::set<std::string> GetTypeSet() const;
     [[nodiscard]] std::map<std::string, std::vector<int>> GetElementListMap() const;
     /// Update atoms positions
     void ConvertRelativeToCartesian();

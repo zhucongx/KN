@@ -26,6 +26,13 @@ std::map<std::string, std::vector<int>> Config::GetElementListMap() const {
   }
   return element_list_map;
 }
+std::set<std::string> Config::GetTypeSet() const {
+  std::set<std::string> type_set;
+  for (const auto &atom : atom_list_) {
+    type_set.insert(atom.GetType());
+  }
+  return type_set;
+}
 void Config::ConvertRelativeToCartesian() {
   for (auto &atom : atom_list_) {
     atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
@@ -385,15 +392,6 @@ std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config
     type_category_hashmap[element_list.first] = count++;
   }
   return type_category_hashmap;
-}
-std::set<std::string> GetTypeSet(const Config &config) {
-  std::set<std::string> type_set;
-  const auto element_list = config.GetElementListMap();
-  std::transform(element_list.cbegin(), element_list.cend(),
-                 std::inserter(type_set, type_set.cend()),
-                 [](const auto &key_value) { return key_value.first; });
-
-  return type_set;
 }
 Vector_t GetPairCenter(const Config &config, const std::pair<int, int> &jump_pair) {
   Vector_t center_position;

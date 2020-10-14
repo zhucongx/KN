@@ -144,7 +144,7 @@ void ConfigGenerator::PrepareVASPFiles(const cfg::Config &reference_config,
 
   PrepareINCAR(file_path);
   PrepareKPOINTS(file_path, factors_);
-  PreparePOTCAR(file_path, cfg::GetTypeSet(reference_config), pot_folder_path_);
+  PreparePOTCAR(file_path, reference_config.GetTypeSet(), pot_folder_path_);
   PrepareSUBMIT(file_path);
   PrepareSUBMITCORI(file_path);
   PrepareSUBMITGL(file_path);
