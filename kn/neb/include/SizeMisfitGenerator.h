@@ -5,6 +5,13 @@
 namespace neb {
 class SizeMisfitGenerator : public ConfigGenerator {
   public:
+    SizeMisfitGenerator(double lattice_constant,
+                        const Factor_t &factors,
+                        const std::filesystem::path &solvent_element,
+                        const std::set<std::string> &element_list,
+                        const std::filesystem::path &pot_folder_path);
+    void CreateConfigs() const override;
+  private:
 };
 
 } // namespace neb

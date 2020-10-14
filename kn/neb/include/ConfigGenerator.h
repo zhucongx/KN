@@ -6,9 +6,9 @@ class ConfigGenerator {
   public:
     ConfigGenerator(double lattice_constant,
                     Factor_t factors,
-                    std::filesystem::path solvent_element,
-                    std::set<std::string> element_list,
-                    std::filesystem::path pot_folder_path);
+                    const std::filesystem::path& solvent_element,
+                    std::set<std::string> element_set,
+                    const std::filesystem::path& pot_folder_path);
     virtual void CreateConfigs() const = 0;
 
   protected:

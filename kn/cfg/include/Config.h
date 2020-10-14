@@ -25,13 +25,13 @@ class Config {
     /// Update atoms positions
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
+    void ScaleWith(double scale);
     // update both atoms' relative and cartesian positions according to periodic boundary condition
     void WrapAtomRelative();
     void WrapAtomCartesian();
     // for better performance, shouldn't call Wrap function
     void MoveRelativeDistance(const Vector_t &distance_vector);
-    void MoveOneAtomRelativeDistance(int index,
-                                     const Vector_t &distance_vector);
+    void MoveOneAtomRelativeDistance(int index, const Vector_t &distance_vector);
     // add small perturbation to break perfect fcc symmetry this method is about to increase
     // the chance to find lower ground states for VASP software
     void Perturb(std::mt19937_64 &generator);

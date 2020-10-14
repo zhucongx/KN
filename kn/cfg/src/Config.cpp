@@ -44,6 +44,10 @@ void Config::ConvertCartesianToRelative() {
     atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
   }
 }
+void Config::ScaleWith(double scale) {
+  basis_ *= scale;
+  ConvertRelativeToCartesian();
+}
 void Config::WrapAtomRelative() {
   for (auto &atom : atom_list_) {
     atom.SetRelativePosition(
@@ -172,9 +176,13 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
     num_atoms += count;
   }
   getline(ifs, buffer);
-  bool relative_option;
-  relative_option = buffer[0] == 'D' || buffer[0] == 'd';
+  bool relative_option = buffer[0] == 'D' || buffer[0] == 'd';
   Config config(basis * scale, num_atoms);
+
+  // If relative_option is ture, only relative position need to scaled, set it to 1
+  if (relative_option)
+    scale = 1.0;
+
   int id_count = 0;
   double position_X, position_Y, position_Z;
   for (const auto &[element_name, count] : elements_counts) {

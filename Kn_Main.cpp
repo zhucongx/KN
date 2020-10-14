@@ -5,13 +5,14 @@
 #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 #include "ClusterConfigGenerator.h"
+#include "SizeMisfitGenerator.h"
 using namespace kn;
 using namespace std;
 // namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
-  neb::ClusterConfigGenerator a(4.046,
-                                {4, 4, 4},
+  neb::SizeMisfitGenerator a(4.046,
+                                {3,3,3},
                                 "Al",
                                 {"Al", "Mg", "Zn"},
                                 "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");

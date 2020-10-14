@@ -5,14 +5,14 @@
 namespace neb {
 ConfigGenerator::ConfigGenerator(double lattice_constant,
                                  Factor_t factors,
-                                 std::filesystem::path solvent_element,
-                                 std::set<std::string> element_list,
-                                 std::filesystem::path pot_folder_path) :
+                                 const std::filesystem::path& solvent_element,
+                                 std::set<std::string> element_set,
+                                 const std::filesystem::path& pot_folder_path) :
     lattice_constant_(lattice_constant),
     factors_(factors),
-    solvent_element(std::move(solvent_element)),
-    element_set_(std::move(element_list)),
-    pot_folder_path_(std::move(pot_folder_path)),
+    solvent_element(solvent_element),
+    element_set_(std::move(element_set)),
+    pot_folder_path_(pot_folder_path),
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
 static void PrepareINCAR(const std::filesystem::path &path) {
@@ -44,7 +44,7 @@ static void PrepareINCAR(const std::filesystem::path &path) {
       << "NPAR   = 4       \n";
 }
 static void PrepareKPOINTS(const std::filesystem::path &path, const Factor_t &factors) {
-  constexpr int kP = 9;
+  constexpr int kP = 11;
   std::ofstream ofs(path / "KPOINTS", std::ofstream::out);
   ofs << "Automatic mesh\n"
       << "0             \n"
