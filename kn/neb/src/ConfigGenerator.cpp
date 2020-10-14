@@ -5,9 +5,9 @@
 namespace neb {
 ConfigGenerator::ConfigGenerator(double lattice_constant,
                                  Factor_t factors,
-                                 std::string solvent_element,
+                                 std::filesystem::path solvent_element,
                                  std::set<std::string> element_list,
-                                 std::string pot_folder_path) :
+                                 std::filesystem::path pot_folder_path) :
     lattice_constant_(lattice_constant),
     factors_(factors),
     solvent_element(std::move(solvent_element)),
@@ -15,9 +15,8 @@ ConfigGenerator::ConfigGenerator(double lattice_constant,
     pot_folder_path_(std::move(pot_folder_path)),
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {}
 
-static void PrepareINCAR(const std::string &path) {
-  std::string filename = path + "/INCAR";
-  std::ofstream ofs(filename, std::ofstream::out);
+static void PrepareINCAR(const std::filesystem::path &path) {
+  std::ofstream ofs(path / "INCAR", std::ofstream::out);
   ofs << "NWRITE = 2\n" << "                 \n"
       << "PREC   = Accurate\n"
       << "ISYM   = 2       \n"
@@ -44,10 +43,9 @@ static void PrepareINCAR(const std::string &path) {
       << "                 \n"
       << "NPAR   = 4       \n";
 }
-static void PrepareKPOINTS(const std::string &path, const Factor_t &factors) {
+static void PrepareKPOINTS(const std::filesystem::path &path, const Factor_t &factors) {
   constexpr int kP = 9;
-  std::string filename = path + "/KPOINTS";
-  std::ofstream ofs(filename, std::ofstream::out);
+  std::ofstream ofs(path / "KPOINTS", std::ofstream::out);
   ofs << "Automatic mesh\n"
       << "0             \n"
       << "Monkhorst-Pack\n"
@@ -56,33 +54,26 @@ static void PrepareKPOINTS(const std::string &path, const Factor_t &factors) {
       << kP / factors[kZDimension] << "\n"
       << "0.   0.   0.  \n";
 }
-static void PreparePOTCAR(const std::string &path,
+static void PreparePOTCAR(const std::filesystem::path &path,
                           const std::set<std::string> &potcar_element_set,
-                          const std::string &pot_folder_path) {
-  std::string out_filename = path + "/POTCAR";
-  std::fstream ofs(out_filename, std::ofstream::out);
+                          const std::filesystem::path &pot_folder_path) {
+  std::fstream ofs(path / "POTCAR", std::ofstream::out);
   for (const auto &element : potcar_element_set) {
     if (element == "X") continue;
-    std::string element_pot_path(pot_folder_path);
-    element_pot_path += '/';
-    element_pot_path += element;
-    element_pot_path += "/POTCAR";
-    std::ifstream ifs(element_pot_path, std::ifstream::in);
+    std::ifstream ifs(pot_folder_path / element / "POTCAR", std::ifstream::in);
     ofs << ifs.rdbuf();
   }
 }
-static void PrepareSUBMIT(const std::string &path) {
-  std::string fnm = path + "/submit_GM.sh";
-  std::ofstream ofs(fnm, std::ofstream::out);
+static void PrepareSUBMIT(const std::filesystem::path &path) {
+  std::ofstream ofs(path / "submit_GM.sh", std::ofstream::out);
   ofs << "/data/submit/unix/submit vasp "
          "be_path=/db/devsys/Submit_be/2020.08_vaspcheck/backend "
          "ver=5.4.4 ncpu=64 spool_files=yes "
          "queue=nahpc_matls_lg cluster=NAHPC_WRN proj=VASP input_dir=`pwd` "
          "jid=neb_init_rlx output_dir=`pwd`";
 }
-static void PrepareSUBMITCORI(const std::string &path) {
-  std::string fnm = path + "/submit_cori.sh";
-  std::ofstream ofs(fnm, std::ofstream::out);
+static void PrepareSUBMITCORI(const std::filesystem::path &path) {
+  std::ofstream ofs(path / "submit_cori.sh", std::ofstream::out);
   ofs << "#!/bin/bash\n"
       << "#SBATCH -N 1\n"
       << "#SBATCH -C knl\n"
@@ -102,9 +93,8 @@ static void PrepareSUBMITCORI(const std::string &path) {
       << "srun -n 64 -c 4 --cpu_bind=cores vasp_std\n"
       << "rm CHG* WAVE*\n";
 }
-static void PrepareSUBMITGL(const std::string &path) {
-  std::string fnm = path + "/submit_gl.sh";
-  std::ofstream ofs(fnm, std::ofstream::out);
+static void PrepareSUBMITGL(const std::filesystem::path &path) {
+  std::ofstream ofs(path / "submit_gl.sh", std::ofstream::out);
   ofs << "#!/bin/bash\n"
       << "#SBATCH -N 1\n"
       << "#SBATCH --ntasks-per-node=36\n"
@@ -120,9 +110,8 @@ static void PrepareSUBMITGL(const std::string &path) {
       << "srun  vasp\n"
       << "rm CHG* WAVE*\n";
 }
-static void PrepareSUBMITSTAMPEDE2(const std::string &path) {
-  std::string fnm = path + "/submit_stampede2.sh";
-  std::ofstream ofs(fnm, std::ofstream::out);
+static void PrepareSUBMITSTAMPEDE2(const std::filesystem::path &path) {
+  std::ofstream ofs(path / "submit_stampede2.sh", std::ofstream::out);
   ofs << "#!/bin/bash\n"
       << "#SBATCH -J vasp\n"
       << "#SBATCH -o vasp.%j.out\n"
@@ -140,8 +129,7 @@ static void PrepareSUBMITSTAMPEDE2(const std::string &path) {
       << "rm CHG* WAVE*\n";
 }
 void ConfigGenerator::PrepareVASPFiles(const cfg::Config &reference_config,
-                                       const std::string &file_path) {
-
+                                       const std::filesystem::path &file_path) const {
   PrepareINCAR(file_path);
   PrepareKPOINTS(file_path, factors_);
   PreparePOTCAR(file_path, reference_config.GetTypeSet(), pot_folder_path_);

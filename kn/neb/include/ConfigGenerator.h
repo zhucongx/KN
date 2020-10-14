@@ -6,13 +6,14 @@ class ConfigGenerator {
   public:
     ConfigGenerator(double lattice_constant,
                     Factor_t factors,
-                    std::string solvent_element,
+                    std::filesystem::path solvent_element,
                     std::set<std::string> element_list,
-                    std::string pot_folder_path);
-    virtual void CreateConfigs() = 0;
+                    std::filesystem::path pot_folder_path);
+    virtual void CreateConfigs() const = 0;
 
   protected:
-    void PrepareVASPFiles(const cfg::Config &reference_config, const std::string &file_path);
+    void PrepareVASPFiles(const cfg::Config &reference_config,
+                          const std::filesystem::path &file_path) const;
 
     double lattice_constant_;
     Factor_t factors_;

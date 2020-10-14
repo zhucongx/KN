@@ -10,21 +10,23 @@ using namespace std;
 // namespace mpi = boost::mpi;
 
 int main(int argc, char *argv[]) {
-  // set<ClusterExpansion::Pair> a;
-  // std::multiset<cfg::Atom, decltype()> test;
-
-
-  unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
-                                                           {"Mg", 99},
-                                                           {"Zn", 0},
-                                                           {"X", 0}};
+  neb::ClusterConfigGenerator a(4.046,
+                                {4, 4, 4},
+                                "Al",
+                                {"Al", "Mg", "Zn"},
+                                "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
+ a.CreateConfigs();
+  // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
+  //                                                          {"Mg", 99},
+  //                                                          {"Zn", 0},
+  //                                                          {"X", 0}};
   // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-  auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
-                                                          {82, 83},
-                                                          type_category_hashmap);
-  for (auto kI : cfg) {
-    cout << kI << " ";
-  }
+  // auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
+  //                                                         {82, 83},
+  //                                                         type_category_hashmap);
+  // for (auto kI : cfg) {
+  //   cout << kI << " ";
+  // }
   // auto config = cfg::Config::ReadConfig("start.cfg");
   // const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, {153,168});
   // config.MoveRelativeDistance(move_distance);
@@ -108,11 +110,11 @@ int main(int argc, char *argv[]) {
 }
 
 //  std::cout << "#" << 0 << endl;
-  //  for (const auto&[key, count] : bonds_changed)
-  //  {
-  //    std::cout << "#" << key << ' ' << count << '\n';
-  //  }
+//  for (const auto&[key, count] : bonds_changed)
+//  {
+//    std::cout << "#" << key << ' ' << count << '\n';
+//  }
 
-  // Config cfg;
-  // cfg.ReadPOSCAR("0.pos");
-  // cfg.WritePOSCAR("00.pos");
+// Config cfg;
+// cfg.ReadPOSCAR("0.pos");
+// cfg.WritePOSCAR("00.pos");

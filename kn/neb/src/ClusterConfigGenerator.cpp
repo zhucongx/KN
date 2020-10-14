@@ -5,9 +5,9 @@
 namespace neb {
 ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const Factor_t &factors,
-                                               const std::string &solvent_element,
+                                               const std::filesystem::path &solvent_element,
                                                const std::set<std::string> &element_list,
-                                               const std::string &pot_folder_path)
+                                               const std::filesystem::path &pot_folder_path)
     : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
 
 static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &config,
@@ -68,7 +68,7 @@ static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &confi
   return result;
 }
 
-void neb::ClusterConfigGenerator::CreateSingletsConfigs() {
+void ClusterConfigGenerator::CreateSingletsConfigs() const {
   auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element, factors_);
   base_config.ChangeAtomTypeAt(0, "X");
   // For convenience choose jump pair 0 and 1, where X at 0 and jump_atom at 1
@@ -89,32 +89,31 @@ void neb::ClusterConfigGenerator::CreateSingletsConfigs() {
         auto config_end = config_start;
         cfg::AtomsJump(config_end, jump_pair.first, jump_pair.second);
 
-
         cfg::Config::WriteConfig(config_start, std::to_string(count) + ".cfg");
 
         ofs << "config " << count << " end 0 pair: "
             << jump_pair.first << ' ' << jump_pair.second << '\n';
-        std::string config_path("config" + std::to_string(count));
+        std::filesystem::path config_path("config" + std::to_string(count));
         // Generate start files
-        std::string start_path(config_path + "/s");
+        std::filesystem::path start_path(config_path / "s");
         std::filesystem::create_directories(start_path);
-        cfg::Config::WriteConfig(config_start, start_path + "/start.cfg");
+        cfg::Config::WriteConfig(config_start, start_path / "start.cfg");
         config_start.Perturb(generator_);
-        cfg::Config::WritePOSCAR(config_start, start_path + "/POSCAR");
+        cfg::Config::WritePOSCAR(config_start, start_path / "POSCAR");
         PrepareVASPFiles(config_start, start_path);
         // Generate end files
-        std::string end_path(config_path + "/e_0");
+        std::filesystem::path end_path(config_path / "e_0");
         std::filesystem::create_directories(end_path);
-        cfg::Config::WriteConfig(config_end, end_path + "/end.cfg");
+        cfg::Config::WriteConfig(config_end, end_path / "end.cfg");
         config_end.Perturb(generator_);
-        cfg::Config::WritePOSCAR(config_end, end_path + "/POSCAR");
+        cfg::Config::WritePOSCAR(config_end, end_path / "POSCAR");
         PrepareVASPFiles(config_end, end_path);
         ++count;
       }
     }
   }
 }
-void ClusterConfigGenerator::CreateConfigs() {
+void ClusterConfigGenerator::CreateConfigs() const {
 // Find equivalent atoms, pairs, triplets
   CreateSingletsConfigs();
 }
