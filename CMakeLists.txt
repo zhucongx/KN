@@ -56,7 +56,7 @@ set(PROJECT_INCLUDE
         ${PROJECT_SOURCE_DIR}/kn/neb/include
         ${PROJECT_SOURCE_DIR}/kn/kmc/include
         )
-add_executable(${PROJECT_NAME} kn_test.cpp ${PROJECT_SRC})
+add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 find_package(Boost COMPONENTS mpi serialization REQUIRED)
