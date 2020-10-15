@@ -83,7 +83,7 @@ static bool IsSmallerSymmetrically(const Triplet &lhs, const Triplet &rhs) {
 }
 
 static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
-                                             const std::pair<int, int> &jump_pair) {
+                                                  const std::pair<int, int> &jump_pair) {
   // First, second, third nearest neighbors of the jump pairs
   constexpr int kNumOfAtoms = 60;
 

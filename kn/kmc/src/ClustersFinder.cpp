@@ -37,7 +37,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   }
   auto output_name(cfg_filename_);
   auto const pos = output_name.find_last_of('.');
-  output_name.insert(pos,"_cluster" );
+  output_name.insert(pos, "_cluster");
   cfg::Config::WriteConfig(config_out, output_name, false);
   return num_atom_in_clusters_set;
 }
@@ -95,7 +95,8 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
       visit_id_queue.pop();
 
       atom_list_of_one_cluster.push_back(atom_id);
-      for (const auto &neighbor_id : config_.GetAtomList()[atom_id].GetFirstNearestNeighborsList()) {
+      for (const auto
+            &neighbor_id : config_.GetAtomList()[atom_id].GetFirstNearestNeighborsList()) {
         it = unvisited_atoms_id_set.find(neighbor_id);
         if (it != unvisited_atoms_id_set.end()) {
           visit_id_queue.push(*it);

@@ -7,7 +7,7 @@ class ClusterConfigGenerator : public ConfigGenerator {
   public:
     ClusterConfigGenerator(double lattice_constant,
                            const Factor_t &factors,
-                           const std::filesystem::path &solvent_element,
+                           const std::string &solvent_element,
                            const std::set<std::string> &element_list,
                            const std::filesystem::path &pot_folder_path);
     void CreateConfigs() const override;

@@ -1,11 +1,10 @@
 #include "ClusterConfigGenerator.h"
 
 #include <utility>
-#include <filesystem>
 namespace neb {
 ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const Factor_t &factors,
-                                               const std::filesystem::path &solvent_element,
+                                               const std::string &solvent_element,
                                                const std::set<std::string> &element_list,
                                                const std::filesystem::path &pot_folder_path)
     : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
@@ -69,7 +68,7 @@ static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &confi
 }
 
 void ClusterConfigGenerator::CreateSingletsConfigs() const {
-  auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element, factors_);
+  auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element_, factors_);
   base_config.ChangeAtomTypeAt(0, "X");
   // For convenience choose jump pair 0 and 1, where X at 0 and jump_atom at 1
   const std::pair<int, int> jump_pair{0, 1};
@@ -81,7 +80,7 @@ void ClusterConfigGenerator::CreateSingletsConfigs() const {
     auto reference_config = base_config;
     reference_config.ChangeAtomTypeAt(1, jump_type);
     for (const auto &singlet_type:element_set_) {
-      if (singlet_type == solvent_element)
+      if (singlet_type == solvent_element_)
         continue;
       for (auto singlet_id:singlet_id_vector) {
         auto config_start = reference_config;

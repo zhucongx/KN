@@ -168,16 +168,16 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::istringstream count_iss(buffer);
 
   std::string element;
-  int count;
-  int num_atoms = 0;
+  int num_atoms;
+  int all_num_atoms = 0;
   std::vector<std::pair<std::string, int>> elements_counts;
-  while (element_iss >> element && count_iss >> count) {
-    elements_counts.emplace_back(element, count);
-    num_atoms += count;
+  while (element_iss >> element && count_iss >> num_atoms) {
+    elements_counts.emplace_back(element, num_atoms);
+    all_num_atoms += num_atoms;
   }
   getline(ifs, buffer);
   bool relative_option = buffer[0] == 'D' || buffer[0] == 'd';
-  Config config(basis * scale, num_atoms);
+  Config config(basis * scale, all_num_atoms);
 
   // If relative_option is ture, only relative position need to scaled, set it to 1
   if (relative_option)

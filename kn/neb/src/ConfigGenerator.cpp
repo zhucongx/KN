@@ -5,12 +5,12 @@
 namespace neb {
 ConfigGenerator::ConfigGenerator(double lattice_constant,
                                  Factor_t factors,
-                                 const std::filesystem::path& solvent_element,
+                                 std::string solvent_element,
                                  std::set<std::string> element_set,
-                                 const std::filesystem::path& pot_folder_path) :
+                                 const std::filesystem::path &pot_folder_path) :
     lattice_constant_(lattice_constant),
     factors_(factors),
-    solvent_element(solvent_element),
+    solvent_element_(std::move(solvent_element)),
     element_set_(std::move(element_set)),
     pot_folder_path_(pot_folder_path),
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {}

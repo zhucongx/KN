@@ -3,12 +3,12 @@ namespace neb {
 
 SizeMisfitGenerator::SizeMisfitGenerator(double lattice_constant,
                                          const Factor_t &factors,
-                                         const std::filesystem::path &solvent_element,
+                                         const std::string &solvent_element,
                                          const std::set<std::string> &element_list,
                                          const std::filesystem::path &pot_folder_path)
     : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
 void SizeMisfitGenerator::CreateConfigs() const {
-  auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element, factors_);
+  auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element_, factors_);
   for (const auto &element_type : element_set_) {
     std::filesystem::path element_path(element_type);
     auto reference_config = base_config;
