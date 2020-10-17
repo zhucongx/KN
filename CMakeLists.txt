@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 
-set(CMAKE_C_COMPILER "gcc") # {gcc, mpicc, icc}
-set(CMAKE_CXX_COMPILER "g++") # {g++, mpicxx, icc}
+# set(CMAKE_C_COMPILER "clang") # {gcc, mpicc, icc}
+# set(CMAKE_CXX_COMPILER "clang++") # {g++, mpicxx, icc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
@@ -23,13 +23,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra"
         CACHE INTERNAL "")
 message("-- Detecting ${CMAKE_CXX_COMPILER_ID} compiler")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -fopenmp -D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
             CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
             CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -fopenmp -D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
             CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -D_GLIBCXX_PARALLEL"
@@ -66,7 +66,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 
 #find_package(EIGEN3 REQUIRED)
 #include_directories(${EIGEN3_INCLUDE_DIR})
-
 
 
 #find_package(TensorFlow REQUIRED)

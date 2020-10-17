@@ -33,9 +33,9 @@ inline std::istream &operator>>(std::istream &is, Vector_t &vector) {
 const double kEpsilon = 1e-12;
 
 inline bool operator==(const Vector_t &lhs, const Vector_t &rhs) {
-  return abs(lhs[kXDimension] - rhs[kXDimension]) < kEpsilon &&
-      abs(lhs[kYDimension] - rhs[kYDimension]) < kEpsilon &&
-      abs(lhs[kZDimension] - rhs[kZDimension]) < kEpsilon;
+  return std::abs(lhs[kXDimension] - rhs[kXDimension]) < kEpsilon &&
+      std::abs(lhs[kYDimension] - rhs[kYDimension]) < kEpsilon &&
+      std::abs(lhs[kZDimension] - rhs[kZDimension]) < kEpsilon;
 }
 
 inline bool operator!=(const Vector_t &lhs, const Vector_t &rhs) {

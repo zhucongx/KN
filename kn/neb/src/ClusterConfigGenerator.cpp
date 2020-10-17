@@ -45,14 +45,14 @@ static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &confi
     if (diff_x > kEpsilon)
       return false;
 
-    const double diff_y = abs(relative_position_lhs[kYDimension] - 0.5) -
-        abs(relative_position_rhs[kYDimension] - 0.5);
+    const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5) -
+        std::abs(relative_position_rhs[kYDimension] - 0.5);
     if (diff_y < -kEpsilon)
       return true;
     if (diff_y > kEpsilon)
       return false;
-    return abs(relative_position_lhs[kZDimension] - 0.5)
-        < abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon;
+    return std::abs(relative_position_lhs[kZDimension] - 0.5)
+        < std::abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon;
   };
   std::set<cfg::Atom, decltype(IsSmallerSymmetrically)> atom_set;
   for (auto &atom:atom_list) {
