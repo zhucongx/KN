@@ -137,7 +137,7 @@ void Config::UpdateNeighbors(double first_r_cutoff,
       }
     }
   }
-};
+}
 void Config::AppendAtomWithoutChangingAtomID(const Atom &atom) {
   atom_list_.push_back(atom);
   // element_list_map_[atom.GetType()].emplace_back(atom.GetId());

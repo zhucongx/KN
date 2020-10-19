@@ -7,6 +7,7 @@ SizeMisfitGenerator::SizeMisfitGenerator(double lattice_constant,
                                          const std::set<std::string> &element_list,
                                          const std::filesystem::path &pot_folder_path)
     : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
+SizeMisfitGenerator::~SizeMisfitGenerator() = default;
 void SizeMisfitGenerator::CreateConfigs() const {
   auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element_, factors_);
   for (const auto &element_type : element_set_) {
@@ -24,10 +25,10 @@ void SizeMisfitGenerator::CreateConfigs() const {
       auto out_config = reference_config;
       out_config.ScaleWith(scale);
       cfg::Config::WriteConfig(reference_config, scale_path / "supercell.cfg", false);
-      out_config.Perturb(generator_);
+      // out_config.Perturb(generator_);
       cfg::Config::WritePOSCAR(out_config, scale_path / "POSCAR", false);
       PrepareVASPFiles(out_config, scale_path);
-      scale += 0.02;
+      scale += 0.01;
     } while (scale < 1.06 + kEpsilon);
   }
 }

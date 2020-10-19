@@ -10,6 +10,7 @@ class SizeMisfitGenerator : public ConfigGenerator {
                         const std::string &solvent_element,
                         const std::set<std::string> &element_list,
                         const std::filesystem::path &pot_folder_path);
+    virtual ~SizeMisfitGenerator();
     void CreateConfigs() const override;
   private:
 };

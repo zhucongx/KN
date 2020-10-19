@@ -21,6 +21,8 @@ MpiClusters::MpiClusters(long long int initial_number,
     solvent_bond_criteria_(solvent_bond_criteria) {
 }
 
+MpiClusters::~MpiClusters() = default;
+
 void MpiClusters::IterateToRun() {
   long long num_total_loop = (finial_number_ - initial_number_) / increment_number_ + 1;
   long long quotient = num_total_loop / mpi_size_;

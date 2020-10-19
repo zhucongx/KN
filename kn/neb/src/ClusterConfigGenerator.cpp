@@ -8,7 +8,7 @@ ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const std::set<std::string> &element_list,
                                                const std::filesystem::path &pot_folder_path)
     : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
-
+ClusterConfigGenerator::~ClusterConfigGenerator() = default;
 static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &config,
                                                         const std::pair<int, int> &jump_pair) {
   // Get first, second, third nearest neighbors of the jump pairs

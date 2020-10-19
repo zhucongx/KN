@@ -9,10 +9,11 @@ namespace kn {
 class MpiIterator {
   public:
     virtual void IterateToRun() = 0;
-
     MpiIterator(long long int initial_number,
                 long long int increment_number,
                 long long int finial_number);
+    virtual ~MpiIterator();
+
   protected:
     boost::mpi::environment env_;
     boost::mpi::communicator world_;

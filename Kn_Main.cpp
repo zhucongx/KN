@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   neb::SizeMisfitGenerator a(4.046,
-                                {3,3,3},
+                                {1,1,1},
                                 "Al",
                                 {"Al", "Mg", "Zn"},
                                 "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");

@@ -12,6 +12,7 @@ class MpiClusters : public MpiIterator {
                 std::string solvent_element,
                 int smallest_cluster_criteria,
                 int solvent_bond_criteria);
+    virtual ~MpiClusters();
     void IterateToRun() override;
   private:
     std::string solvent_element_;

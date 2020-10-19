@@ -15,12 +15,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} "
         CACHE INTERNAL "")
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
--Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual \
--Winline -Wunreachable-code -Wcast-align -Wundef -Wredundant-decls \
+-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wpointer-arith -Wold-style-cast -Wpedantic \
+-Wcast-qual -Wunused -Woverloaded-virtual -Winline -Wunreachable-code -Wcast-align \
+-Wundef -Wmisleading-indentation -Wredundant-decls -pedantic \
+-Wnull-dereference  -Wdouble-promotion -Wextra-semi \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra"
         CACHE INTERNAL "")
+
 message("-- Detecting ${CMAKE_CXX_COMPILER_ID} compiler")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
@@ -32,7 +35,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
             CACHE INTERNAL "")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -frename-registers -D_GLIBCXX_PARALLEL"
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
             CACHE INTERNAL "")
 else ()
     message(WARNING "Please check which compiler you are using")

@@ -14,7 +14,7 @@ ConfigGenerator::ConfigGenerator(double lattice_constant,
     element_set_(std::move(element_set)),
     pot_folder_path_(pot_folder_path),
     generator_(std::chrono::system_clock::now().time_since_epoch().count()) {}
-
+ConfigGenerator::~ConfigGenerator() = default;
 static void PrepareINCAR(const std::filesystem::path &path) {
   std::ofstream ofs(path / "INCAR", std::ofstream::out);
   ofs << "NWRITE = 2\n" << "                 \n"
@@ -44,7 +44,7 @@ static void PrepareINCAR(const std::filesystem::path &path) {
       << "NPAR   = 4       \n";
 }
 static void PrepareKPOINTS(const std::filesystem::path &path, const Factor_t &factors) {
-  constexpr int kP = 11;
+  constexpr int kP = 18;
   std::ofstream ofs(path / "KPOINTS", std::ofstream::out);
   ofs << "Automatic mesh\n"
       << "0             \n"

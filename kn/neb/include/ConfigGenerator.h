@@ -12,6 +12,7 @@ class ConfigGenerator {
                     std::string solvent_element,
                     std::set<std::string> element_set,
                     const std::filesystem::path &pot_folder_path);
+    virtual ~ConfigGenerator();
     virtual void CreateConfigs() const = 0;
 
   protected:

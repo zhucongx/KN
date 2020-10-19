@@ -15,5 +15,6 @@ MpiIterator::MpiIterator(long long int initial_number,
   }
 
 }
+MpiIterator::~MpiIterator() = default;
 
 } // namespace kn
