@@ -38,7 +38,17 @@ static void OverwriteINCAR(const std::filesystem::path &path) {
       << "                 \n"
       << "NPAR   = 4       \n";
 }
-
+static void OverwriteKPOINTS(const std::filesystem::path &path, const Factor_t &factors) {
+  constexpr int kP = 18;
+  std::ofstream ofs(path / "KPOINTS", std::ofstream::out);
+  ofs << "Automatic mesh\n"
+      << "0             \n"
+      << "Monkhorst-Pack\n"
+      << kP / factors[kXDimension] << "   "
+      << kP / factors[kYDimension] << "   "
+      << kP / factors[kZDimension] << "\n"
+      << "0.   0.   0.  \n";
+}
 void SizeMisfitGenerator::CreateConfigs() const {
   auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element_, factors_);
   for (const auto &element_type : element_set_) {
@@ -61,6 +71,7 @@ void SizeMisfitGenerator::CreateConfigs() const {
       cfg::Config::WritePOSCAR(out_config, scale_path / "POSCAR", false);
       PrepareVASPFiles(out_config, scale_path);
       OverwriteINCAR(scale_path);
+      OverwriteKPOINTS(scale_path, factors_);
     }
   }
 }
