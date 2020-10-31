@@ -9,6 +9,7 @@
 #include <iomanip>
 
 #include "Constants.hpp"
+// TODO use size_t
 const size_t kDimension = 3;
 
 enum Dimension { kXDimension, kYDimension, kZDimension };
@@ -21,7 +22,7 @@ using Matrix_t = std::array<Vector_t, kDimension>;
 using Factor_t = std::array<int, kDimension>;
 
 inline std::ostream &operator<<(std::ostream &os, const Vector_t &vector) {
-  os << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
+  os << std::fixed << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
   return os;
 }
 

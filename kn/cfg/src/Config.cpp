@@ -153,7 +153,6 @@ void Config::ChangeAtomTypeAt(int id, const std::string &type) {
 
 Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
-
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // #comment
   double scale;
   ifs >> scale; // scale factor, usually which is 1.0
@@ -286,6 +285,7 @@ void Config::WritePOSCAR(const Config &config,
                          const std::string &filename,
                          bool show_vacancy_option) {
   std::ofstream ofs(filename, std::ofstream::out);
+  ofs.precision(16);
   ofs << "#comment\n1.0\n";
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
@@ -311,6 +311,7 @@ void Config::WriteConfig(const Config &config,
                          const std::string &filename,
                          bool neighbors_info) {
   std::ofstream ofs(filename, std::ofstream::out);
+  ofs.precision(16);
   ofs << "Number of particles = " << config.GetNumAtoms() << '\n';
   ofs << "A = 1.0 Angstrom (basic length-scale)\n";
   auto basis = config.GetBasis();
