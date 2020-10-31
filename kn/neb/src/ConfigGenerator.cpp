@@ -17,17 +17,18 @@ ConfigGenerator::ConfigGenerator(double lattice_constant,
 ConfigGenerator::~ConfigGenerator() = default;
 static void PrepareINCAR(const std::filesystem::path &path) {
   std::ofstream ofs(path / "INCAR", std::ofstream::out);
-  ofs << "NWRITE = 2\n" << "                 \n"
+  ofs << "NWRITE = 2       \n"
+      << "\n"
       << "PREC   = Accurate\n"
       << "ISYM   = 2       \n"
       << "NELM   = 240     \n"
       << "NELMIN = 4       \n"
-      << "                 \n"
+      << "\n"
       << "NSW    = 10000   \n"
       << "IBRION = 2       \n"
       << "POTIM  = 0.5     \n"
       << "ISIF   = 2       \n"
-      << "                 \n"
+      << "\n"
       << "ISMEAR = 1       \n"
       << "SIGMA  = 0.4     \n"
       << "                 \n"
@@ -37,14 +38,14 @@ static void PrepareINCAR(const std::filesystem::path &path) {
       << "ENAUG  = 600.00  \n"
       << "EDIFF  = 1e-7    \n"
       << "ISPIN  = 1       \n"
-      << "                 \n"
+      << "\n"
       << "LWAVE  = .FALSE. \n"
       << "LCHARG = .TRUE.  \n"
       << "                 \n"
       << "NPAR   = 4       \n";
 }
 static void PrepareKPOINTS(const std::filesystem::path &path, const Factor_t &factors) {
-  constexpr int kP = 18;
+  constexpr int kP = 9;
   std::ofstream ofs(path / "KPOINTS", std::ofstream::out);
   ofs << "Automatic mesh\n"
       << "0             \n"
@@ -67,10 +68,10 @@ static void PreparePOTCAR(const std::filesystem::path &path,
 static void PrepareSUBMIT(const std::filesystem::path &path) {
   std::ofstream ofs(path / "submit_GM.sh", std::ofstream::out);
   ofs << "/data/submit/unix/submit vasp "
-         "be_path=/db/devsys/Submit_be/2020.08_vaspcheck/backend "
-         "ver=5.4.4 ncpu=64 spool_files=yes "
-         "queue=nahpc_matls_lg cluster=NAHPC_WRN proj=VASP input_dir=`pwd` "
-         "jid=neb_init_rlx output_dir=`pwd`";
+      << "be_path=/db/devsys/Submit_be/2020.08_vaspcheck/backend "
+      << "ver=5.4.4 ncpu=64 spool_files=yes "
+      << "queue=nahpc_matls_lg cluster=NAHPC_WRN proj=VASP input_dir=`pwd` "
+      << "jid=neb_init_rlx output_dir=`pwd`";
 }
 static void PrepareSUBMITCORI(const std::filesystem::path &path) {
   std::ofstream ofs(path / "submit_cori.sh", std::ofstream::out);
@@ -121,11 +122,24 @@ static void PrepareSUBMITSTAMPEDE2(const std::filesystem::path &path) {
       << "#SBATCH -p normal\n"
       << "#SBATCH -t 36:00:00\n"
       << "#SBATCH -A TG-DMR190035\n"
+      << "#SBATCH --mail-user=zhucongx@umich.edu\n"
+      << "#SBATCH --mail-type=ALL\n"
       << "\n"
       << "#TG-DMR190035 TG-MSS160003\n"
       << "\n"
       << "module load vasp/5.4.4\n"
-      << "ibrun vasp_std > vasp_test.out\n"
+      << "ibrun vasp_std\n"
+      << "rm CHG* WAVE*\n";
+}
+static void PrepareGroup(const std::filesystem::path &path) {
+  std::ofstream ofs(path / "submit_group.sh", std::ofstream::out);
+  ofs << "#!/bin/bash -l\n"
+      << "#SBATCH -p long\n"
+      << "#SBATCH -t 30-00:00:00\n"
+      << "#SBATCH -N 1\n"
+      << "#SBATCH -n 32\n"
+      << "\n"
+      << "mpirun -n 32 vasp_std\n"
       << "rm CHG* WAVE*\n";
 }
 void ConfigGenerator::PrepareVASPFiles(const cfg::Config &reference_config,
@@ -137,6 +151,7 @@ void ConfigGenerator::PrepareVASPFiles(const cfg::Config &reference_config,
   PrepareSUBMITCORI(file_path);
   PrepareSUBMITGL(file_path);
   PrepareSUBMITSTAMPEDE2(file_path);
+  PrepareGroup(file_path);
 }
 
 } // namespace cfg
