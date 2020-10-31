@@ -9,10 +9,10 @@
 using namespace kn;
 using namespace std;
 // namespace mpi = boost::mpi;
-
-int main(int argc, char *argv[]) {
-  neb::SizeMisfitGenerator a(4.046,
-                                {1,1,1},
+// pure Al lattice constant 4.0404778433873281
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+  neb::SizeMisfitGenerator a(4.0404778433873281,
+                                {3,3,3},
                                 "Al",
                                 {"Al", "Mg", "Zn"},
                                 "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");

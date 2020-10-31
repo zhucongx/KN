@@ -68,7 +68,7 @@ class Config {
     Matrix_t basis_{};
     // Three translational Bravais lattice vector
     // Matrix_t reciprocal_matrix_{},
-    double energy_{};
+    [[maybe_unused]] double energy_{};
     // The index of atom in the vector is not always same as of the id of the atom
     std::vector<Atom> atom_list_;
   public:
