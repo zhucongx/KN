@@ -17,25 +17,25 @@ namespace kn::ClusterExpansion {
 /// When we treat this vector, we don't care the sign of y and z, and y and z should be
 /// indistinguishable. If sum and diff of abs of y and abs of z are same, these atoms should
 /// be considered same positions
-static bool AreSameSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
-  const auto &relative_position_lhs = lhs.GetRelativePosition();
-  const auto &relative_position_rhs = rhs.GetRelativePosition();
-  return std::abs(relative_position_lhs[kXDimension]
-                      - relative_position_rhs[kXDimension]) < kEpsilon &&
-      std::abs(std::abs(relative_position_lhs[kYDimension] - 0.5)
-                   - std::abs(relative_position_rhs[kYDimension] - 0.5)) < kEpsilon &&
-      std::abs(std::abs(relative_position_lhs[kZDimension] - 0.5)
-                   - std::abs(relative_position_rhs[kZDimension] - 0.5)) < kEpsilon;
-}
-static bool AreSameSymmetrically(const Pair &lhs, const Pair &rhs) {
-  return AreSameSymmetrically(lhs.GetAtom1(), rhs.GetAtom1()) &&
-      AreSameSymmetrically(lhs.GetAtom2(), rhs.GetAtom2());
-}
-static bool AreSameSymmetrically(const Triplet &lhs, const Triplet &rhs) {
-  return AreSameSymmetrically(lhs.GetAtom1(), rhs.GetAtom1()) &&
-      AreSameSymmetrically(lhs.GetAtom2(), rhs.GetAtom2()) &&
-      AreSameSymmetrically(lhs.GetAtom3(), rhs.GetAtom3());
-}
+// static bool AreSameSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
+//   const auto &relative_position_lhs = lhs.GetRelativePosition();
+//   const auto &relative_position_rhs = rhs.GetRelativePosition();
+//   return std::abs(relative_position_lhs[kXDimension]
+//                       - relative_position_rhs[kXDimension]) < kEpsilon &&
+//       std::abs(std::abs(relative_position_lhs[kYDimension] - 0.5)
+//                    - std::abs(relative_position_rhs[kYDimension] - 0.5)) < kEpsilon &&
+//       std::abs(std::abs(relative_position_lhs[kZDimension] - 0.5)
+//                    - std::abs(relative_position_rhs[kZDimension] - 0.5)) < kEpsilon;
+// }
+// static bool AreSameSymmetrically(const Pair &lhs, const Pair &rhs) {
+//   return AreSameSymmetrically(lhs.GetAtom1(), rhs.GetAtom1()) &&
+//       AreSameSymmetrically(lhs.GetAtom2(), rhs.GetAtom2());
+// }
+// static bool AreSameSymmetrically(const Triplet &lhs, const Triplet &rhs) {
+//   return AreSameSymmetrically(lhs.GetAtom1(), rhs.GetAtom1()) &&
+//       AreSameSymmetrically(lhs.GetAtom2(), rhs.GetAtom2()) &&
+//       AreSameSymmetrically(lhs.GetAtom3(), rhs.GetAtom3());
+// }
 // static bool AreSameSymmetrically(const Vector_t &relative_position_lhs,
 //                                  const Vector_t &relative_position_rhs) {
 //   return std::abs(relative_position_lhs[kXDimension]

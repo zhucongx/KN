@@ -22,7 +22,7 @@ static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &confi
   atom_list.reserve(atom_id_set.size());
 
   const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
-  for (int id : atom_id_set) {
+  for (auto id : atom_id_set) {
     cfg::Atom atom = config.GetAtomList()[id];
 
     // move to center
