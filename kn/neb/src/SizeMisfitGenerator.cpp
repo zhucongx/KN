@@ -64,4 +64,5 @@ void SizeMisfitGenerator::CreateConfigs() const {
     }
   }
 }
+
 } // namespace neb
