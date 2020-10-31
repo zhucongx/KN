@@ -15,12 +15,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} "
         CACHE INTERNAL "")
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
--Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wpointer-arith -Wold-style-cast -Wpedantic \
--Wcast-qual -Wunused -Woverloaded-virtual -Winline -Wunreachable-code -Wcast-align \
--Wundef -Wmisleading-indentation -Wredundant-decls -pedantic \
+-Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wpointer-arith -Wold-style-cast -Wpedantic  \
+-Wcast-qual -Wunused -Woverloaded-virtual -Winline -Wunreachable-code -Wcast-align  -Weffc++ \
+-Wundef -Wmisleading-indentation -Wredundant-decls -pedantic-errors \
 -Wnull-dereference  -Wdouble-promotion -Wextra-semi \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
+# -Wconversion
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -Wall -Wextra"
         CACHE INTERNAL "")
 
