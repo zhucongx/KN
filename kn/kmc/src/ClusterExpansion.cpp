@@ -1,5 +1,6 @@
 #include "ClusterExpansion.h"
 #include <unordered_set>
+// TODO using Clusters class
 namespace kn::ClusterExpansion {
 // mm2 group point:
 // mirror perpendicular to xz plane
