@@ -7,5 +7,5 @@ class OrderConfigGenerator : public ConfigGenerator {
 
 };
 
-} // namespace neb
+} // namespace gen
 #endif //KN_KN_NEB_INCLUDE_ORDEREDMODEL_H_

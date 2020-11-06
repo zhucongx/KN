@@ -16,13 +16,13 @@ constexpr double kFourthNearestNeighborsCutoff = 5.9;
 
 
 // For FCC the first nearest neighbor is 12
-constexpr int kNumFirstNearestNeighbors = 12;
+constexpr size_t kNumFirstNearestNeighbors = 12;
 // For FCC the second nearest neighbor is 6
-constexpr int kNumSecondNearestNeighbors = 6;
+constexpr size_t kNumSecondNearestNeighbors = 6;
 // For FCC the third nearest neighbor is 6
-constexpr int kNumThirdNearestNeighbors = 24;
+constexpr size_t kNumThirdNearestNeighbors = 24;
 // For FCC the fourth nearest neighbor is 12
-constexpr int kNumFourthNearestNeighbors = 12;
+constexpr size_t kNumFourthNearestNeighbors = 12;
 } // namespace Al_const
 #endif //KN_KN_CFG_INCLUDE_CONSTANTS_HPP_
 

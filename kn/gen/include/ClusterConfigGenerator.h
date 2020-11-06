@@ -1,7 +1,7 @@
 #ifndef KN_KN_NEB_INCLUDE_CLUSTERCONFIGGENERATOR_H_
 #define KN_KN_NEB_INCLUDE_CLUSTERCONFIGGENERATOR_H_
 #include "ConfigGenerator.h"
-namespace neb {
+namespace gen {
 // This class generate some singular atom, pairs triplets as criterion
 class ClusterConfigGenerator : public ConfigGenerator {
   public:
@@ -17,5 +17,5 @@ class ClusterConfigGenerator : public ConfigGenerator {
 
 };
 
-} // namespace neb
+} // namespace gen
 #endif //KN_KN_NEB_INCLUDE_CLUSTERCONFIGGENERATOR_H_

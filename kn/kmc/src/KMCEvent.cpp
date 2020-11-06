@@ -2,10 +2,10 @@
 #include "KMCEvent.h"
 
 namespace kn {
-KMCEvent::KMCEvent(std::pair<int, int> jump_pair) : jump_pair_(std::move(jump_pair)) {
+KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair) : jump_pair_(std::move(jump_pair)) {
 }
 
-const std::pair<int, int> &KMCEvent::GetJumpPair() const {
+const std::pair<size_t, size_t> &KMCEvent::GetJumpPair() const {
   return jump_pair_;
 }
 

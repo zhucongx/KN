@@ -3,7 +3,7 @@
 namespace cfg {
 Atom::Atom() = default;
 // Set both relative and absolute position, but will be corrected later
-Atom::Atom(int id, double mass, std::string type, double x, double y, double z) :
+Atom::Atom(size_t id, double mass, std::string type, double x, double y, double z) :
     id_(id),
     mass_(mass),
     type_(std::move(type)),
@@ -13,7 +13,7 @@ Atom::Atom(int id, double mass, std::string type, double x, double y, double z) 
   second_nearest_neighbors_list_.reserve(Al_const::kNumSecondNearestNeighbors);
   third_nearest_neighbors_list_.reserve(Al_const::kNumThirdNearestNeighbors);
 }
-Atom::Atom(int id, double mass, std::string type, Vector_t position) :
+Atom::Atom(size_t id, double mass, std::string type, Vector_t position) :
     id_(id),
     mass_(mass),
     type_(std::move(type)),
@@ -29,7 +29,7 @@ const Vector_t &Atom::GetCartesianPosition() const {
 const Vector_t &Atom::GetRelativePosition() const {
   return relative_position_;
 }
-int Atom::GetId() const {
+size_t Atom::GetId() const {
   return id_;
 }
 double Atom::GetMass() const {
@@ -38,17 +38,17 @@ double Atom::GetMass() const {
 const std::string &Atom::GetType() const {
   return type_;
 }
-const std::vector<int> &Atom::GetFirstNearestNeighborsList() const {
+const std::vector<size_t> &Atom::GetFirstNearestNeighborsList() const {
   return first_nearest_neighbors_list_;
 }
-const std::vector<int> &Atom::GetSecondNearestNeighborsList() const {
+const std::vector<size_t> &Atom::GetSecondNearestNeighborsList() const {
   return second_nearest_neighbors_list_;
 }
-const std::vector<int> &Atom::GetThirdNearestNeighborsList() const {
+const std::vector<size_t> &Atom::GetThirdNearestNeighborsList() const {
   return third_nearest_neighbors_list_;
 }
-std::unordered_set<int> Atom::GetFirstAndSecondThirdNeighborsSet() const {
-  std::unordered_set<int> near_neighbors_hashset;
+std::unordered_set<size_t> Atom::GetFirstAndSecondThirdNeighborsSet() const {
+  std::unordered_set<size_t> near_neighbors_hashset;
   std::copy(first_nearest_neighbors_list_.begin(),
             first_nearest_neighbors_list_.end(),
             std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
@@ -69,19 +69,19 @@ void Atom::SetCartesianPosition(const Vector_t &cartesian_position) {
 void Atom::SetRelativePosition(const Vector_t &relative_position) {
   relative_position_ = relative_position;
 }
-void Atom::SetId(int id) {
+void Atom::SetId(size_t id) {
   id_ = id;
 }
 void Atom::SetType(const std::string &type) {
   mass_ = FindMass(type_ = type);
 }
-void Atom::AppendFirstNearestNeighborsList(int index) {
+void Atom::AppendFirstNearestNeighborsList(size_t index) {
   first_nearest_neighbors_list_.emplace_back(index);
 }
-void Atom::AppendSecondNearestNeighborsList(int index) {
+void Atom::AppendSecondNearestNeighborsList(size_t index) {
   second_nearest_neighbors_list_.emplace_back(index);
 }
-void Atom::AppendThirdNearestNeighborsList(int index) {
+void Atom::AppendThirdNearestNeighborsList(size_t index) {
   third_nearest_neighbors_list_.emplace_back(index);
 }
 void Atom::CleanNeighborsLists() {
@@ -168,6 +168,6 @@ double FindMass(const std::string &elem) {
   // If this element is not in the list, return 0
   if (it == element_list.end())
     return 0;
-  return mass_list[std::distance(element_list.begin(), it)];
+  return mass_list[static_cast<size_t>(std::distance(element_list.begin(), it))];
 }
 }// namespace cfg

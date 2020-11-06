@@ -6,11 +6,11 @@
 namespace cfg {
 
 Config::Config() = default;
-Config::Config(const Matrix_t &basis, int atom_size) : basis_(basis) {
+Config::Config(const Matrix_t &basis, size_t atom_size) : basis_(basis) {
   if (!atom_size)
     atom_list_.reserve(atom_size);
 }
-int Config::GetNumAtoms() const {
+size_t Config::GetNumAtoms() const {
   return atom_list_.size();
 }
 const Matrix_t &Config::GetBasis() const {
@@ -19,8 +19,8 @@ const Matrix_t &Config::GetBasis() const {
 const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
-std::map<std::string, std::vector<int>> Config::GetElementListMap() const {
-  std::map<std::string, std::vector<int>> element_list_map;
+std::map<std::string, std::vector<size_t>> Config::GetElementListMap() const {
+  std::map<std::string, std::vector<size_t>> element_list_map;
   for (const auto &atom : atom_list_) {
     element_list_map[atom.GetType()].push_back(atom.GetId());
   }
@@ -72,7 +72,7 @@ void Config::MoveRelativeDistance(const Vector_t &distance_vector) {
     atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
   }
 }
-void Config::MoveOneAtomRelativeDistance(int index,
+void Config::MoveOneAtomRelativeDistance(size_t index,
                                          const Vector_t &distance_vector) {
   atom_list_[index].SetRelativePosition(
       atom_list_[index].GetRelativePosition() + distance_vector);
@@ -147,7 +147,7 @@ void Config::AppendAtomWithChangingAtomID(Atom atom) {
   // element_list_map_[atom.GetType()].emplace_back(atom.GetId());
   atom_list_.push_back(std::move(atom));
 }
-void Config::ChangeAtomTypeAt(int id, const std::string &type) {
+void Config::ChangeAtomTypeAt(size_t id, const std::string &type) {
   atom_list_[id].SetType(type);
 }
 
@@ -167,9 +167,9 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::istringstream count_iss(buffer);
 
   std::string element;
-  int num_atoms;
-  int all_num_atoms = 0;
-  std::vector<std::pair<std::string, int>> elements_counts;
+  size_t num_atoms;
+  size_t all_num_atoms = 0;
+  std::vector<std::pair<std::string, size_t>> elements_counts;
   while (element_iss >> element && count_iss >> num_atoms) {
     elements_counts.emplace_back(element, num_atoms);
     all_num_atoms += num_atoms;
@@ -182,11 +182,11 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   if (relative_option)
     scale = 1.0;
 
-  int id_count = 0;
+  size_t id_count = 0;
   double position_X, position_Y, position_Z;
   for (const auto &[element_name, count] : elements_counts) {
     double mass = FindMass(element_name);
-    for (int j = 0; j < count; ++j) {
+    for (size_t j = 0; j < count; ++j) {
       ifs >> position_X >> position_Y >> position_Z;
       config.AppendAtomWithoutChangingAtomID({id_count, mass, element_name,
                                               position_X * scale, position_Y * scale,
@@ -207,7 +207,7 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
-  int num_atoms;
+  size_t num_atoms;
   ifs >> num_atoms;
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(),
@@ -244,9 +244,9 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // "entry_count = 3"
 
   double mass, relative_position_X, relative_position_Y, relative_position_Z;
-  int index;
+  size_t index;
   bool neighbor_found = false;
-  for (int id = 0; id < num_atoms; ++id) {
+  for (size_t id = 0; id < num_atoms; ++id) {
     std::string type;
     ifs >> mass;
     ifs >> type;
@@ -257,15 +257,15 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
               relative_position_Z * scale);
     if (ifs.peek() != '\n') {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
-      for (int i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
+      for (size_t i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
         ifs >> index;
         atom.AppendFirstNearestNeighborsList(index);
       }
-      for (int i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
+      for (size_t i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
         ifs >> index;
         atom.AppendSecondNearestNeighborsList(index);
       }
-      for (int i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
+      for (size_t i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
         ifs >> index;
         atom.AppendThirdNearestNeighborsList(index);
       }
@@ -346,7 +346,7 @@ void Config::WriteConfig(const Config &config,
   }
 }
 
-void AtomsJump(Config &config, int lhs, int rhs) {
+void AtomsJump(Config &config, size_t lhs, size_t rhs) {
 
   std::swap(config.atom_list_[lhs].relative_position_, config.atom_list_[rhs].relative_position_);
   std::swap(config.atom_list_[lhs].cartesian_position_, config.atom_list_[rhs].cartesian_position_);
@@ -379,8 +379,8 @@ void AtomsJump(Config &config, int lhs, int rhs) {
                config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
 }
 
-std::map<Bond, int> CountAllBonds(const Config &config) {
-  std::map<Bond, int> bonds_count_map;
+std::map<Bond, size_t> CountAllBonds(const Config &config) {
+  std::map<Bond, size_t> bonds_count_map;
   std::string type1, type2;
   auto atom_list = config.GetAtomList();
   for (const auto &atom : atom_list) {
@@ -394,15 +394,15 @@ std::map<Bond, int> CountAllBonds(const Config &config) {
   }
   return bonds_count_map;
 }
-std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config) {
-  int count = 1;
-  std::unordered_map<std::string, int> type_category_hashmap;
+std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config) {
+  size_t count = 1;
+  std::unordered_map<std::string, size_t> type_category_hashmap;
   for (const auto &element_list : config.GetElementListMap()) {
     type_category_hashmap[element_list.first] = count++;
   }
   return type_category_hashmap;
 }
-Vector_t GetPairCenter(const Config &config, const std::pair<int, int> &jump_pair) {
+Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair) {
   Vector_t center_position;
   for (const auto kDim : All_Dimensions) {
     double first_relative = config.GetAtomList()[jump_pair.first].GetRelativePosition()[kDim];
@@ -421,13 +421,13 @@ Vector_t GetPairCenter(const Config &config, const std::pair<int, int> &jump_pai
   }
   return center_position;
 }
-Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<int, int> &jump_pair) {
+Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &jump_pair) {
   const Vector_t pair_direction = Normalize(GetRelativeDistanceVector(
       config.GetAtomList()[jump_pair.first],
       config.GetAtomList()[jump_pair.second]));
   const auto &first_atom = config.GetAtomList()[jump_pair.first];
   Vector_t vertical_vector{};
-  for (const int index : first_atom.GetFirstNearestNeighborsList()) {
+  for (const auto index : first_atom.GetFirstNearestNeighborsList()) {
     const Vector_t jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
     const double dot_prod = Dot(pair_direction, jump_vector);
     if (std::abs(dot_prod) < 1e-6) {
@@ -464,13 +464,13 @@ Config GenerateFCC(double lattice_constant_a, const std::string &element, const 
                        {0, lattice_constant_a * factors[kYDimension], 0},
                        {0, 0, lattice_constant_a * factors[kZDimension]}}},
                      4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
-  int atoms_counter = 0;
+  size_t atoms_counter = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
   auto z_length = static_cast<double>(factors[kZDimension]);
-  for (int k = 0; k < factors[kZDimension]; ++k) {
-    for (int j = 0; j < factors[kYDimension]; ++j) {
-      for (int i = 0; i < factors[kXDimension]; ++i) {
+  for (size_t k = 0; k < factors[kZDimension]; ++k) {
+    for (size_t j = 0; j < factors[kYDimension]; ++j) {
+      for (size_t i = 0; i < factors[kXDimension]; ++i) {
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);

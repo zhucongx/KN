@@ -7,9 +7,9 @@
 // This namespace contains some functions that can analyze dft calculations data
 namespace kn::DftAnalysis {
 
-// Generate encode file according to the log.txt file and generated config files
-void PrintOutEncode(const std::string &reference_filename,
-                    const std::unordered_map<std::string, int> &type_category_hashmap);
+// // Generate encode file according to the log.txt file and generated config files
+// void PrintOutEncode(const std::string &reference_filename,
+//                     const std::unordered_map<std::string, int> &type_category_hashmap);
 
 void PrintOutClusterExpansionAverage(
     const std::string &reference_filename,

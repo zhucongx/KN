@@ -7,12 +7,12 @@
 #include "ClustersFinder.h"
 
 namespace kn {
-MpiClusters::MpiClusters(long long int initial_number,
-                         long long int increment_number,
-                         long long int finial_number,
+MpiClusters::MpiClusters(unsigned long long int initial_number,
+                         unsigned long long int increment_number,
+                         unsigned long long int finial_number,
                          std::string solvent_element,
-                         int smallest_cluster_criteria,
-                         int solvent_bond_criteria) :
+                         size_t smallest_cluster_criteria,
+                         size_t solvent_bond_criteria) :
     MpiIterator(initial_number,
                 increment_number,
                 finial_number),
@@ -24,13 +24,15 @@ MpiClusters::MpiClusters(long long int initial_number,
 MpiClusters::~MpiClusters() = default;
 
 void MpiClusters::IterateToRun() {
-  long long num_total_loop = (finial_number_ - initial_number_) / increment_number_ + 1;
-  long long quotient = num_total_loop / mpi_size_;
-  auto remainder = num_total_loop % mpi_size_;
-  long long num_cycle = remainder ? (quotient + 1) : quotient;
+  auto num_total_loop = (finial_number_ - initial_number_) / increment_number_ + 1;
+  auto quotient = num_total_loop / static_cast<unsigned long long int>(mpi_size_);
+  auto remainder = num_total_loop % static_cast<unsigned long long int>(mpi_size_);
+  auto num_cycle = remainder ? (quotient + 1) : quotient;
 
-  for (long long i = 0; i < num_cycle; ++i) {
-    long long num_file = initial_number_ + (i * mpi_size_ + mpi_rank_) * increment_number_;
+  for (unsigned long long i = 0; i < num_cycle; ++i) {
+    auto num_file = initial_number_ +
+        (i * static_cast<unsigned long long int>(mpi_size_)
+            + static_cast<unsigned long long int>(mpi_rank_)) * increment_number_;
     ClustersFinder::ClusterElementNumMap num_different_element;
     if (num_file <= finial_number_) {
       ClustersFinder cluster_finder(std::to_string(num_file) + ".cfg",

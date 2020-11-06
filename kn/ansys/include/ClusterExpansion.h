@@ -17,12 +17,12 @@ namespace kn::ClusterExpansion {
 // this function rotate and sort the config in a particular way, basically from center to outside
 std::vector<double> GetAverageClusterFunctions(
     const cfg::Config &config,
-    const std::pair<int, int> &jump_pair,
+    const std::pair<size_t, size_t> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap);
 
 std::vector<double> GetAverageClusterFunctionsBack(
     const cfg::Config &config,
-    const std::pair<int, int> &jump_pair,
+    const std::pair<size_t, size_t> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap);
 
 class Pair {
@@ -106,5 +106,5 @@ class Triplet {
     cfg::Atom atom3_;
 };
 
-}
+} // namespace kn::ClusterExpansion
 #endif //KN_KN_KMC_INCLUDE_CLUSTEREXPANSION_H_

@@ -1,4 +1,4 @@
-#include "ClusterExpansion.h"
+#include "../include/ClusterExpansion.h"
 #include <unordered_set>
 // TODO using Clusters class
 namespace kn::ClusterExpansion {
@@ -89,11 +89,11 @@ static bool IsSmallerSymmetrically(const Triplet &lhs, const Triplet &rhs) {
 }
 
 static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
-                                                  const std::pair<int, int> &jump_pair) {
+                                                  const std::pair<size_t, size_t> &jump_pair) {
   // First, second, third nearest neighbors of the jump pairs
-  constexpr int kNumOfAtoms = 60;
+  constexpr size_t kNumOfAtoms = 60;
 
-  std::unordered_set<int> atom_id_set;
+  std::unordered_set<size_t> atom_id_set;
   atom_id_set.merge(config.GetAtomList()[jump_pair.first].GetFirstAndSecondThirdNeighborsSet());
   atom_id_set.merge(config.GetAtomList()[jump_pair.second].GetFirstAndSecondThirdNeighborsSet());
 
@@ -101,7 +101,7 @@ static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
 
   std::vector<cfg::Atom> atom_list;
   atom_list.reserve(kNumOfAtoms);
-  for (int id : atom_id_set) {
+  for (auto id : atom_id_set) {
     cfg::Atom atom = config.GetAtomList()[id];
 
     // move to center
@@ -135,7 +135,7 @@ static cfg::Config GetRotatedCenteredSortedConfig(const cfg::Config &config,
 //                                                  );
 std::vector<double> GetAverageClusterFunctions(
     const cfg::Config &config,
-    const std::pair<int, int> &jump_pair,
+    const std::pair<size_t, size_t> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
 
   cfg::Config transformed_config = GetRotatedCenteredSortedConfig(config, jump_pair);
@@ -278,7 +278,7 @@ std::vector<double> GetAverageClusterFunctions(
 
 std::vector<double> GetAverageClusterFunctionsBack(
     const cfg::Config &config,
-    const std::pair<int, int> &jump_pair,
+    const std::pair<size_t, size_t> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
   auto back_config = config;
   cfg::AtomsJump(back_config, jump_pair.first, jump_pair.second);

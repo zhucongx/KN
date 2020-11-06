@@ -1,7 +1,7 @@
 #include "ClusterConfigGenerator.h"
 
 #include <utility>
-namespace neb {
+namespace gen {
 ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const Factor_t &factors,
                                                const std::string &solvent_element,
@@ -9,10 +9,11 @@ ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const std::filesystem::path &pot_folder_path)
     : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
 ClusterConfigGenerator::~ClusterConfigGenerator() = default;
-static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &config,
-                                                        const std::pair<int, int> &jump_pair) {
+static std::vector<size_t> GetEquivalentSingletIndexVector(
+    const cfg::Config &config,
+    const std::pair<size_t, size_t> &jump_pair) {
   // Get first, second, third nearest neighbors of the jump pairs
-  std::unordered_set<int> atom_id_set;
+  std::unordered_set<size_t> atom_id_set;
   atom_id_set.merge(config.GetAtomList()[jump_pair.first].GetFirstAndSecondThirdNeighborsSet());
   atom_id_set.merge(config.GetAtomList()[jump_pair.second].GetFirstAndSecondThirdNeighborsSet());
   atom_id_set.erase(jump_pair.first);
@@ -59,7 +60,7 @@ static std::vector<int> GetEquivalentSingletIndexVector(const cfg::Config &confi
     atom_set.insert(std::move(atom));
   }
 
-  std::vector<int> result;
+  std::vector<size_t> result;
   result.reserve(atom_set.size());
   for (const auto &atom:atom_set) {
     result.emplace_back(atom.GetId());
@@ -71,11 +72,11 @@ void ClusterConfigGenerator::CreateSingletsConfigs() const {
   auto base_config = cfg::GenerateFCC(lattice_constant_, solvent_element_, factors_);
   base_config.ChangeAtomTypeAt(0, "X");
   // For convenience choose jump pair 0 and 1, where X at 0 and jump_atom at 1
-  const std::pair<int, int> jump_pair{0, 1};
+  const std::pair<size_t, size_t> jump_pair{0, 1};
   auto singlet_id_vector = GetEquivalentSingletIndexVector(base_config, jump_pair);
 
   std::ofstream ofs("log.txt", std::ofstream::out);
-  int count = 0;
+  size_t count = 0;
   for (const auto &jump_type : element_set_) {
     auto reference_config = base_config;
     reference_config.ChangeAtomTypeAt(1, jump_type);
@@ -117,4 +118,4 @@ void ClusterConfigGenerator::CreateConfigs() const {
   CreateSingletsConfigs();
 }
 
-} // namespace neb::cluster_model
+} // namespace gen::cluster_model

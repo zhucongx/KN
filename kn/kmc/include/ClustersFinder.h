@@ -9,11 +9,11 @@
 namespace kn {
 class ClustersFinder {
   public:
-    using ClusterElementNumMap = std::vector<std::map<std::string, int>>;
+    using ClusterElementNumMap = std::vector<std::map<std::string, size_t>>;
     ClustersFinder(std::string cfg_filename,
                    std::string solvent_atom_type,
-                   int smallest_cluster_criteria,
-                   int solvent_bond_criteria);
+                   size_t smallest_cluster_criteria,
+                   size_t solvent_bond_criteria);
     // Return a 2D array where values of each row representing the number of atoms of different
     // element in one cluster
     ClusterElementNumMap FindClustersAndOutput();
@@ -21,17 +21,17 @@ class ClustersFinder {
     static void PrintLog(const std::string &filename, const ClusterElementNumMap &found_data);
   private:
     void ReadFileAndUpdateNeighbor();
-    [[nodiscard]] std::unordered_set<int> FindSoluteAtomsHelper() const;
-    [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClustersBFSHelper(
-        std::unordered_set<int> unvisited_atoms_id_set) const;
-    [[nodiscard]] std::vector<std::vector<int>> FindAtomListOfClusters() const;
+    [[nodiscard]] std::unordered_set<size_t> FindSoluteAtomsHelper() const;
+    [[nodiscard]] std::vector<std::vector<size_t>> FindAtomListOfClustersBFSHelper(
+        std::unordered_set<size_t> unvisited_atoms_id_set) const;
+    [[nodiscard]] std::vector<std::vector<size_t>> FindAtomListOfClusters() const;
 
     std::string cfg_filename_;
     cfg::Config config_;
     std::string solvent_element_;
     std::set<std::string> element_set_;
-    int smallest_cluster_criteria_{};
-    int solvent_bond_criteria_{};
+    size_t smallest_cluster_criteria_{};
+    size_t solvent_bond_criteria_{};
 };
 } // namespace kn
 

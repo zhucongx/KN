@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wpointer-arith -Wold-style-cast -Wpedantic  \
 -Wcast-qual -Wunused -Woverloaded-virtual -Winline -Wunreachable-code -Wcast-align  -Weffc++ \
 -Wundef -Wmisleading-indentation -Wredundant-decls -pedantic-errors \
--Wnull-dereference  -Wdouble-promotion -Wextra-semi \
+-Wnull-dereference  -Wdouble-promotion -Wextra-semi -Wconversion \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 # -Wconversion
@@ -44,20 +44,23 @@ else ()
             CACHE INTERNAL "")
 endif ()
 ##############################################################################################
-#add_executable(${PROJECT_NAME} kn_test.cpp)
+#add_executable(${PROJECT_NAME} Kn_Main.cpp)
 #add_subdirectory(kn/cfg)
-#add_subdirectory(kn/neb)
+#add_subdirectory(kn/gen)
+#add_subdirectory(kn/ansys)
 #add_subdirectory(kn/kmc)
-#target_link_libraries(${PROJECT_NAME} PUBLIC cfg neb kmc)
+#target_link_libraries(${PROJECT_NAME} PUBLIC cfg gen ansys kmc)
 ##############################################################################################
 file(GLOB PROJECT_SRC
         ${PROJECT_SOURCE_DIR}/kn/cfg/src/*.cpp
-        ${PROJECT_SOURCE_DIR}/kn/neb/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/kn/gen/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/kn/ansys/src/*.cpp
         ${PROJECT_SOURCE_DIR}/kn/kmc/src/*.cpp
         )
 set(PROJECT_INCLUDE
         ${PROJECT_SOURCE_DIR}/kn/cfg/include
-        ${PROJECT_SOURCE_DIR}/kn/neb/include
+        ${PROJECT_SOURCE_DIR}/kn/gen/include
+        ${PROJECT_SOURCE_DIR}/kn/ansys/include
         ${PROJECT_SOURCE_DIR}/kn/kmc/include
         )
 add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})

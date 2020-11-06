@@ -6,9 +6,9 @@ namespace kn {
 class KMCEvent {
   public:
 
-    explicit KMCEvent(std::pair<int, int> jump_pair);
+    explicit KMCEvent(std::pair<size_t, size_t> jump_pair);
 
-    [[nodiscard]] const std::pair<int, int> &GetJumpPair() const;
+    [[nodiscard]] const std::pair<size_t, size_t> &GetJumpPair() const;
     [[nodiscard]] double GetBarrier() const;
     void SetBarrier(double barrier);
     [[nodiscard]] double GetRate() const;
@@ -21,7 +21,7 @@ class KMCEvent {
     void SetCumulativeProvability(double cumulative_provability);
 
   protected:
-    std::pair<int, int> jump_pair_;
+    std::pair<size_t, size_t> jump_pair_;
     double barrier_;
     double rate_;
     double energy_change_;

@@ -1,5 +1,5 @@
 #include "SizeMisfitGenerator.h"
-namespace neb {
+namespace gen {
 SizeMisfitGenerator::SizeMisfitGenerator(double lattice_constant,
                                          const Factor_t &factors,
                                          const std::string &solvent_element,
@@ -76,4 +76,4 @@ void SizeMisfitGenerator::CreateConfigs() const {
   }
 }
 
-} // namespace neb
+} // namespace gen

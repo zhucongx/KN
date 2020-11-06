@@ -4,7 +4,7 @@
 
 #include "Config.h"
 
-namespace neb {
+namespace gen {
 class ConfigGenerator {
   public:
     ConfigGenerator(double lattice_constant,
@@ -29,5 +29,5 @@ class ConfigGenerator {
 
 };
 
-} // namespace cfg
+} // namespace gen
 #endif //KN_KN_NEB_INCLUDE_CONFIGGENERATOR_H_

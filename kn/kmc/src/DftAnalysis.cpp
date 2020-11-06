@@ -3,50 +3,50 @@
 #include <fstream>
 #include <sstream>
 #include <set>
-#include "Encode.h"
-#include "ClusterExpansion.h"
+// #include "Encode.h"
+#include "../../ansys/include/ClusterExpansion.h"
 
 namespace kn {
-void DftAnalysis::PrintOutEncode(
-    const std::string &reference_filename,
-    const std::unordered_map<std::string, int> &type_category_hashmap) {
-  std::ifstream ifs(reference_filename, std::ifstream::in);
-  std::ofstream ofs("encode.txt", std::ofstream::out);
-  std::string buffer;
-  ofs << "config image ";
-  for (int i = 0; i < Encode::kLengthOfEncodes; ++i) {
-    ofs << "F" << i << " ";
-  }
-  for (int i = 0; i < Encode::kLengthOfEncodes; ++i) {
-    ofs << "B" << i << " ";
-  }
-  ofs << '\n';
-
-  while (ifs >> buffer) {
-    if (buffer != "config") {
-      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      continue;
-    }
-    int config_index, image_index, jump_pair_first, jump_pair_second;
-    // config 0 end 0 pair: 248 218
-    ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
-
-    auto forward_encode_result = Encode::GetEncode(
-        cfg::Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true),
-        {jump_pair_first, jump_pair_second},
-        type_category_hashmap);
-    for (const auto &image_forward_encode : forward_encode_result) {
-      ofs << config_index << "  " << image_index << "  ";
-      for (const auto &code : image_forward_encode) {
-        ofs << code << " ";
-      }
-      for (const auto &code : Encode::GetBackwardEncode(image_forward_encode)) {
-        ofs << code << " ";
-      }
-      ofs << '\n';
-    }
-  }
-}
+// void DftAnalysis::PrintOutEncode(
+//     const std::string &reference_filename,
+//     const std::unordered_map<std::string, int> &type_category_hashmap) {
+//   std::ifstream ifs(reference_filename, std::ifstream::in);
+//   std::ofstream ofs("encode.txt", std::ofstream::out);
+//   std::string buffer;
+//   ofs << "config image ";
+//   for (int i = 0; i < Encode::kLengthOfEncodes; ++i) {
+//     ofs << "F" << i << " ";
+//   }
+//   for (int i = 0; i < Encode::kLengthOfEncodes; ++i) {
+//     ofs << "B" << i << " ";
+//   }
+//   ofs << '\n';
+//
+//   while (ifs >> buffer) {
+//     if (buffer != "config") {
+//       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+//       continue;
+//     }
+//     int config_index, image_index, jump_pair_first, jump_pair_second;
+//     // config 0 end 0 pair: 248 218
+//     ifs >> config_index >> buffer >> image_index >> buffer >> jump_pair_first >> jump_pair_second;
+//
+//     auto forward_encode_result = Encode::GetEncode(
+//         cfg::Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true),
+//         {jump_pair_first, jump_pair_second},
+//         type_category_hashmap);
+//     for (const auto &image_forward_encode : forward_encode_result) {
+//       ofs << config_index << "  " << image_index << "  ";
+//       for (const auto &code : image_forward_encode) {
+//         ofs << code << " ";
+//       }
+//       for (const auto &code : Encode::GetBackwardEncode(image_forward_encode)) {
+//         ofs << code << " ";
+//       }
+//       ofs << '\n';
+//     }
+//   }
+// }
 void DftAnalysis::PrintOutClusterExpansionAverage(
     const std::string &reference_filename,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
@@ -54,10 +54,10 @@ void DftAnalysis::PrintOutClusterExpansionAverage(
   std::ofstream ofs("cluster_expansion.txt", std::ofstream::out);
   std::string buffer;
   ofs << "config image ";
-  for (int i = 0; i < 194; ++i) {
+  for (size_t i = 0; i < 194; ++i) {
     ofs << "A" << i << " ";
   }
-  for (int i = 0; i < 194; ++i) {
+  for (size_t i = 0; i < 194; ++i) {
     ofs << "B" << i << " ";
   }
   ofs << '\n';

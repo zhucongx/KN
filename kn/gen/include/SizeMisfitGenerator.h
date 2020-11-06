@@ -2,7 +2,7 @@
 #define KN_KN_NEB_INCLUDE_SIZEMISFITGENERATOR_H_
 #include "ConfigGenerator.h"
 
-namespace neb {
+namespace gen {
 class SizeMisfitGenerator : public ConfigGenerator {
   public:
     SizeMisfitGenerator(double lattice_constant,
@@ -15,5 +15,5 @@ class SizeMisfitGenerator : public ConfigGenerator {
   private:
 };
 
-} // namespace neb
+} // namespace gen
 #endif //KN_KN_NEB_INCLUDE_SIZEMISFITGENERATOR_H_

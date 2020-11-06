@@ -19,7 +19,7 @@ const std::array<Dimension, 3> All_Dimensions{kXDimension, kYDimension, kZDimens
 // By default, it is always a 1 by 3 vector
 using Vector_t = std::array<double, kDimension>;
 using Matrix_t = std::array<Vector_t, kDimension>;
-using Factor_t = std::array<int, kDimension>;
+using Factor_t = std::array<size_t, kDimension>;
 
 inline std::ostream &operator<<(std::ostream &os, const Vector_t &vector) {
   os << std::fixed << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];

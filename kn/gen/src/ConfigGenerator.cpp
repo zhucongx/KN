@@ -2,7 +2,7 @@
 
 #include <utility>
 #include <chrono>
-namespace neb {
+namespace gen {
 ConfigGenerator::ConfigGenerator(double lattice_constant,
                                  Factor_t factors,
                                  std::string solvent_element,
@@ -13,7 +13,8 @@ ConfigGenerator::ConfigGenerator(double lattice_constant,
     solvent_element_(std::move(solvent_element)),
     element_set_(std::move(element_set)),
     pot_folder_path_(pot_folder_path),
-    generator_(std::chrono::system_clock::now().time_since_epoch().count()) {}
+    generator_(static_cast<unsigned long long int>(
+                   std::chrono::system_clock::now().time_since_epoch().count())) {}
 ConfigGenerator::~ConfigGenerator() = default;
 static void PrepareINCAR(const std::filesystem::path &path) {
   std::ofstream ofs(path / "INCAR", std::ofstream::out);
@@ -154,4 +155,4 @@ void ConfigGenerator::PrepareVASPFiles(const cfg::Config &reference_config,
   PrepareGroup(file_path);
 }
 
-} // namespace cfg
+} // namespace gen

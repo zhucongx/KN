@@ -1,22 +1,22 @@
-#include "MpiClusters.h"
-#include "Encode.h"
+// #include "MpiClusters.h"
+// #include "Encode.h"
 // #include "ConfigGenerator.h"
-#include "DftAnalysis.h"
-#include "ClusterExpansion.h"
+// #include "DftAnalysis.h"
+// #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 #include "ClusterConfigGenerator.h"
 #include "SizeMisfitGenerator.h"
-using namespace kn;
+// using namespace kn;
 using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
 int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  neb::SizeMisfitGenerator a(4.0404778433873281,
-                             {2, 2, 2},
-                             "Al",
-                             {"Al", "Cu", "Mg", "Zn"},
-                             "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
-  a.CreateConfigs();
+  // gen::SizeMisfitGenerator a(4.0404778433873281,
+  //                            {2, 2, 2},
+  //                            "Al",
+  //                            {"Al", "Cu", "Mg", "Zn"},
+  //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
+  // a.CreateConfigs();
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 99},
   //                                                          {"Zn", 0},

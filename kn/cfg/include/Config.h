@@ -15,13 +15,13 @@ class Config {
   public:
     /// Constructor
     Config();
-    Config(const Matrix_t &basis, int atom_size = 0);
+    Config(const Matrix_t &basis, size_t atom_size = 0);
     /// Getter
-    [[nodiscard]] int GetNumAtoms() const;
+    [[nodiscard]] size_t GetNumAtoms() const;
     [[nodiscard]] const Matrix_t &GetBasis() const;
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
     [[nodiscard]] std::set<std::string> GetTypeSet() const;
-    [[nodiscard]] std::map<std::string, std::vector<int>> GetElementListMap() const;
+    [[nodiscard]] std::map<std::string, std::vector<size_t>> GetElementListMap() const;
     /// Update atoms positions
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
@@ -31,7 +31,7 @@ class Config {
     void WrapAtomCartesian();
     // for better performance, shouldn't call Wrap function
     void MoveRelativeDistance(const Vector_t &distance_vector);
-    void MoveOneAtomRelativeDistance(int index, const Vector_t &distance_vector);
+    void MoveOneAtomRelativeDistance(size_t index, const Vector_t &distance_vector);
     // add small perturbation to break perfect fcc symmetry this method is about to increase
     // the chance to find lower ground states for VASP software
     void Perturb(std::mt19937_64 &generator);
@@ -43,7 +43,7 @@ class Config {
     void AppendAtomWithoutChangingAtomID(const Atom &atom);
     void AppendAtomWithChangingAtomID(Atom atom);
     /// Modify atoms
-    void ChangeAtomTypeAt(int id, const std::string &type);
+    void ChangeAtomTypeAt(size_t id, const std::string &type);
     /// IO Todo: rewrite as friend function
     static Config ReadPOSCAR(const std::string &filename, bool update_neighbors = true);
     static Config ReadConfig(const std::string &filename, bool update_neighbors = true);
@@ -68,22 +68,23 @@ class Config {
     Matrix_t basis_{};
     // Three translational Bravais lattice vector
     // Matrix_t reciprocal_matrix_{},
-    [[maybe_unused]] double energy_{};
+    double energy_{};
     // The index of atom in the vector is not always same as of the id of the atom
     std::vector<Atom> atom_list_;
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, int lhs, int rhs);
+    friend void AtomsJump(Config &config, size_t lhs, size_t rhs);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
-void AtomsJump(Config &config, int lhs, int rhs);
-std::map<Bond, int> CountAllBonds(const Config &config);
-std::unordered_map<std::string, int> GetTypeCategoryHashmap(const Config &config);
+void AtomsJump(Config &config, size_t lhs, size_t rhs);
+std::map<Bond, size_t> CountAllBonds(const Config &config);
+// Returns the config's type hashmap with the key type name and a categorical label
+std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config);
 std::set<std::string> GetTypeSet(const Config &config);
 // jump_pair in a pair of two indexes, this function return the center of these two atoms
-Vector_t GetPairCenter(const Config &config, const std::pair<int, int> &jump_pair);
-Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<int, int> &jump_pair);
+Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair);
+Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &jump_pair);
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
 
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors);

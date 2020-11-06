@@ -16,13 +16,13 @@ class Clusters {
   public:
     /// Constructor
     explicit Clusters(const std::array<Atom, DataSize> &atom_array) : atom_array_(atom_array) {
-      std::sort(atom_array.begin(), atom_array.end(), [](int a, int b) {
+      std::sort(atom_array.begin(), atom_array.end(), [](size_t a, size_t b) {
         // sort to make sure the uniqueness of clusters
         return a < b;
       });
     }
     /// Getter
-    [[nodiscard]] int GetIndexAt(int i) const {
+    [[nodiscard]] size_t GetIndexAt(size_t i) const {
       return atom_array_[i];
     }
     ///Operators
@@ -48,7 +48,7 @@ class Clusters {
       return seed;
     }
   private:
-    std::array<int, DataSize> atom_array_;
+    std::array<size_t, DataSize> atom_array_;
 };
 
 }// namespace cfg

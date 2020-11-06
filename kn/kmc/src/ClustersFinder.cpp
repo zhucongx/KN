@@ -7,8 +7,8 @@
 namespace kn {
 ClustersFinder::ClustersFinder(std::string cfg_filename,
                                std::string solvent_atom_type,
-                               int smallest_cluster_criteria,
-                               int solvent_bond_criteria)
+                               size_t smallest_cluster_criteria,
+                               size_t solvent_bond_criteria)
     : cfg_filename_(std::move(cfg_filename)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
@@ -20,10 +20,10 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
 
   cfg::Config config_out(config_.GetBasis(), config_.GetNumAtoms());
-  std::vector<std::map<std::string, int>> num_atom_in_clusters_set;
+  std::vector<std::map<std::string, size_t>> num_atom_in_clusters_set;
   for (auto &atom_list : cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
-    std::map<std::string, int> num_atom_in_one_cluster;
+    std::map<std::string, size_t> num_atom_in_one_cluster;
     for (const auto &element : element_set_) {
       num_atom_in_one_cluster[element] = 0;
     }
@@ -63,8 +63,8 @@ void ClustersFinder::ReadFileAndUpdateNeighbor() {
   }
 }
 
-std::unordered_set<int> ClustersFinder::FindSoluteAtomsHelper() const {
-  std::unordered_set<int> solute_atoms_hashset;
+std::unordered_set<size_t> ClustersFinder::FindSoluteAtomsHelper() const {
+  std::unordered_set<size_t> solute_atoms_hashset;
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == solvent_element_ || element_type == "X")
       continue;
@@ -76,20 +76,20 @@ std::unordered_set<int> ClustersFinder::FindSoluteAtomsHelper() const {
   return solute_atoms_hashset;
 }
 
-std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
-    std::unordered_set<int> unvisited_atoms_id_set) const {
-  std::vector<std::vector<int>> cluster_atom_list;
-  std::queue<int> visit_id_queue;
-  int atom_id;
+std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClustersBFSHelper(
+    std::unordered_set<size_t> unvisited_atoms_id_set) const {
+  std::vector<std::vector<size_t>> cluster_atom_list;
+  std::queue<size_t> visit_id_queue;
+  size_t atom_id;
 
-  std::unordered_set<int>::iterator it;
+  std::unordered_set<size_t>::iterator it;
   while (!unvisited_atoms_id_set.empty()) {
     // Find next element
     it = unvisited_atoms_id_set.begin();
     visit_id_queue.push(*it);
     unvisited_atoms_id_set.erase(it);
 
-    std::vector<int> atom_list_of_one_cluster;
+    std::vector<size_t> atom_list_of_one_cluster;
     while (!visit_id_queue.empty()) {
       atom_id = visit_id_queue.front();
       visit_id_queue.pop();
@@ -109,13 +109,13 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClustersBFSHelper(
   return cluster_atom_list;
 }
 
-std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
+std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters
   auto it = cluster_atom_list.begin();
   while (it != cluster_atom_list.end()) {
-    if (static_cast<int>(it->size()) <= smallest_cluster_criteria_) {
+    if (it->size() <= smallest_cluster_criteria_) {
       it = cluster_atom_list.erase(it);
     } else {
       ++it;
@@ -124,7 +124,7 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
 
   // add solvent neighbors
   for (auto &atom_list : cluster_atom_list) {
-    std::unordered_map<int, int> neighbor_bond_count;
+    std::unordered_map<size_t, size_t> neighbor_bond_count;
     for (const auto &atom_index : atom_list) {
       for (auto neighbor_id : config_.GetAtomList()[atom_index].GetFirstNearestNeighborsList()) {
         if (config_.GetAtomList()[neighbor_id].GetType() == solvent_element_)
@@ -138,7 +138,7 @@ std::vector<std::vector<int>> ClustersFinder::FindAtomListOfClusters() const {
   }
 
   // remove duplicate outer layer
-  std::unordered_set<int> unvisited_atoms_id_set;
+  std::unordered_set<size_t> unvisited_atoms_id_set;
   for (const auto &singe_cluster_vector : cluster_atom_list) {
     std::copy(singe_cluster_vector.begin(),
               singe_cluster_vector.end(),

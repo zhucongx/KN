@@ -2,9 +2,9 @@
 
 namespace kn {
 
-MpiIterator::MpiIterator(long long int initial_number,
-                         long long int increment_number,
-                         long long int finial_number)
+MpiIterator::MpiIterator(unsigned long long int initial_number,
+                         unsigned long long int increment_number,
+                         unsigned long long int finial_number)
     : initial_number_(initial_number),
       increment_number_(increment_number),
       finial_number_(finial_number) {
