@@ -1,7 +1,7 @@
 // #include "MpiClusters.h"
 // #include "Encode.h"
 // #include "ConfigGenerator.h"
-// #include "DftAnalysis.h"
+#include "Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 #include "ClusterConfigGenerator.h"
@@ -10,18 +10,18 @@
 using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
-int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
   //                            {2, 2, 2},
   //                            "Al",
   //                            {"Al", "Cu", "Mg", "Zn"},
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
-  // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
-  //                                                          {"Mg", 99},
-  //                                                          {"Zn", 0},
-  //                                                          {"X", 0}};
-  // DftAnalysis::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
+  unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
+                                                           {"Mg", -1},
+                                                           {"Zn", 2},
+                                                           {"X", 0}};
+  ansys::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
   // auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
   //                                                         {82, 83},
   //                                                         type_category_hashmap);

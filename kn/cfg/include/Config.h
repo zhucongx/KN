@@ -8,7 +8,6 @@
 #include <random>
 #include "Atom.h"
 #include "Bond.h"
-#include "Clusters.hpp"
 namespace cfg {
 class Atom;
 class Config {
@@ -16,6 +15,7 @@ class Config {
     /// Constructor
     Config();
     Config(const Matrix_t &basis, size_t atom_size = 0);
+    Config(const Matrix_t &basis, std::vector<Atom> atom_list);
     /// Getter
     [[nodiscard]] size_t GetNumAtoms() const;
     [[nodiscard]] const Matrix_t &GetBasis() const;
@@ -35,6 +35,7 @@ class Config {
     // add small perturbation to break perfect fcc symmetry this method is about to increase
     // the chance to find lower ground states for VASP software
     void Perturb(std::mt19937_64 &generator);
+    void ClearNeighbors();
     // TODO rewrite this function
     void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
                          double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff,
@@ -86,6 +87,7 @@ std::set<std::string> GetTypeSet(const Config &config);
 Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair);
 Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &jump_pair);
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
+// Returns the config with the original IDs.
 
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors);
 }// namespace cfg

@@ -10,6 +10,8 @@ Config::Config(const Matrix_t &basis, size_t atom_size) : basis_(basis) {
   if (!atom_size)
     atom_list_.reserve(atom_size);
 }
+Config::Config(const Matrix_t &basis, std::vector<Atom> atom_list)
+    : basis_(basis), atom_list_(std::move(atom_list)) {}
 size_t Config::GetNumAtoms() const {
   return atom_list_.size();
 }
@@ -101,11 +103,14 @@ void Config::Perturb(std::mt19937_64 &generator) {
   WrapAtomCartesian();
 }
 // TODO rewrite this function
+void Config::ClearNeighbors() {
+  for (auto &atom:atom_list_)
+    atom.CleanNeighborsLists();
+}
 void Config::UpdateNeighbors(double first_r_cutoff,
                              double second_r_cutoff,
                              double third_r_cutoff) {
-  for (auto &atom:atom_list_)
-    atom.CleanNeighborsLists();
+  ClearNeighbors();
 
   double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
   double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
@@ -402,6 +407,7 @@ std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &con
   }
   return type_category_hashmap;
 }
+
 Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair) {
   Vector_t center_position;
   for (const auto kDim : All_Dimensions) {
@@ -457,10 +463,11 @@ void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_mat
     atom.SetRelativePosition(relative_position);
   }
 }
+
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors) {
 
-  double mass = cfg::FindMass(element);
-  cfg::Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
+  double mass = FindMass(element);
+  Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
                        {0, lattice_constant_a * factors[kYDimension], 0},
                        {0, 0, lattice_constant_a * factors[kZDimension]}}},
                      4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);

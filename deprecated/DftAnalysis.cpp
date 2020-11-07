@@ -4,7 +4,7 @@
 #include <sstream>
 #include <set>
 // #include "Encode.h"
-#include "../../ansys/include/ClusterExpansion.h"
+#include "ClusterExpansion.h"
 
 namespace kn {
 // void DftAnalysis::PrintOutEncode(

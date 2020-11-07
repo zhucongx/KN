@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wpointer-arith -Wold-style-cast -Wpedantic  \
 -Wcast-qual -Wunused -Woverloaded-virtual -Winline -Wunreachable-code -Wcast-align  -Weffc++ \
 -Wundef -Wmisleading-indentation -Wredundant-decls -pedantic-errors \
--Wnull-dereference  -Wdouble-promotion -Wextra-semi -Wconversion \
+-Wnull-dereference  -Wdouble-promotion -Wextra-semi -Wconversion -Wfatal-errors \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 # -Wconversion
