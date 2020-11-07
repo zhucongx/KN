@@ -17,27 +17,18 @@ class Cluster {
   public:
     /// Constructor
     explicit Cluster(std::array<Atom, DataSize> atom_array) : atom_array_(std::move(atom_array)) {
-      std::sort(atom_array_.begin(), atom_array_.end(), [](const auto &lhs, const auto &rhs) {
-        // sort to make sure the uniqueness of clusters
-        return lhs.GetId() < rhs.GetId();
-      });
+      Sort();
     }
-    template<typename ... Ts,
-        typename std::enable_if<sizeof...(Ts) == DataSize, int>::type = 0>
+    template<typename ... Ts, typename std::enable_if<sizeof...(Ts) == DataSize, int>::type = 0>
     explicit Cluster(Ts &&... ts) : atom_array_{std::forward<Ts>(ts)...} {
-      std::sort(atom_array_.begin(), atom_array_.end(), [](const auto &lhs, const auto &rhs) {
-        // sort to make sure the uniqueness of clusters
-        return lhs.GetId() < rhs.GetId();
-      });
+      Sort();
     }
 
     /// Getter
     [[nodiscard]] const Atom &GetAtomAt(size_t i) const {
       return atom_array_[i];
     }
-    // [[nodiscard]] const Atom &GetIdAt(size_t i) const {
-    //   return atom_array_[i].GetId() ;
-    // }
+
     ///Operators
     friend bool operator==(const Cluster<DataSize> &lhs, const Cluster<DataSize> &rhs) {
       for (size_t i = 0; i < DataSize; ++i) {
@@ -61,6 +52,12 @@ class Cluster {
       return seed;
     }
   private:
+    void Sort() {
+      std::sort(atom_array_.begin(), atom_array_.end(), [](const auto &lhs, const auto &rhs) {
+        // sort to make sure the uniqueness of clusters
+        return lhs.GetId() < rhs.GetId();
+      });
+    }
     std::array<Atom, DataSize> atom_array_;
 };
 
