@@ -13,10 +13,10 @@ void PrintOutClusterExpansionAverage(
   std::ofstream ofs("cluster_expansion.txt", std::ofstream::out);
   std::string buffer;
   ofs << "config image ";
-  for (size_t i = 0; i < 194; ++i) {
+  for (size_t i = 0; i < 178; ++i) {
     ofs << "A" << i << " ";
   }
-  for (size_t i = 0; i < 194; ++i) {
+  for (size_t i = 0; i < 178; ++i) {
     ofs << "B" << i << " ";
   }
   ofs << '\n';

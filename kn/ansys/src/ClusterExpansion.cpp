@@ -22,7 +22,8 @@ using Triplet_t = cfg::Cluster<3>;
 /// When we treat this vector, we don't care the sign of y and z, and y and z should be
 /// indistinguishable. If sum and diff of abs of y and abs of z are same, these atoms should
 /// be considered same positions
-static bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
+// Helps to sort the atoms symmetrically
+bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
 
@@ -44,6 +45,7 @@ static bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rh
       < std::abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon);
 }
 
+// Helps to sort the atoms symmetrically
 template<size_t DataSize>
 static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
                                           const cfg::Cluster<DataSize> &rhs) {
@@ -58,6 +60,7 @@ static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
   return false;
 }
 
+// Get the neighboring updated sorted atoms vector
 static std::vector<cfg::Atom> GetSymmetricallySortedAtomVector(
     const cfg::Config &config,
     const std::pair<size_t, size_t> &jump_pair) {
@@ -67,6 +70,7 @@ static std::vector<cfg::Atom> GetSymmetricallySortedAtomVector(
   std::unordered_set<size_t> atom_id_set;
   atom_id_set.merge(config.GetAtomList()[jump_pair.first].GetFirstAndSecondThirdNeighborsSet());
   atom_id_set.merge(config.GetAtomList()[jump_pair.second].GetFirstAndSecondThirdNeighborsSet());
+  atom_id_set.erase(jump_pair.first);
 
   const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
 
@@ -103,6 +107,7 @@ static std::vector<cfg::Atom> GetSymmetricallySortedAtomVector(
   return config_out.GetAtomList();
 }
 
+// Update the average cluster functions vector from the cluster vector
 template<size_t DataSize>
 static void GetAverageParametersFromClusterVectorHelper(
     std::vector<cfg::Cluster<DataSize>> &&cluster_vector,

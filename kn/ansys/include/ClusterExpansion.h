@@ -11,6 +11,8 @@
 #include "Config.h"
 
 namespace ansys::ClusterExpansion {
+bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs);
+
 // this function rotate and sort the config in a particular way, basically from center to outside
 std::vector<double> GetAverageClusterParameters(
     const cfg::Config &config,

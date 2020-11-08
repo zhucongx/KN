@@ -10,6 +10,8 @@
 using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
+#include "KMCSimulation.h"
+#include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
   //                            {2, 2, 2},
@@ -22,7 +24,7 @@ int main(int argc, char *argv[]) {
                                                            {"Zn", 2},
                                                            {"X", 0}};
   ansys::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-  // auto cfg = ClusterExpansion::GetAverageClusterFunctions(cfg::Config::ReadConfig("start.cfg"),
+  // auto cfg = ansys::ClusterExpansion::GetAverageClusterParameters(cfg::Config::ReadConfig("start.cfg"),
   //                                                         {82, 83},
   //                                                         type_category_hashmap);
   // for (auto kI : cfg) {
