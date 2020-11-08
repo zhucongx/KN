@@ -8,6 +8,7 @@
 #include <random>
 #include "Atom.h"
 #include "Bond.h"
+#include "Cluster.hpp"
 namespace cfg {
 class Atom;
 class Config {
