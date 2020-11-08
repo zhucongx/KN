@@ -2,7 +2,7 @@
 #define KN_KN_KMC_INCLUDE_MPIITERATOR_H_
 
 #include <boost/mpi.hpp>
-#include <ClustersFinder.h>
+#include "ClustersFinder.h"
 
 namespace kn {
 
