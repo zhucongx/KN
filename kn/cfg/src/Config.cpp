@@ -468,9 +468,9 @@ Config GenerateFCC(double lattice_constant_a, const std::string &element, const 
 
   double mass = FindMass(element);
   Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
-                       {0, lattice_constant_a * factors[kYDimension], 0},
-                       {0, 0, lattice_constant_a * factors[kZDimension]}}},
-                     4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
+                  {0, lattice_constant_a * factors[kYDimension], 0},
+                  {0, 0, lattice_constant_a * factors[kZDimension]}}},
+                4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
   size_t atoms_counter = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
