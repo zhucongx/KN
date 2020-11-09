@@ -90,6 +90,7 @@ Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, siz
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
 // Returns the config with the original IDs.
 
+size_t GetVacancyIndex(const Config &config);
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors);
 }// namespace cfg
 #endif //KN_KN_CFG_INCLUDE_CONFIG_H_
