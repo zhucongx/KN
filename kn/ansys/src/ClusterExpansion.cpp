@@ -146,7 +146,7 @@ static void GetAverageParametersFromClusterVectorHelper(
   } while (upper_it_pair != cluster_vector.cend());
 }
 
-std::vector<double> GetAverageClusterParameters(
+std::vector<double> GetAverageClusterParametersForward(
     const cfg::Config &config,
     const std::pair<size_t, size_t> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
@@ -216,12 +216,12 @@ std::vector<double> GetAverageClusterParameters(
   return average_cluster_functions_vector;
 }
 
-std::vector<double> GetAverageClusterParametersBack(
+std::vector<double> GetAverageClusterParametersBackward(
     const cfg::Config &config,
     const std::pair<size_t, size_t> &jump_pair,
     const std::unordered_map<std::string, double> &type_category_hashmap) {
   auto back_config = config;
   cfg::AtomsJump(back_config, jump_pair.first, jump_pair.second);
-  return GetAverageClusterParameters(back_config, jump_pair, type_category_hashmap);
+  return GetAverageClusterParametersForward(back_config, jump_pair, type_category_hashmap);
 }
 } // namespace ansys::ClusterExpansion

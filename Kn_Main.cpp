@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
                                                            {"Zn", 2},
                                                            {"X", 0}};
   ansys::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-  // auto cfg = ansys::ClusterExpansion::GetAverageClusterParameters(cfg::Config::ReadConfig("start.cfg"),
+  // auto cfg = ansys::ClusterExpansion::GetAverageClusterParametersForward(cfg::Config::ReadConfig("start.cfg"),
   //                                                         {82, 83},
   //                                                         type_category_hashmap);
   // for (auto kI : cfg) {

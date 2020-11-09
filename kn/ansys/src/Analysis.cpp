@@ -33,10 +33,11 @@ void PrintOutClusterExpansionAverage(
     const auto
         config =
         cfg::Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true);
-    auto cluster_expansion_average_code = ClusterExpansion::GetAverageClusterParameters(
+    auto cluster_expansion_average_code = ClusterExpansion::GetAverageClusterParametersForward(
         config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
-    auto cluster_expansion_average_code_back = ClusterExpansion::GetAverageClusterParametersBack(
-        config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
+    auto cluster_expansion_average_code_back =
+        ClusterExpansion::GetAverageClusterParametersBackward(
+            config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
 
     ofs << config_index << "  " << image_index << "  ";
     for (const auto &code : cluster_expansion_average_code) {
