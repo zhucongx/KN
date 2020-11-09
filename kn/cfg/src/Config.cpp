@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
+#include <boost/range/combine.hpp>
 namespace cfg {
 
 Config::Config() = default;
@@ -102,11 +103,11 @@ void Config::Perturb(std::mt19937_64 &generator) {
   }
   WrapAtomCartesian();
 }
-// TODO rewrite this function
 void Config::ClearNeighbors() {
   for (auto &atom:atom_list_)
     atom.CleanNeighborsLists();
 }
+// TODO rewrite this function
 void Config::UpdateNeighbors(double first_r_cutoff,
                              double second_r_cutoff,
                              double third_r_cutoff) {
@@ -350,38 +351,78 @@ void Config::WriteConfig(const Config &config,
     ofs << '\n';
   }
 }
-
+// lhs : vacancy_index; rhs : neighbor_index
 void AtomsJump(Config &config, size_t lhs, size_t rhs) {
 
-  std::swap(config.atom_list_[lhs].relative_position_, config.atom_list_[rhs].relative_position_);
-  std::swap(config.atom_list_[lhs].cartesian_position_, config.atom_list_[rhs].cartesian_position_);
+  // three things to swap here:
+  // 1) element coordinates
+  std::swap(config.atom_list_[lhs].relative_position_,
+            config.atom_list_[rhs].relative_position_);
+  std::swap(config.atom_list_[lhs].cartesian_position_,
+            config.atom_list_[rhs].cartesian_position_);
 
-  std::swap(config.atom_list_[lhs].first_nearest_neighbors_list_,
-            config.atom_list_[rhs].first_nearest_neighbors_list_);
-  std::replace(config.atom_list_[lhs].first_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].first_nearest_neighbors_list_.end(),
-               config.atom_list_[lhs].GetId(), config.atom_list_[rhs].GetId());
-  std::replace(config.atom_list_[rhs].first_nearest_neighbors_list_.begin(),
-               config.atom_list_[rhs].first_nearest_neighbors_list_.end(),
-               config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
+  // 2) jump pair neighbour lists
+  auto lhs_lists = {&config.atom_list_[lhs].first_nearest_neighbors_list_,
+                    &config.atom_list_[lhs].second_nearest_neighbors_list_,
+                    &config.atom_list_[lhs].third_nearest_neighbors_list_};
+  auto rhs_lists = {&config.atom_list_[rhs].first_nearest_neighbors_list_,
+                    &config.atom_list_[rhs].second_nearest_neighbors_list_,
+                    &config.atom_list_[rhs].third_nearest_neighbors_list_};
+  for (const auto[lhs_neighbor_list_pointer,
+    rhs_neighbor_list_pointer] : boost::combine(lhs_lists, rhs_lists)) {
+    std::swap(*lhs_neighbor_list_pointer, *rhs_neighbor_list_pointer);
+    std::replace(lhs_neighbor_list_pointer->begin(),
+                 lhs_neighbor_list_pointer->end(),
+                 lhs, rhs);
+    std::replace(rhs_neighbor_list_pointer->begin(),
+                 rhs_neighbor_list_pointer->end(),
+                 rhs, lhs);
+  }
+  // 3) neighbor atom's neighbor list
+  std::unordered_set<size_t> atom_id_hashset;
+  atom_id_hashset.merge(config.GetAtomList()[lhs].GetFirstAndSecondThirdNeighborsSet());
+  atom_id_hashset.merge(config.GetAtomList()[rhs].GetFirstAndSecondThirdNeighborsSet());
 
-  std::swap(config.atom_list_[lhs].second_nearest_neighbors_list_,
-            config.atom_list_[rhs].second_nearest_neighbors_list_);
-  std::replace(config.atom_list_[lhs].second_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].second_nearest_neighbors_list_.end(),
-               config.atom_list_[lhs].GetId(), config.atom_list_[rhs].GetId());
-  std::replace(config.atom_list_[rhs].second_nearest_neighbors_list_.begin(),
-               config.atom_list_[rhs].second_nearest_neighbors_list_.end(),
-               config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
-
-  std::swap(config.atom_list_[lhs].third_nearest_neighbors_list_,
-            config.atom_list_[rhs].third_nearest_neighbors_list_);
-  std::replace(config.atom_list_[lhs].third_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].third_nearest_neighbors_list_.end(),
-               config.atom_list_[lhs].GetId(), config.atom_list_[rhs].GetId());
-  std::replace(config.atom_list_[rhs].third_nearest_neighbors_list_.begin(),
-               config.atom_list_[rhs].third_nearest_neighbors_list_.end(),
-               config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
+  for (auto i : atom_id_hashset) {
+    if (i == lhs || i == rhs)
+      continue;
+    for (auto neighbor_list:{&config.atom_list_[i].first_nearest_neighbors_list_,
+                             &config.atom_list_[i].second_nearest_neighbors_list_,
+                             &config.atom_list_[i].third_nearest_neighbors_list_}) {
+      for (auto &j : *neighbor_list) {
+        if (j == lhs)
+          j = rhs;
+        else if (j == rhs)
+          j = lhs;
+      }
+    }
+  }
+  // std::swap(config.atom_list_[lhs].first_nearest_neighbors_list_,
+  //           config.atom_list_[rhs].first_nearest_neighbors_list_);
+  // std::replace(config.atom_list_[lhs].first_nearest_neighbors_list_.begin(),
+  //              config.atom_list_[lhs].first_nearest_neighbors_list_.end(),
+  //              config.atom_list_[lhs].GetId(), config.atom_list_[rhs].GetId());
+  // std::replace(config.atom_list_[rhs].first_nearest_neighbors_list_.begin(),
+  //              config.atom_list_[rhs].first_nearest_neighbors_list_.end(),
+  //              config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
+  //
+  // std::swap(config.atom_list_[lhs].second_nearest_neighbors_list_,
+  //           config.atom_list_[rhs].second_nearest_neighbors_list_);
+  // std::replace(config.atom_list_[lhs].second_nearest_neighbors_list_.begin(),
+  //              config.atom_list_[lhs].second_nearest_neighbors_list_.end(),
+  //              config.atom_list_[lhs].GetId(), config.atom_list_[rhs].GetId());
+  // std::replace(config.atom_list_[rhs].second_nearest_neighbors_list_.begin(),
+  //              config.atom_list_[rhs].second_nearest_neighbors_list_.end(),
+  //              config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
+  //
+  // std::swap(config.atom_list_[lhs].third_nearest_neighbors_list_,
+  //           config.atom_list_[rhs].third_nearest_neighbors_list_);
+  // std::replace(config.atom_list_[lhs].third_nearest_neighbors_list_.begin(),
+  //              config.atom_list_[lhs].third_nearest_neighbors_list_.end(),
+  //              config.atom_list_[lhs].GetId(), config.atom_list_[rhs].GetId());
+  // std::replace(config.atom_list_[rhs].third_nearest_neighbors_list_.begin(),
+  //              config.atom_list_[rhs].third_nearest_neighbors_list_.end(),
+  //              config.atom_list_[rhs].GetId(), config.atom_list_[lhs].GetId());
 }
 
 std::map<Bond, size_t> CountAllBonds(const Config &config) {
