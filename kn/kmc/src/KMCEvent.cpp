@@ -5,6 +5,13 @@ namespace kmc {
 KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair) : jump_pair_(std::move(jump_pair)) {
 }
 
+KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair,
+                   std::pair<double, double> barrier_and_diff)
+    : jump_pair_(std::move(jump_pair)),
+      barrier_(barrier_and_diff.first),
+      rate_(-barrier_and_diff.first * kBoltzmannConstantTimesTemperatureInv),
+      energy_change_(barrier_and_diff.second) {}
+
 const std::pair<size_t, size_t> &KMCEvent::GetJumpPair() const {
   return jump_pair_;
 }

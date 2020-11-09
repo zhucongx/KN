@@ -3,11 +3,17 @@
 #include <utility>
 
 namespace kmc {
+constexpr double kBoltzmannConstant = 8.617333262145e-5;
+constexpr double kTemperature = 300;
+constexpr double kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBoltzmannConstant;
+
 class KMCEvent {
   public:
     /// Constructor
     explicit KMCEvent(std::pair<size_t, size_t> jump_pair);
-    /// Getter
+    KMCEvent(std::pair<size_t, size_t> jump_pair,
+             std::pair<double, double> barrier_and_diff);
+/// Getter
     [[nodiscard]] const std::pair<size_t, size_t> &GetJumpPair() const;
     [[nodiscard]] double GetBarrier() const;
     [[nodiscard]] double GetRate() const;
