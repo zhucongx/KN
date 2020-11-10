@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-# set(CMAKE_C_COMPILER "clang") # {gcc, mpicc, icc}
-# set(CMAKE_CXX_COMPILER "clang++") # {g++, mpicxx, icc}
+# set(CMAKE_C_COMPILER "icc") # {gcc, mpicc, icc}
+# set(CMAKE_CXX_COMPILER "icc") # {g++, mpicxx, icc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
