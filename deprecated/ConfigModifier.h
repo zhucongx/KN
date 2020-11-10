@@ -1,7 +1,7 @@
 #ifndef KN_INCLUDE_CONFIGMODIFIER_H_
 #define KN_INCLUDE_CONFIGMODIFIER_H_
 
-#include "Config.h"
+#include "Cfg.hpp"
 #include "FCCConfig.h"
 
 class ConfigModifier {

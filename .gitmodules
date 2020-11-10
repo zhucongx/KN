@@ -1,3 +1,0 @@
-[submodule "external/cppflow"]
-	path = external/cppflow
-	url = https://github.com/zhucongx/cppflow.git

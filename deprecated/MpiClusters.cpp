@@ -1,0 +1,62 @@
+#include "MpiClusters.h"
+#include <utility>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+
+#include "ClustersFinder.h"
+
+namespace kn {
+MpiClusters::MpiClusters(unsigned long long int initial_number,
+                         unsigned long long int increment_number,
+                         unsigned long long int finial_number,
+                         std::string solvent_element,
+                         size_t smallest_cluster_criteria,
+                         size_t solvent_bond_criteria) :
+    MpiIterator(initial_number,
+                increment_number,
+                finial_number),
+    solvent_element_(std::move(solvent_element)),
+    smallest_cluster_criteria_(smallest_cluster_criteria),
+    solvent_bond_criteria_(solvent_bond_criteria) {
+}
+
+MpiClusters::~MpiClusters() = default;
+
+void MpiClusters::IterateToRun() {
+  auto num_total_loop = (finial_number_ - initial_number_) / increment_number_ + 1;
+  auto quotient = num_total_loop / static_cast<unsigned long long int>(mpi_size_);
+  auto remainder = num_total_loop % static_cast<unsigned long long int>(mpi_size_);
+  auto num_cycle = remainder ? (quotient + 1) : quotient;
+
+  for (unsigned long long i = 0; i < num_cycle; ++i) {
+    auto num_file = initial_number_ +
+        (i * static_cast<unsigned long long int>(mpi_size_)
+            + static_cast<unsigned long long int>(mpi_rank_)) * increment_number_;
+    ClustersFinder::ClusterElementNumMap num_different_element;
+    if (num_file <= finial_number_) {
+      ClustersFinder cluster_finder(std::to_string(num_file) + ".cfg",
+                                    solvent_element_,
+                                    smallest_cluster_criteria_,
+                                    solvent_bond_criteria_);
+      num_different_element = cluster_finder.FindClustersAndOutput();
+    }
+    world_.barrier();
+    if (mpi_rank_ != 0) {
+      boost::mpi::gather(world_, num_different_element, 0);
+    } else {
+      std::vector<ClustersFinder::ClusterElementNumMap> all_num_different_element;
+      boost::mpi::gather(world_, num_different_element, all_num_different_element, 0);
+
+      std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
+      auto file_index = num_file;
+      for (const auto &this_num_different_element : all_num_different_element) {
+        if (file_index > finial_number_)
+          break;
+        ClustersFinder::PrintLog(std::to_string(file_index), this_num_different_element);
+        file_index += increment_number_;
+      }
+    }
+  }
+}
+} // namespace kn

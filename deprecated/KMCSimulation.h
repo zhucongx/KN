@@ -5,7 +5,7 @@
 #include <vector>
 #include <boost/mpi.hpp>
 
-#include "Config.h"
+#include "Cfg.hpp"
 #include "KMCEvent.h"
 namespace kn {
 class KMCSimulation {

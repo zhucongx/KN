@@ -1,14 +1,12 @@
 build/
 bin/
-obj/
 lib/
 cmake-build-*/
 example/
 out/
 .idea/
 .vs/
-
+.vscode/
 
 CMakeSettings.json
-.DS_Store
-
+**/.DS_Store

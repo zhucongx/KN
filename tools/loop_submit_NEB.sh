@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 for i in `seq 0 0`
 do
 	cp prepare_NEB.sh config$i/

@@ -1,7 +1,7 @@
 #ifndef KN_INCLUDE_FCCCONFIG_H_
 #define KN_INCLUDE_FCCCONFIG_H_
 
-#include "Config.h"
+#include "Cfg.hpp"
 
 namespace kn {
 

@@ -1,10 +1,12 @@
+#!/usr/bin/env bash
+
 for i in `seq 0 0`
 do
     cd config$i/
     for j in $(ls -d */)
     do
         cd ${j}
-        sbatch submit.stampede2
+        sbatch submit_stampede2.sh
         cd ..
     done
     cd ..

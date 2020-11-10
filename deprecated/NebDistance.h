@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "Bond.h"
-#include "Config.h"
+#include "Cfg.hpp"
 
 namespace kn::NebDistance {
 void PrintTheDistanceFromTwoPOSCARFiles(const std::string &filename1,

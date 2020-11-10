@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 getEBarrier() {
   Estart=$(sed '1,1!d' neb.dat | awk '{print $3}')
   Esaddle=$(awk 'BEGIN{a=   0}{if ($3>0+a) a=$3} END{print a}' neb.dat)

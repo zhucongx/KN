@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 read_E() {
   grep -i entropy OUTCAR >tmp1
   tail -1 tmp1 >tmp2
@@ -6,7 +6,7 @@ read_E() {
   rm tmp1 tmp2
 }
 main() {
-  max=$(ls | sed 's/e_//' | sort -n | tail -1)
+  max=$(ls | sed 's/e_//' | sed 's/s//' | sort -n | tail -1)
   for i in $(seq 0 "${max}"); do
     mkdir -p NEB_$i/00 NEB_$i/06
     cp s/CONTCAR NEB_$i/POSCAR0
@@ -76,8 +76,8 @@ EOF
 #SBATCH -n 60
 #SBATCH -N 2
 #SBATCH -p normal
-#SBATCH -t 12:00:00
-#SBATCH -A  TG-MSS160003
+#SBATCH -t 36:00:00
+#SBATCH -A  TG-DMR190035
 
 #TG-MSS160003 TG-DMR190035
 
@@ -85,9 +85,7 @@ module load vasp/5.4.4
 
 run_mpirun()
 {
-
     ibrun -n 60 vasp_std_vtst > vasp_test.out
-
 }
 
 main()
@@ -106,8 +104,3 @@ EOF
   done
 }
 time main
-
-nebbarrier.pl
-nebspline.pl
-gnuplot /Users/zhucongx/Program/goali/vtstscripts-947/nebplot.gnu
-vfin.pl stored
