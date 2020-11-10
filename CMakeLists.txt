@@ -53,13 +53,13 @@ endif ()
 ##############################################################################################
 file(GLOB PROJECT_SRC
         ${PROJECT_SOURCE_DIR}/kn/cfg/src/*.cpp
-        ${PROJECT_SOURCE_DIR}/kn/gen/src/*.cpp
+#        ${PROJECT_SOURCE_DIR}/kn/gen/src/*.cpp
         ${PROJECT_SOURCE_DIR}/kn/ansys/src/*.cpp
         ${PROJECT_SOURCE_DIR}/kn/kmc/src/*.cpp
         )
 set(PROJECT_INCLUDE
         ${PROJECT_SOURCE_DIR}/kn/cfg/include
-        ${PROJECT_SOURCE_DIR}/kn/gen/include
+#        ${PROJECT_SOURCE_DIR}/kn/gen/include
         ${PROJECT_SOURCE_DIR}/kn/ansys/include
         ${PROJECT_SOURCE_DIR}/kn/kmc/include
         )

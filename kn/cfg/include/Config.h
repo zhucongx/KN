@@ -44,7 +44,11 @@ class Config {
     /// Add new atoms
     void AppendAtomWithoutChangingAtomID(const Atom &atom);
     void AppendAtomWithChangingAtomID(Atom atom);
+    // Removes the atom that has the id
+    void RemoveAtomWithID(size_t id);
     /// Modify atoms
+    void SortAtomListWith(const std::function<bool(const cfg::Atom &, const cfg::Atom &)> &compare);
+    void ReIndexAtoms();
     void ChangeAtomTypeAt(size_t id, const std::string &type);
     /// IO Todo: rewrite as friend function
     static Config ReadPOSCAR(const std::string &filename, bool update_neighbors = true);
@@ -70,25 +74,26 @@ class Config {
     Matrix_t basis_{};
     // Three translational Bravais lattice vector
     // Matrix_t reciprocal_matrix_{},
-    double energy_{};
     // The index of atom in the vector is not always same as of the id of the atom
     std::vector<Atom> atom_list_;
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, size_t lhs, size_t rhs);
+    friend void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair);
+    friend void AtomsJumpWithIdPair(Config &config, std::pair<size_t, size_t> jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
-void AtomsJump(Config &config, size_t lhs, size_t rhs);
+void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair);
+void AtomsJumpWithIdPair(Config &config, std::pair<size_t, size_t> jump_pair);
+
 std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config);
-std::set<std::string> GetTypeSet(const Config &config);
+// std::set<std::string> GetTypeSet(const Config &config);
 // jump_pair in a pair of two indexes, this function return the center of these two atoms
 Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair);
 Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &jump_pair);
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
-// Returns the config with the original IDs.
 
 size_t GetVacancyIndex(const Config &config);
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors);

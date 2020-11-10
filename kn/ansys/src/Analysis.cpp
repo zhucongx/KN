@@ -12,15 +12,21 @@ void PrintOutClusterExpansionAverage(
   std::ifstream ifs(reference_filename, std::ifstream::in);
   std::ofstream ofs("cluster_expansion.txt", std::ofstream::out);
   std::string buffer;
+
+  ansys::ClusterExpansion::Cluster_Map_t cluster_map =
+      ansys::ClusterExpansion::GetAverageClusterParametersMapping(
+          cfg::Config::ReadConfig("config0/s/start.cfg", true));
+
   ofs << "config image ";
-  for (size_t i = 0; i < 178; ++i) {
+  for (size_t i = 0; i < cluster_map.size() + 1; ++i) {
     ofs << "A" << i << " ";
   }
-  for (size_t i = 0; i < 178; ++i) {
+  for (size_t i = 0; i < cluster_map.size() + 1; ++i) {
     ofs << "B" << i << " ";
   }
   ofs << '\n';
 
+  size_t ct = 0;
   while (ifs >> buffer) {
     if (buffer != "config") {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -33,11 +39,14 @@ void PrintOutClusterExpansionAverage(
     const auto
         config =
         cfg::Config::ReadConfig("config" + std::to_string(config_index) + "/s/start.cfg", true);
-    auto cluster_expansion_average_code = ClusterExpansion::GetAverageClusterParametersForward(
-        config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
-    auto cluster_expansion_average_code_back =
-        ClusterExpansion::GetAverageClusterParametersBackward(
-            config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
+    // find map at the first one
+
+    // auto[cluster_expansion_average_code, cluster_expansion_average_code_back] =
+    // ClusterExpansion::GetAverageClusterParametersForwardAndBackward(
+    //     config, {jump_pair_first, jump_pair_second}, type_category_hashmap);
+    auto[cluster_expansion_average_code, cluster_expansion_average_code_back] =
+    ClusterExpansion::GetAverageClusterParametersForwardAndBackwardFromMap(
+        config, {jump_pair_first, jump_pair_second}, type_category_hashmap, cluster_map);
 
     ofs << config_index << "  " << image_index << "  ";
     for (const auto &code : cluster_expansion_average_code) {
@@ -47,6 +56,7 @@ void PrintOutClusterExpansionAverage(
       ofs << code << " ";
     }
     ofs << '\n';
+    ++ct;
   }
 }
 

@@ -2,14 +2,13 @@
 #include "KMCEvent.h"
 
 namespace kmc {
-KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair) : jump_pair_(std::move(jump_pair)) {
-}
+KMCEvent::KMCEvent() = default;
 
 KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair,
                    std::pair<double, double> barrier_and_diff)
     : jump_pair_(std::move(jump_pair)),
       barrier_(barrier_and_diff.first),
-      rate_(-barrier_and_diff.first * kBoltzmannConstantTimesTemperatureInv),
+      rate_(exp(-barrier_and_diff.first * kBoltzmannConstantTimesTemperatureInv)),
       energy_change_(barrier_and_diff.second) {}
 
 const std::pair<size_t, size_t> &KMCEvent::GetJumpPair() const {
@@ -59,4 +58,9 @@ void KMCEvent::SetProbability(double probability) {
 void KMCEvent::SetCumulativeProvability(double cumulative_provability) {
   cumulative_provability_ = cumulative_provability;
 }
+
+void KMCEvent::CalculateProbability(double total_rates) {
+  probability_ = rate_ / total_rates;
+}
+
 } // namespace kmc
