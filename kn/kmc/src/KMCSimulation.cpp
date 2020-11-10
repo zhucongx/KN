@@ -156,7 +156,7 @@ void KMCSimulation::Simulate() {
             << event_list_[event_index].GetBarrier() << std::endl;
       }
       if (steps_ % config_dump_steps == 0)
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cf.g", true);
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
     }
 
     steps_++;
