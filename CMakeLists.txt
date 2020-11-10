@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 # set(CMAKE_C_COMPILER "clang") # {gcc, mpicc, icc}
 # set(CMAKE_CXX_COMPILER "clang++") # {g++, mpicxx, icc}
@@ -63,6 +63,11 @@ set(PROJECT_INCLUDE
         ${PROJECT_SOURCE_DIR}/kn/ansys/include
         ${PROJECT_SOURCE_DIR}/kn/kmc/include
         )
+
+set(BOOST_ROOT "TACC_BOOST_MPI_DIR ${BOOST_ROOT}")
+set(BOOST_INCLUDEDIR "TACC_BOOST_MPI_INC ${BOOST_INCLUDEDIR} ")
+set(BOOST_LIBRARYDIR "TACC_BOOST_MPI_LIB ${BOOST_LIBRARYDIR} ")
+
 add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
