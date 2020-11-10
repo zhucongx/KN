@@ -64,13 +64,18 @@ set(PROJECT_INCLUDE
         ${PROJECT_SOURCE_DIR}/kn/kmc/include
         )
 
-set(BOOST_ROOT "TACC_BOOST_MPI_DIR ${BOOST_ROOT}")
-set(BOOST_INCLUDEDIR "TACC_BOOST_MPI_INC ${BOOST_INCLUDEDIR} ")
-set(BOOST_LIBRARYDIR "TACC_BOOST_MPI_LIB ${BOOST_LIBRARYDIR} ")
+
 
 add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
+
+set(Boost_NO_SYSTEM_PATHS TRUE)
+if (Boost_NO_SYSTEM_PATHS)
+    set(BOOST_ROOT "/opt/apps/intel18/impi18_0/boost-mpi/1.68")
+    set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
+    set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
+endif (Boost_NO_SYSTEM_PATHS)
 find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
