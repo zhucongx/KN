@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.10)
 
 # set(CMAKE_C_COMPILER "icc") # {gcc, mpicc, icc}
 # set(CMAKE_CXX_COMPILER "icc") # {g++, mpicxx, icc}
@@ -70,12 +70,12 @@ add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
-set(Boost_NO_SYSTEM_PATHS TRUE)
-if (Boost_NO_SYSTEM_PATHS)
-    set(BOOST_ROOT "/opt/apps/intel18/impi18_0/boost-mpi/1.68")
-    set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
-    set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
-endif (Boost_NO_SYSTEM_PATHS)
+#set(Boost_NO_SYSTEM_PATHS TRUE)
+#if (Boost_NO_SYSTEM_PATHS)
+#    set(BOOST_ROOT "/opt/apps/intel18/impi18_0/boost-mpi/1.68")
+#    set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
+#    set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
+#endif (Boost_NO_SYSTEM_PATHS)
 find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
