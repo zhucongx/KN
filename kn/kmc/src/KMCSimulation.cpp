@@ -24,7 +24,7 @@ KMCSimulation::KMCSimulation(cfg::Config config,
       energy_(energy),
       time_(time),
       total_rate_{0.0},
-      barrier_predictor_(config_,std::move(type_category_hashmap)),
+      barrier_predictor_(config_, std::move(type_category_hashmap)),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
   vacancy_index_ = cfg::GetVacancyIndex(config_);
@@ -125,7 +125,7 @@ size_t KMCSimulation::SelectEvent() {
 }
 void KMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
-  ofs << "steps_    time_    energy_    \n";
+  ofs << "steps    time    energy    barrier\n";
   ofs.precision(8);
 
   while (steps_ < maximum_number_) {
@@ -138,22 +138,25 @@ void KMCSimulation::Simulate() {
     if (mpi_rank_ == 0) {
       event_index = SelectEvent();
     }
+    world_.barrier();
     boost::mpi::broadcast(world_, event_index, 0);
+    world_.barrier();
 
     cfg::AtomsJump(config_, event_list_[event_index].GetJumpPair());
 
     if (mpi_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      time_ -= log(distribution(generator_) / (total_rate_ * 1e13));
+      time_ -= log(distribution(generator_)) / (total_rate_ * 1e13);
       energy_ += event_list_[event_index].GetEnergyChange();
 
       // log and config file
       if (steps_ % log_dump_steps == 0) {
-        ofs << steps_ << " " << time_ << " " << energy_ << " " << '\n';
+        ofs << steps_ << " " << time_ << " " << energy_ << " "
+            << event_list_[event_index].GetBarrier() << std::endl;
       }
       if (steps_ % config_dump_steps == 0)
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cf.g", true);
     }
 
     steps_++;

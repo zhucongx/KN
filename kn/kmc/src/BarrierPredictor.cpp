@@ -11,6 +11,8 @@ BarrierPredictor::BarrierPredictor(
 
   auto element_set = reference_config.GetTypeSet();
   for (const auto &element : element_set) {
+    if (element == "X")
+      continue;
     std::ifstream ifs(element + ".weight", std::ifstream::in);
     if (!ifs.is_open()) {
       std::cout << "Cannot open " << element << ".weight\n";
@@ -21,7 +23,7 @@ BarrierPredictor::BarrierPredictor(
     while (ifs >> weight) {
       weight_vector.emplace_back(weight);
     }
-    element_weight_hashmap_.at(element) = weight_vector;
+    element_weight_hashmap_[element] = weight_vector;
   }
 }
 std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
@@ -32,13 +34,12 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
   ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackwardFromMap(
       config, jump_pair, type_category_hashmap_, mapping_);
   const auto &weights
-      = element_weight_hashmap_.at(config.GetAtomList()[jump_pair.second].GetType());
+      = element_weight_hashmap_.at(config.GetAtomList().at(jump_pair.second).GetType());
 
   double forward_barrier = 0, backward_barrier = 0;
-  for (const auto[forward_encode, backward_encode, weight]
-      : boost::combine(forward_encode_list, backward_encode_list, weights)) {
-    forward_barrier += forward_encode * weight;
-    backward_barrier += backward_encode * weight;
+  for (size_t i = 0; i < weights.size(); ++i) {
+    forward_barrier += forward_encode_list[i] * weights[i];
+    backward_barrier += backward_encode_list[i] * weights[i];
   }
 
   return {forward_barrier, forward_barrier - backward_barrier};
