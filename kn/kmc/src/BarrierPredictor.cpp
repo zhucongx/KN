@@ -1,4 +1,6 @@
 #include "BarrierPredictor.h"
+
+#include <chrono>
 #include <boost/range/combine.hpp>
 
 #include <utility>
