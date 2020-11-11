@@ -379,30 +379,30 @@ void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair) {
 
   // 2) jump pair neighbour lists
   std::swap(config.atom_list_[lhs].first_nearest_neighbors_list_,
-            config.atom_list_[lhs].first_nearest_neighbors_list_);
+            config.atom_list_[rhs].first_nearest_neighbors_list_);
   std::replace(config.atom_list_[lhs].first_nearest_neighbors_list_.begin(),
                config.atom_list_[lhs].first_nearest_neighbors_list_.end(),
                lhs, rhs);
-  std::replace(config.atom_list_[lhs].first_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].first_nearest_neighbors_list_.end(),
+  std::replace(config.atom_list_[rhs].first_nearest_neighbors_list_.begin(),
+               config.atom_list_[rhs].first_nearest_neighbors_list_.end(),
                rhs, lhs);
 
   std::swap(config.atom_list_[lhs].second_nearest_neighbors_list_,
-            config.atom_list_[lhs].second_nearest_neighbors_list_);
+            config.atom_list_[rhs].second_nearest_neighbors_list_);
   std::replace(config.atom_list_[lhs].second_nearest_neighbors_list_.begin(),
                config.atom_list_[lhs].second_nearest_neighbors_list_.end(),
                lhs, rhs);
-  std::replace(config.atom_list_[lhs].second_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].second_nearest_neighbors_list_.end(),
+  std::replace(config.atom_list_[rhs].second_nearest_neighbors_list_.begin(),
+               config.atom_list_[rhs].second_nearest_neighbors_list_.end(),
                rhs, lhs);
 
   std::swap(config.atom_list_[lhs].third_nearest_neighbors_list_,
-            config.atom_list_[lhs].third_nearest_neighbors_list_);
+            config.atom_list_[rhs].third_nearest_neighbors_list_);
   std::replace(config.atom_list_[lhs].third_nearest_neighbors_list_.begin(),
                config.atom_list_[lhs].third_nearest_neighbors_list_.end(),
                lhs, rhs);
-  std::replace(config.atom_list_[lhs].third_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].third_nearest_neighbors_list_.end(),
+  std::replace(config.atom_list_[rhs].third_nearest_neighbors_list_.begin(),
+               config.atom_list_[rhs].third_nearest_neighbors_list_.end(),
                rhs, lhs);
   // auto lhs_lists = {&config.atom_list_[lhs].first_nearest_neighbors_list_,
   //                   &config.atom_list_[lhs].second_nearest_neighbors_list_,
