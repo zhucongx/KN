@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
- set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
- set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
+#set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
+#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wpointer-arith -Wold-style-cast -Wpedantic  \
 -Wcast-qual -Wunused -Woverloaded-virtual -Winline -Wunreachable-code -Wcast-align  -Weffc++ \
 -Wundef -Wmisleading-indentation -Wredundant-decls -pedantic-errors \
--Wnull-dereference  -Wdouble-promotion -Wconversion -Wfatal-errors \
+-Wnull-dereference  -Wdouble-promotion -Wconversion -Wfatal-errors  -Wextra-semi \
 -O0 -g3 -finline-functions"
         CACHE INTERNAL "")
 # -Wconversion
@@ -53,13 +53,13 @@ endif ()
 ##############################################################################################
 file(GLOB PROJECT_SRC
         ${PROJECT_SOURCE_DIR}/kn/cfg/src/*.cpp
-#        ${PROJECT_SOURCE_DIR}/kn/gen/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/kn/gen/src/*.cpp
         ${PROJECT_SOURCE_DIR}/kn/ansys/src/*.cpp
         ${PROJECT_SOURCE_DIR}/kn/kmc/src/*.cpp
         )
 set(PROJECT_INCLUDE
         ${PROJECT_SOURCE_DIR}/kn/cfg/include
-#        ${PROJECT_SOURCE_DIR}/kn/gen/include
+        ${PROJECT_SOURCE_DIR}/kn/gen/include
         ${PROJECT_SOURCE_DIR}/kn/ansys/include
         ${PROJECT_SOURCE_DIR}/kn/kmc/include
         )
@@ -89,18 +89,18 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 #target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
 #target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
 
-find_package(MPI REQUIRED)
-# include directories
-target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-# link libraries
-target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-# set interface target compile options
-target_compile_options(${PROJECT_NAME} INTERFACE
-        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-target_compile_options(${PROJECT_NAME} INTERFACE
-        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+#find_package(MPI REQUIRED)
+## include directories
+#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+## link libraries
+#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+## set interface target compile options
+#target_compile_options(${PROJECT_NAME} INTERFACE
+#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+#target_compile_options(${PROJECT_NAME} INTERFACE
+#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+#set_target_properties(${PROJECT_NAME} PROPERTIES
+#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 
 #find_package(OpenMP REQUIRED)
 ## include directories

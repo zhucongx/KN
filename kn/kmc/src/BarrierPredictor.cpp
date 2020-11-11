@@ -1,6 +1,6 @@
 #include "BarrierPredictor.h"
 
-#include <chrono>
+// #include <chrono>
 #include <boost/range/combine.hpp>
 
 #include <utility>
@@ -43,8 +43,8 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
     forward_barrier += forward_encode_list[i] * weights[i];
     backward_barrier += backward_encode_list[i] * weights[i];
   }
-  static std::mt19937_64 generator(static_cast<unsigned long long int>(
-                                       std::chrono::system_clock::now().time_since_epoch().count()));
+  // static std::mt19937_64 generator(static_cast<unsigned long long int>(
+  //                                      std::chrono::system_clock::now().time_since_epoch().count()));
   // static std::uniform_real_distribution<double> distribution(0, 1e-1);
   // auto non_neg_forward = std::max(forward_barrier, 1e-3);
   return {forward_barrier,

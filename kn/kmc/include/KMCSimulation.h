@@ -17,14 +17,6 @@ class KMCSimulation {
                   unsigned long long int steps,
                   double energy,
                   double time);
-    // KMCSimulation(cfg::Config config,
-    //               unsigned long long int log_dump_steps,
-    //               unsigned long long int config_dump_steps,
-    //               unsigned long long int maximum_number,
-    //               unsigned long long int steps,
-    //               double energy,
-    //               double time,
-    //               std::unordered_map<std::string, double> type_category_hashmap);
     void Simulate();
   protected:
     void BuildEventListSerial();
@@ -33,8 +25,8 @@ class KMCSimulation {
 
     // simulation parameters
     cfg::Config config_;
-    const unsigned long long int log_dump_steps;
-    const unsigned long long int config_dump_steps;
+    const unsigned long long int log_dump_steps_;
+    const unsigned long long int config_dump_steps_;
     const unsigned long long int maximum_number_;
 
     // statistical information
