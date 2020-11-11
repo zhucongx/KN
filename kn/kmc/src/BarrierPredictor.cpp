@@ -41,8 +41,11 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
     forward_barrier += forward_encode_list[i] * weights[i];
     backward_barrier += backward_encode_list[i] * weights[i];
   }
-
-  return {std::max(forward_barrier, 1e-2),
-          std::max(forward_barrier, 1e-2) - std::max(backward_barrier, 1e-2)};
+  static std::mt19937_64 generator(static_cast<unsigned long long int>(
+                                       std::chrono::system_clock::now().time_since_epoch().count()));
+  static std::uniform_real_distribution<double> distribution(0.0, 1e-3);
+  auto non_neg_forward = std::max(forward_barrier, distribution(generator));
+  return {non_neg_forward,
+          non_neg_forward - std::max(backward_barrier, distribution(generator))};
 }
 } // namespace kmc
