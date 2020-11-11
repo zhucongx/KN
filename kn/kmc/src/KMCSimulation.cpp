@@ -65,13 +65,13 @@ void KMCSimulation::BuildEventListParallel() {
       std::vector<KMCEvent> collected_list;
       double sum_rates_;
 
-      boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus<double>(), 0);
+      boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus<>(), 0);
       boost::mpi::gather(world_, event, collected_list, 0);
 
       total_rate_ += sum_rates_;
       std::copy(collected_list.begin(), collected_list.end(), std::back_inserter(event_list_));
     } else {
-      boost::mpi::reduce(world_, event.GetRate(), std::plus<double>(), 0);
+      boost::mpi::reduce(world_, event.GetRate(), std::plus<>(), 0);
       boost::mpi::gather(world_, event, 0);
     }
   }

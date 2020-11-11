@@ -42,6 +42,7 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
     backward_barrier += backward_encode_list[i] * weights[i];
   }
 
-  return {forward_barrier, forward_barrier - backward_barrier};
+  return {std::max(forward_barrier, 1e-2),
+          std::max(forward_barrier, 1e-2) - std::max(backward_barrier, 1e-2)};
 }
 } // namespace kmc

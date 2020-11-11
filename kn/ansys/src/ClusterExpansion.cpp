@@ -424,7 +424,7 @@ std::array<std::vector<double>, 2> GetAverageClusterParametersForwardAndBackward
 
   std::array<std::vector<double>, 2> result;
 
-  for (int i = 0; i < 2; ++i) {
+  for (size_t i = 0; i < 2; ++i) {
     const auto &atom_vector = atom_vectors[i];
 
     std::vector<double> encode_list{1};
