@@ -428,15 +428,23 @@ void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair) {
   for (auto i : atom_id_hashset) {
     if (i == lhs || i == rhs)
       continue;
-    for (auto neighbor_list:{&config.atom_list_[i].first_nearest_neighbors_list_,
-                             &config.atom_list_[i].second_nearest_neighbors_list_,
-                             &config.atom_list_[i].third_nearest_neighbors_list_}) {
-      for (auto &j : *neighbor_list) {
-        if (j == lhs)
-          j = rhs;
-        else if (j == rhs)
-          j = lhs;
-      }
+    for (auto &j : config.atom_list_[i].first_nearest_neighbors_list_) {
+      if (j == lhs)
+        j = rhs;
+      else if (j == rhs)
+        j = lhs;
+    }
+    for (auto &j : config.atom_list_[i].second_nearest_neighbors_list_) {
+      if (j == lhs)
+        j = rhs;
+      else if (j == rhs)
+        j = lhs;
+    }
+    for (auto &j : config.atom_list_[i].third_nearest_neighbors_list_) {
+      if (j == lhs)
+        j = rhs;
+      else if (j == rhs)
+        j = lhs;
     }
   }
 }

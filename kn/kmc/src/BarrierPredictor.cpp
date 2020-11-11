@@ -45,9 +45,9 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
   }
   static std::mt19937_64 generator(static_cast<unsigned long long int>(
                                        std::chrono::system_clock::now().time_since_epoch().count()));
-  static std::uniform_real_distribution<double> distribution(0.0, 1e-3);
-  auto non_neg_forward = std::max(forward_barrier, distribution(generator));
-  return {non_neg_forward,
-          non_neg_forward - std::max(backward_barrier, distribution(generator))};
+  // static std::uniform_real_distribution<double> distribution(0, 1e-1);
+  // auto non_neg_forward = std::max(forward_barrier, 1e-3);
+  return {forward_barrier,
+          forward_barrier - backward_barrier};
 }
 } // namespace kmc
