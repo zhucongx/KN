@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   //                            {"Al", "Cu", "Mg", "Zn"},
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
-
+  // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
   kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
                        1e5,
                        1e7,

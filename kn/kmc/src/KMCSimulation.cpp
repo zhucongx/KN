@@ -17,8 +17,8 @@ KMCSimulation::KMCSimulation(cfg::Config config,
                              double energy,
                              double time)
     : config_(std::move(config)),
-      log_dump_steps(log_dump_steps),
-      config_dump_steps(config_dump_steps),
+      log_dump_steps_(log_dump_steps),
+      config_dump_steps_(config_dump_steps),
       maximum_number_(maximum_number),
       steps_(steps),
       energy_(energy),
@@ -65,13 +65,13 @@ void KMCSimulation::BuildEventListParallel() {
       std::vector<KMCEvent> collected_list;
       double sum_rates_;
 
-      boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus(), 0);
+      boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus<>(), 0);
       boost::mpi::gather(world_, event, collected_list, 0);
 
       total_rate_ += sum_rates_;
       std::copy(collected_list.begin(), collected_list.end(), std::back_inserter(event_list_));
     } else {
-      boost::mpi::reduce(world_, event.GetRate(), std::plus(), 0);
+      boost::mpi::reduce(world_, event.GetRate(), std::plus<>(), 0);
       boost::mpi::gather(world_, event, 0);
     }
   }
@@ -151,11 +151,11 @@ void KMCSimulation::Simulate() {
       energy_ += event_list_[event_index].GetEnergyChange();
 
       // log and config file
-      if (steps_ % log_dump_steps == 0) {
+      if (steps_ % log_dump_steps_ == 0) {
         ofs << steps_ << " " << time_ << " " << energy_ << " "
             << event_list_[event_index].GetBarrier() << std::endl;
       }
-      if (steps_ % config_dump_steps == 0)
+      if (steps_ % config_dump_steps_ == 0)
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
     }
 

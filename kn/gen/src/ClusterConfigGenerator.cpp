@@ -71,7 +71,7 @@ void ClusterConfigGenerator::CreateSingletsConfigs() const {
         auto config_start = reference_config;
         config_start.ChangeAtomTypeAt(singlet_id, singlet_type);
         auto config_end = config_start;
-        cfg::AtomsJump(config_end, jump_pair.first, jump_pair.second);
+        cfg::AtomsJump(config_end, jump_pair);
 
         cfg::Config::WriteConfig(config_start, std::to_string(count) + ".cfg", false);
 
