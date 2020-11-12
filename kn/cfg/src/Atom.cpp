@@ -47,19 +47,6 @@ const std::vector<size_t> &Atom::GetSecondNearestNeighborsList() const {
 const std::vector<size_t> &Atom::GetThirdNearestNeighborsList() const {
   return third_nearest_neighbors_list_;
 }
-std::unordered_set<size_t> Atom::GetFirstAndSecondThirdNeighborsSet() const {
-  std::unordered_set<size_t> near_neighbors_hashset;
-  std::copy(first_nearest_neighbors_list_.begin(),
-            first_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  std::copy(second_nearest_neighbors_list_.begin(),
-            second_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  std::copy(third_nearest_neighbors_list_.begin(),
-            third_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  return near_neighbors_hashset;
-}
 // bool Atom::operator<(const Atom &rhs) const {
 //   return id_ < rhs.id_;
 // }

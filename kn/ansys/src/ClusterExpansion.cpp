@@ -121,9 +121,8 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
   // First, second, third nearest neighbors of the jump pairs
   constexpr size_t kNumOfAtoms = 60;
 
-  std::unordered_set<size_t> atom_id_set;
-  atom_id_set.merge(config.GetAtomList()[jump_pair.first].GetFirstAndSecondThirdNeighborsSet());
-  atom_id_set.merge(config.GetAtomList()[jump_pair.second].GetFirstAndSecondThirdNeighborsSet());
+  std::unordered_set<size_t>
+      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
 
   const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
 
@@ -131,7 +130,7 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
   atom_list_forward.reserve(kNumOfAtoms);
 
   Vector_t vacancy_relative_position, vacancy_cartesian_position;
-  for (auto id : atom_id_set) {
+  for (auto id : atom_id_hashset) {
     cfg::Atom atom = config.GetAtomList()[id];
     atom.CleanNeighborsLists();
     // move to center
