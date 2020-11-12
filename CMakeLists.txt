@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-#set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
-#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
+set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
+set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
@@ -76,31 +76,37 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 #    set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
 #    set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
 #endif (Boost_NO_SYSTEM_PATHS)
+
+find_package(MPI REQUIRED)
+# include directories
+target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+# link libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+# set interface target compile options
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+
 find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
-##############################################################################################
 
 #find_package(EIGEN3 REQUIRED)
-#include_directories(${EIGEN3_INCLUDE_DIR})
+#target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC ${EIGEN3_LIBRARIES})
+##############################################################################################
+
+
 
 
 #find_package(TensorFlow REQUIRED)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
 #target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
 
-#find_package(MPI REQUIRED)
-## include directories
-#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-## link libraries
-#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-## set interface target compile options
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+
 
 #find_package(OpenMP REQUIRED)
 ## include directories
