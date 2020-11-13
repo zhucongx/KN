@@ -11,7 +11,6 @@ constexpr double kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBol
 
 class KMCEvent {
     // Todo reduce KMCEvent
-
   public:
     /// Constructor
     KMCEvent();
@@ -43,7 +42,7 @@ class KMCEvent {
       ar & rate_;
       ar & energy_change_;
       ar & probability_;
-      ar & cumulative_provability_;
+      ar & cumulative_probability_;
     }
   protected:
     std::pair<size_t, size_t> jump_pair_{};
@@ -51,7 +50,7 @@ class KMCEvent {
     double rate_{};
     double energy_change_{};
     double probability_{};
-    double cumulative_provability_{};
+    double cumulative_probability_{};
 };
 } // namespace kmc
 
