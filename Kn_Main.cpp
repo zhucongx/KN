@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
                        1e7,
                        1e10,
                        {{"Al", 1},
-                        {"Mg", -1},
+                        {"Mg", -2},
                         {"Zn", 2},
                         {"X", 6}
                        },
