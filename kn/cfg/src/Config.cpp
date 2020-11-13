@@ -375,13 +375,13 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
     const auto &atom = config.GetAtomList()[i];
     std::copy(atom.GetFirstNearestNeighborsList().begin(),
               atom.GetFirstNearestNeighborsList().end(),
-              std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
     std::copy(atom.GetSecondNearestNeighborsList().begin(),
               atom.GetSecondNearestNeighborsList().end(),
-              std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
     std::copy(atom.GetThirdNearestNeighborsList().begin(),
               atom.GetThirdNearestNeighborsList().end(),
-              std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
   }
   return near_neighbors_hashset;
 }

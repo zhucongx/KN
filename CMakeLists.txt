@@ -70,6 +70,21 @@ add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
+# Stampede2 doesn't have boost-mpi. Use self-compiled version
+SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/home1/07075/tg863748/library/boost/include")
+SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/home1/07075/tg863748/library/boost/lib")
+find_package(Boost COMPONENTS mpi serialization REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
+
+find_package(ARMADILLO REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ARMADILLO_LIBRARIES})
+
+find_package(EIGEN3 REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
+##############################################################################################
+
 #set(Boost_NO_SYSTEM_PATHS TRUE)
 #if (Boost_NO_SYSTEM_PATHS)
 #    set(BOOST_ROOT "/opt/apps/intel18/impi18_0/boost-mpi/1.68")
@@ -77,35 +92,23 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 #    set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
 #endif (Boost_NO_SYSTEM_PATHS)
 
-find_package(MPI REQUIRED)
-# include directories
-target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-# link libraries
-target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-# set interface target compile options
-target_compile_options(${PROJECT_NAME} INTERFACE
-        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-target_compile_options(${PROJECT_NAME} INTERFACE
-        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
-
-find_package(Boost COMPONENTS mpi serialization REQUIRED)
-target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
-
-#find_package(EIGEN3 REQUIRED)
-#target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} PUBLIC ${EIGEN3_LIBRARIES})
-##############################################################################################
-
-
-
 
 #find_package(TensorFlow REQUIRED)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
 #target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
 
+#find_package(MPI REQUIRED)
+## include directories
+#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+## link libraries
+#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+## set interface target compile options
+#target_compile_options(${PROJECT_NAME} INTERFACE
+#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+#target_compile_options(${PROJECT_NAME} INTERFACE
+#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+#set_target_properties(${PROJECT_NAME} PROPERTIES
+#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 
 
 #find_package(OpenMP REQUIRED)
@@ -118,9 +121,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 #        "${OpenMP_C_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 
-#find_package(ARMADILLO REQUIRED)
-#target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
+
 #
 ## Lib keras2cpp
 #add_subdirectory(external/keras2cpp)

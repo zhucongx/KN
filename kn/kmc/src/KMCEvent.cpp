@@ -33,7 +33,7 @@ double KMCEvent::GetProbability() const {
 }
 
 double KMCEvent::GetCumulativeProvability() const {
-  return cumulative_provability_;
+  return cumulative_probability_;
 }
 
 void KMCEvent::SetJumpPair(const std::pair<size_t, size_t> &jump_pair) {
@@ -57,7 +57,7 @@ void KMCEvent::SetProbability(double probability) {
 }
 
 void KMCEvent::SetCumulativeProvability(double cumulative_provability) {
-  cumulative_provability_ = cumulative_provability;
+  cumulative_probability_ = cumulative_provability;
 }
 
 void KMCEvent::CalculateProbability(double total_rates) {

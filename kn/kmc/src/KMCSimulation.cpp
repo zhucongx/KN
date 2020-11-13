@@ -8,14 +8,15 @@
 namespace kmc {
 
 constexpr size_t kEventListSize = Al_const::kNumFirstNearestNeighbors;
-KMCSimulation::KMCSimulation(cfg::Config config,
-                             unsigned long long int log_dump_steps,
-                             unsigned long long int config_dump_steps,
-                             unsigned long long int maximum_number,
-                             std::unordered_map<std::string, double> type_category_hashmap,
-                             unsigned long long int steps,
-                             double energy,
-                             double time)
+KMCSimulation::KMCSimulation(
+    cfg::Config config,
+    unsigned long long int log_dump_steps,
+    unsigned long long int config_dump_steps,
+    unsigned long long int maximum_number,
+    std::unordered_map<std::string, double> type_category_hashmap,
+    unsigned long long int steps,
+    double energy,
+    double time)
     : config_(std::move(config)),
       log_dump_steps_(log_dump_steps),
       config_dump_steps_(config_dump_steps),
@@ -23,19 +24,18 @@ KMCSimulation::KMCSimulation(cfg::Config config,
       steps_(steps),
       energy_(energy),
       time_(time),
-      total_rate_{0.0},
+      vacancy_index_(cfg::GetVacancyIndex(config_)),
+      mpi_rank_(static_cast<size_t>(world_.rank())),
+      mpi_size_(static_cast<size_t>(world_.size())),
       barrier_predictor_(config_, std::move(type_category_hashmap)),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
-  vacancy_index_ = cfg::GetVacancyIndex(config_);
   event_list_.reserve(kEventListSize);
-
-  mpi_rank_ = static_cast<size_t>(world_.rank());
-  mpi_size_ = static_cast<size_t>(world_.size());
   if (world_.rank() == 0) {
     std::cout << "Using " << world_.size() << " processes." << std::endl;
   }
 }
+KMCSimulation::~KMCSimulation() = default;
 void KMCSimulation::BuildEventListSerial() {
   event_list_.clear();
   total_rate_ = 0;
@@ -108,7 +108,7 @@ void KMCSimulation::BuildEventListParallel() {
   }
 }
 
-size_t KMCSimulation::SelectEvent() {
+size_t KMCSimulation::SelectEvent() const {
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
   const double random_number = distribution(generator_);
@@ -118,15 +118,19 @@ size_t KMCSimulation::SelectEvent() {
                              [](const auto &lhs, double value) {
                                return lhs.GetCumulativeProvability() < value;
                              });
+  // If not find (maybe generated 1), which rarely happens, returns the last event
   if (it == event_list_.cend()) {
     it--;
   }
   return static_cast<size_t>(std::distance(event_list_.begin(), it));
 }
+void KMCSimulation::CheckAndFix(double one_step_time) {}
 void KMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
-  ofs << "steps    time    energy    barrier\n";
-  ofs.precision(8);
+  if (mpi_rank_ == 0) {
+    ofs << "steps    time    energy    barrier\n";
+    ofs.precision(8);
+  }
 
   while (steps_ < maximum_number_) {
     if (mpi_size_ == 1) {
@@ -138,17 +142,24 @@ void KMCSimulation::Simulate() {
     if (mpi_rank_ == 0) {
       event_index = SelectEvent();
     }
-    world_.barrier();
+    // world_.barrier();
     boost::mpi::broadcast(world_, event_index, 0);
-    world_.barrier();
+    // world_.barrier();
+    const auto &executed_invent_pair = event_list_[event_index].GetJumpPair();
+    cfg::AtomsJump(config_, executed_invent_pair);
 
-    cfg::AtomsJump(config_, event_list_[event_index].GetJumpPair());
+    // std::pair<size_t,size_t> CheckingPair{0,0};
 
     if (mpi_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      time_ -= log(distribution(generator_)) / (total_rate_ * 1e13);
+      auto one_step_time = log(distribution(generator_)) / (total_rate_ * 1e14);
+      time_ -= one_step_time;
       energy_ += event_list_[event_index].GetEnergyChange();
+
+      // std::cerr << event_list_[event_index].GetBarrier() << '\n';
+
+      CheckAndFix(-one_step_time);
 
       // log and config file
       if (steps_ % log_dump_steps_ == 0) {
@@ -158,9 +169,8 @@ void KMCSimulation::Simulate() {
       if (steps_ % config_dump_steps_ == 0)
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
     }
-
     steps_++;
-    world_.barrier();
+    // world_.barrier();
   }
 
 }
