@@ -8,9 +8,7 @@
 using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
-// #include "deprecated/LSKMCSimulation.h"
 #include "KMCSimulation.h"
-
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
@@ -35,7 +33,7 @@ int main(int argc, char *argv[]) {
                        1e7,
                        1e10,
                        {{"Al", 1},
-                        {"Mg", -2},
+                        {"Mg", -1},
                         {"Zn", 2},
                         {"X", 6}
                        },
