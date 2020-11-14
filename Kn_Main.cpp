@@ -1,4 +1,3 @@
-// #include "MpiClusters.h"
 // #include "Encode.h"
 // #include "ConfigGenerator.h"
 #include "Analysis.h"
@@ -9,6 +8,7 @@ using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
+#include "MpiClusters.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
@@ -28,17 +28,17 @@ int main(int argc, char *argv[]) {
   //                         {"X", 6}},
   //                        0, 0, 0,
   //                        25000, 5e-9, 0.3);
-  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-                       1e5,
-                       1e7,
-                       1e10,
-                       {{"Al", 1},
-                        {"Mg", -2},
-                        {"Zn", 2},
-                        {"X", 6}
-                       },
-                       0, 0, 0);
-  a.Simulate();
+  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+  //                      1e5,
+  //                      1e7,
+  //                      1e10,
+  //                      {{"Al", 1},
+  //                       {"Mg", -2},
+  //                       {"Zn", 2},
+  //                       {"X", 6}
+  //                      },
+  //                      0, 0, 0);
+  // a.Simulate();
 //   unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
 //                                                            {"Mg", -2},
 //                                                            {"Zn", 2},
@@ -62,9 +62,9 @@ int main(int argc, char *argv[]) {
 // test.UpdateNeighbors(Al_const::kFirstNearestNeighborsCutoff,
 //                      Al_const::kNearNeighborsCutoff);
 // ConfigIO::WriteConfig(test, "0_f.cfg", false);
-// MpiClusters test(370000000, 1000000, 6252000000,
-//                  "Al", 3, 3);
-// test.IterateToRun();
+ansys::MpiClusters test(0, 10000000, 210000000,
+                 "Al", 3, 3);
+test.IterateToRun();
 
 // MpiNeighbors test(370000000, 1000000, 6252000000);
 // test.IterateToRun();

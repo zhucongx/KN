@@ -157,8 +157,6 @@ void KMCSimulation::Simulate() {
       time_ -= one_step_time;
       energy_ += event_list_[event_index].GetEnergyChange();
 
-      // std::cerr << event_list_[event_index].GetBarrier() << '\n';
-
       CheckAndFix(-one_step_time);
 
       // log and config file
