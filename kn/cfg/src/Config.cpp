@@ -113,9 +113,9 @@ void Config::UpdateNeighbors(double first_r_cutoff,
                              double third_r_cutoff) {
   ClearNeighbors();
 
-  double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
-  double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
-  double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
+  const double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
+  const double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
+  const double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
 
   for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {

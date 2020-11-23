@@ -6,10 +6,10 @@
 #include <utility>
 namespace kmc {
 BarrierPredictor::BarrierPredictor(
-    const cfg::Config &reference_config,
+     const cfg::Config& reference_config,
     std::unordered_map<std::string, double> type_category_hashmap)
-    : type_category_hashmap_(std::move(type_category_hashmap)) {
-  mapping_ = ansys::ClusterExpansion::GetAverageClusterParametersMapping(reference_config);
+    : mapping_(ansys::ClusterExpansion::GetAverageClusterParametersMapping(reference_config)),
+      type_category_hashmap_(std::move(type_category_hashmap)) {
 
   auto element_set = reference_config.GetTypeSet();
   for (const auto &element : element_set) {

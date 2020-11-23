@@ -13,7 +13,7 @@ class BarrierPredictor {
         const std::pair<size_t, size_t> &jump_pair) const;
   private:
     std::unordered_map<std::string, std::vector<double>> element_weight_hashmap_;
-    ansys::ClusterExpansion::Cluster_Map_t mapping_;
+    const ansys::ClusterExpansion::Cluster_Map_t mapping_;
     const std::unordered_map<std::string, double> type_category_hashmap_;
 };
 } // namespace kmc
