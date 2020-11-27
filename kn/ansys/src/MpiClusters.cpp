@@ -34,9 +34,6 @@ MpiClusters::MpiClusters(unsigned long long int initial_number,
           && (filename - initial_number_) % increment_number == 0)
         filename_time_hashset_[filename] = time;
     }
-    for (const auto &[element_type, index_vector] : filename_time_hashset_) {
-      std::cout << element_type << " " << index_vector << "\n";
-    }
   }
 }
 
@@ -78,25 +75,29 @@ void MpiClusters::IterateToRun() {
           break;
         ofs << "{ \n"
             << "\"index\" : " << "\"" << std::to_string(file_index) << "\",\n"
-            << "\"time\" : " << 10*filename_time_hashset_[file_index] << ",\n"
+            << "\"time\" : " << 10 * filename_time_hashset_[file_index] << ",\n"
             << "\"clusters\" : [ \n";
 
-        for (size_t i = 0; i < this_num_different_element.size(); i++) {
-          const auto &cluster = this_num_different_element[i];
+        for (size_t j = 0; j < this_num_different_element.size(); j++) {
+          const auto &cluster = this_num_different_element[j];
           ofs << "[ ";
 
           std::for_each(cluster.cbegin(), --cluster.cend(), [&ofs](auto it) {
             ofs << it.second << ", ";
           });
           ofs << (--cluster.cend())->second;
-          if (i == this_num_different_element.size() - 1) {
+          if (j == this_num_different_element.size() - 1) {
             ofs << "] \n";
           } else {
             ofs << "], \n";
           }
         }
         ofs << "]\n";
-        ofs << "}, \n";
+        if (file_index != finial_number_) {
+          ofs << "}, \n";
+        } else {
+          ofs << "} \n";
+        }
         file_index += increment_number_;
       }
     }
