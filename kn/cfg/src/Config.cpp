@@ -117,8 +117,8 @@ void Config::UpdateNeighbors(double first_r_cutoff,
   const double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
   const double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
 
-  for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
-    for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
+  for (auto it1 = atom_list_.begin(); it1 != atom_list_.end(); ++it1) {
+    for (auto it2 = atom_list_.begin(); it2 != it1; ++it2) {
       Vector_t absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
       if (absolute_distance_vector[kXDimension] > third_r_cutoff_square)
         continue;
