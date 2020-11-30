@@ -120,11 +120,11 @@ void Config::UpdateNeighbors(double first_r_cutoff,
   for (auto it1 = atom_list_.begin(); it1 != atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 != it1; ++it2) {
       Vector_t absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
-      if (absolute_distance_vector[kXDimension] > third_r_cutoff_square)
+      if (std::abs(absolute_distance_vector[kXDimension]) > third_r_cutoff)
         continue;
-      if (absolute_distance_vector[kYDimension] > third_r_cutoff_square)
+      if (std::abs(absolute_distance_vector[kYDimension]) > third_r_cutoff)
         continue;
-      if (absolute_distance_vector[kZDimension] > third_r_cutoff_square)
+      if (std::abs(absolute_distance_vector[kZDimension]) > third_r_cutoff)
         continue;
       double absolute_distance_square = Inner(absolute_distance_vector);
       if (absolute_distance_square <= third_r_cutoff_square) {
