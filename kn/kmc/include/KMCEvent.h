@@ -36,7 +36,7 @@ class KMCEvent {
     friend class boost::serialization::access;
     template<class Archive>
     // use boost serialization templates
-    void serialize(Archive &ar, const unsigned int version) {
+    void serialize(Archive &ar, [[maybe_unused]] const size_t version) {
       ar & jump_pair_;
       ar & barrier_;
       ar & rate_;
