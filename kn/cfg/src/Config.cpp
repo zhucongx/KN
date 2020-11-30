@@ -197,7 +197,8 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
     all_num_atoms += num_atoms;
   }
   getline(ifs, buffer);
-  bool relative_option = buffer[0] == 'D' || buffer[0] == 'd';
+  bool relative_option =
+      buffer[0] != 'C' && buffer[0] != 'c' && buffer[0] != 'K' && buffer[0] != 'k';
   Config config(basis * scale, all_num_atoms);
 
   // If relative_option is ture, only relative position need to scaled, set it to 1
