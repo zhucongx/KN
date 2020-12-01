@@ -533,11 +533,8 @@ Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, siz
     const Vector_t jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
     const double dot_prod = Dot(pair_direction, jump_vector);
     if (std::abs(dot_prod) < 1e-6) {
-      double absolute_distance_square = Inner(jump_vector * config.GetBasis());
-      if (absolute_distance_square < pow(Al_const::kFirstNearestNeighborsCutoff, 2)) {
-        vertical_vector = Normalize(jump_vector);
-        break;
-      }
+      vertical_vector = Normalize(jump_vector);
+      break;
     }
   }
   // The third row is normalized since it is a cross product of two normalized vectors.
