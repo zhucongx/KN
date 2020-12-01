@@ -312,21 +312,21 @@ void Config::WritePOSCAR(const Config &config,
   ofs << "#comment\n1.0\n";
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
-
-  for (const auto &[element, element_list] : config.GetElementListMap()) {
-    if (show_vacancy_option || element != "X") {
-      ele_oss << element << ' ';
-      count_oss << element_list.size() << ' ';
-    }
+  const auto element_list_map = config.GetElementListMap();
+  for (const auto &[element, element_list] : element_list_map) {
+    if (!show_vacancy_option && element == "X")
+      continue;
+    ele_oss << element << ' ';
+    count_oss << element_list.size() << ' ';
   }
   ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
   ofs << "Direct\n";
 
-  for (const auto &[element, element_list] : config.GetElementListMap()) {
-    if (show_vacancy_option || element != "X") {
-      for (auto index : element_list) {
-        ofs << config.GetAtomList()[index].GetRelativePosition() << '\n';
-      }
+  for (const auto &[element, element_list] : element_list_map) {
+    if (!show_vacancy_option && element == "X")
+      continue;
+    for (auto index : element_list) {
+      ofs << config.GetAtomList()[index].GetRelativePosition() << '\n';
     }
   }
 }
@@ -354,7 +354,7 @@ void Config::WriteConfig(const Config &config,
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
     if (neighbors_info) {
-      ofs << " #";
+      ofs << " # ";
       for (auto neighbor_index : atom.GetFirstNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
