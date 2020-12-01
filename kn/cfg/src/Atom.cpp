@@ -81,9 +81,9 @@ Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second) {
   Vector_t relative_distance_vector = second.GetRelativePosition() - first.GetRelativePosition();
   // periodic boundary conditions
   for (const auto kDim : All_Dimensions) {
-    if (relative_distance_vector[kDim] >= 0.5)
+    while (relative_distance_vector[kDim] >= 0.5)
       relative_distance_vector[kDim] -= 1;
-    else if (relative_distance_vector[kDim] < -0.5)
+    while (relative_distance_vector[kDim] < -0.5)
       relative_distance_vector[kDim] += 1;
   }
   return relative_distance_vector;
