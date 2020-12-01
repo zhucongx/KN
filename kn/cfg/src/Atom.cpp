@@ -95,7 +95,7 @@ double FindMass(const std::string &elem) {
   * Atomic weights of the elements 2009 (IUPAC Technical Report)
   * -------------------------------------------------------------------------- */
   static const std::vector<double> mass_list = {
-      0.0,                                                              // Vacancy
+      0.0,                                                             // Vacancy
       1.00797,     4.0026,      6.939,       9.012182,    10.811,      // H  - B
       12.01115,    14.0067,     15.9994,     18.9984032,  20.17976,    // C  - Ne
       22.989769,   24.30506,    26.9815386,  28.086,      30.973762,   // Na - P
