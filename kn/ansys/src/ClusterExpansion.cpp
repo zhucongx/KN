@@ -1,8 +1,6 @@
 #include "ClusterExpansion.h"
 #include "Cluster.hpp"
 
-#include <boost/range/combine.hpp>
-
 namespace ansys::ClusterExpansion {
 
 using Singlet_t = cfg::Cluster<1>;
@@ -190,105 +188,105 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
 }
 
 // Update the average cluster functions vector from the cluster vector
-template<size_t DataSize>
-static void GetAverageParametersFromClusterVectorHelper(
-    std::vector<cfg::Cluster<DataSize>> &&cluster_vector,
-    const std::unordered_map<std::string, double> &type_category_hashmap,
-    std::vector<double> &average_cluster_functions_vector) {
-  // sort clusters
-  std::sort(cluster_vector.begin(), cluster_vector.end(),
-            [](const auto &lhs, const auto &rhs) {
-              return IsClusterSmallerSymmetrically(lhs, rhs);
-            });
-  // start to point at Cluster in the first range
-  typename std::vector<cfg::Cluster<DataSize>>::const_iterator lower_it_pair, upper_it_pair;
-  lower_it_pair = cluster_vector.cbegin();
-  do {
-    upper_it_pair = std::upper_bound(lower_it_pair, cluster_vector.cend(),
-                                     *lower_it_pair,
-                                     [](const auto &lhs, const auto &rhs) {
-                                       return IsClusterSmallerSymmetrically(lhs, rhs);
-                                     });
-    // add parameters
-    average_cluster_functions_vector.push_back(
-        std::accumulate(lower_it_pair, upper_it_pair, 0.0,
-                        [&type_category_hashmap = std::as_const(type_category_hashmap)](
-                            double current_sum, const cfg::Cluster<DataSize> &rhs) {
-                          double cumulative_product = 1.0;
-                          for (size_t i = 0; i < DataSize; ++i) {
-                            cumulative_product *=
-                                type_category_hashmap.at(rhs.GetAtomAt(i).GetType());
-                          }
-                          return current_sum + cumulative_product;
-                        }) / static_cast<double>(std::distance(lower_it_pair, upper_it_pair))
-    );
+// template<size_t DataSize>
+// static void GetAverageParametersFromClusterVectorHelper(
+//     std::vector<cfg::Cluster<DataSize>> &&cluster_vector,
+//     const std::unordered_map<std::string, double> &type_category_hashmap,
+//     std::vector<double> &average_cluster_functions_vector) {
+//   // sort clusters
+//   std::sort(cluster_vector.begin(), cluster_vector.end(),
+//             [](const auto &lhs, const auto &rhs) {
+//               return IsClusterSmallerSymmetrically(lhs, rhs);
+//             });
+//   // start to point at Cluster in the first range
+//   typename std::vector<cfg::Cluster<DataSize>>::const_iterator lower_it_pair, upper_it_pair;
+//   lower_it_pair = cluster_vector.cbegin();
+//   do {
+//     upper_it_pair = std::upper_bound(lower_it_pair, cluster_vector.cend(),
+//                                      *lower_it_pair,
+//                                      [](const auto &lhs, const auto &rhs) {
+//                                        return IsClusterSmallerSymmetrically(lhs, rhs);
+//                                      });
+//     // add parameters
+//     average_cluster_functions_vector.push_back(
+//         std::accumulate(lower_it_pair, upper_it_pair, 0.0,
+//                         [&type_category_hashmap = std::as_const(type_category_hashmap)](
+//                             double current_sum, const cfg::Cluster<DataSize> &rhs) {
+//                           double cumulative_product = 1.0;
+//                           for (size_t i = 0; i < DataSize; ++i) {
+//                             cumulative_product *=
+//                                 type_category_hashmap.at(rhs.GetAtomAt(i).GetType());
+//                           }
+//                           return current_sum + cumulative_product;
+//                         }) / static_cast<double>(std::distance(lower_it_pair, upper_it_pair))
+//     );
+//
+//     // update to next range
+//     lower_it_pair = upper_it_pair;
+//   } while (upper_it_pair != cluster_vector.cend());
+// }
 
-    // update to next range
-    lower_it_pair = upper_it_pair;
-  } while (upper_it_pair != cluster_vector.cend());
-}
-
-static void GetAverageClusterParametersFromAtomVector(
-    const std::vector<cfg::Atom> &atom_vector,
-    const std::unordered_map<std::string, double> &type_category_hashmap,
-    std::vector<double> &average_cluster_functions_vector) {
-  /// singlets
-  // find all singlets
-  std::vector<Singlet_t> singlet_vector;
-  std::transform(atom_vector.begin(),
-                 atom_vector.end(),
-                 std::back_inserter(singlet_vector),
-                 [](auto &&atom) {
-                   return static_cast<Singlet_t>(atom);
-                 });
-  GetAverageParametersFromClusterVectorHelper(
-      std::move(singlet_vector),
-      type_category_hashmap,
-      average_cluster_functions_vector);
-  /// first nearest pairs
-  // find all pairs
-  std::unordered_set<Pair_t, boost::hash<Pair_t>> first_pair_set;
-  for (const auto &atom1 : atom_vector) {
-    for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
-      first_pair_set.emplace(atom1, atom_vector.at(atom2_index));
-    }
-  }
-  GetAverageParametersFromClusterVectorHelper(
-      std::vector<Pair_t>(first_pair_set.begin(), first_pair_set.end()),
-      type_category_hashmap,
-      average_cluster_functions_vector);
-  /// second nearest pairs
-  // find all pairs
-  std::unordered_set<Pair_t, boost::hash<Pair_t>> second_pair_set;
-  for (const auto &atom1 : atom_vector) {
-    for (const auto &atom2_index : atom1.GetSecondNearestNeighborsList()) {
-      second_pair_set.emplace(atom1, atom_vector.at(atom2_index));
-    }
-  }
-  GetAverageParametersFromClusterVectorHelper(
-      std::vector<Pair_t>(second_pair_set.begin(), second_pair_set.end()),
-      type_category_hashmap,
-      average_cluster_functions_vector);
-  /// first nearest triplets
-  // find all triplets
-  std::unordered_set<Triplet_t, boost::hash<Triplet_t>> triplets_set;
-  for (const auto &atom1 : atom_vector) {
-    for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
-      const auto &atom2 = atom_vector[atom2_index];
-      for (const auto &atom3_index : atom2.GetFirstNearestNeighborsList()) {
-        if (std::find(atom1.GetFirstNearestNeighborsList().begin(),
-                      atom1.GetFirstNearestNeighborsList().end(),
-                      atom3_index) != atom1.GetFirstNearestNeighborsList().end()) {
-          triplets_set.emplace(atom1, atom2, atom_vector.at(atom3_index));
-        }
-      }
-    }
-  }
-  GetAverageParametersFromClusterVectorHelper(
-      std::vector<Triplet_t>(triplets_set.begin(), triplets_set.end()),
-      type_category_hashmap,
-      average_cluster_functions_vector);
-}
+// static void GetAverageClusterParametersFromAtomVector(
+//     const std::vector<cfg::Atom> &atom_vector,
+//     const std::unordered_map<std::string, double> &type_category_hashmap,
+//     std::vector<double> &average_cluster_functions_vector) {
+//   /// singlets
+//   // find all singlets
+//   std::vector<Singlet_t> singlet_vector;
+//   std::transform(atom_vector.begin(),
+//                  atom_vector.end(),
+//                  std::back_inserter(singlet_vector),
+//                  [](auto &&atom) {
+//                    return static_cast<Singlet_t>(atom);
+//                  });
+//   GetAverageParametersFromClusterVectorHelper(
+//       std::move(singlet_vector),
+//       type_category_hashmap,
+//       average_cluster_functions_vector);
+//   /// first nearest pairs
+//   // find all pairs
+//   std::unordered_set<Pair_t, boost::hash<Pair_t>> first_pair_set;
+//   for (const auto &atom1 : atom_vector) {
+//     for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
+//       first_pair_set.emplace(atom1, atom_vector.at(atom2_index));
+//     }
+//   }
+//   GetAverageParametersFromClusterVectorHelper(
+//       std::vector<Pair_t>(first_pair_set.begin(), first_pair_set.end()),
+//       type_category_hashmap,
+//       average_cluster_functions_vector);
+//   /// second nearest pairs
+//   // find all pairs
+//   std::unordered_set<Pair_t, boost::hash<Pair_t>> second_pair_set;
+//   for (const auto &atom1 : atom_vector) {
+//     for (const auto &atom2_index : atom1.GetSecondNearestNeighborsList()) {
+//       second_pair_set.emplace(atom1, atom_vector.at(atom2_index));
+//     }
+//   }
+//   GetAverageParametersFromClusterVectorHelper(
+//       std::vector<Pair_t>(second_pair_set.begin(), second_pair_set.end()),
+//       type_category_hashmap,
+//       average_cluster_functions_vector);
+//   /// first nearest triplets
+//   // find all triplets
+//   std::unordered_set<Triplet_t, boost::hash<Triplet_t>> triplets_set;
+//   for (const auto &atom1 : atom_vector) {
+//     for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
+//       const auto &atom2 = atom_vector[atom2_index];
+//       for (const auto &atom3_index : atom2.GetFirstNearestNeighborsList()) {
+//         if (std::find(atom1.GetFirstNearestNeighborsList().begin(),
+//                       atom1.GetFirstNearestNeighborsList().end(),
+//                       atom3_index) != atom1.GetFirstNearestNeighborsList().end()) {
+//           triplets_set.emplace(atom1, atom2, atom_vector.at(atom3_index));
+//         }
+//       }
+//     }
+//   }
+//   GetAverageParametersFromClusterVectorHelper(
+//       std::vector<Triplet_t>(triplets_set.begin(), triplets_set.end()),
+//       type_category_hashmap,
+//       average_cluster_functions_vector);
+// }
 
 template<size_t DataSize>
 static void GetAverageParametersMappingFromClusterVectorHelper(
@@ -326,24 +324,24 @@ static void GetAverageParametersMappingFromClusterVectorHelper(
 
 }
 
-std::array<std::vector<double>, 2> GetAverageClusterParametersForwardAndBackward(
-    const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair,
-    const std::unordered_map<std::string, double> &type_category_hashmap) {
-
-  const auto[forward_atom_vector, backward_atom_vector] = GetSymmetricallySortedAtomVectors(config,
-                                                                                            jump_pair);
-  std::vector<double> average_cluster_functions_vector_forward{1};
-  std::vector<double> average_cluster_functions_vector_backward{1};
-
-  GetAverageClusterParametersFromAtomVector(forward_atom_vector,
-                                            type_category_hashmap,
-                                            average_cluster_functions_vector_forward);
-  GetAverageClusterParametersFromAtomVector(backward_atom_vector,
-                                            type_category_hashmap,
-                                            average_cluster_functions_vector_backward);
-  return {average_cluster_functions_vector_forward, average_cluster_functions_vector_backward};
-}
+// std::array<std::vector<double>, 2> GetAverageClusterParametersForwardAndBackward(
+//     const cfg::Config &config,
+//     const std::pair<size_t, size_t> &jump_pair,
+//     const std::unordered_map<std::string, double> &type_category_hashmap) {
+//
+//   const auto[forward_atom_vector, backward_atom_vector] = GetSymmetricallySortedAtomVectors(config,
+//                                                                                             jump_pair);
+//   std::vector<double> average_cluster_functions_vector_forward{1};
+//   std::vector<double> average_cluster_functions_vector_backward{1};
+//
+//   GetAverageClusterParametersFromAtomVector(forward_atom_vector,
+//                                             type_category_hashmap,
+//                                             average_cluster_functions_vector_forward);
+//   GetAverageClusterParametersFromAtomVector(backward_atom_vector,
+//                                             type_category_hashmap,
+//                                             average_cluster_functions_vector_backward);
+//   return {average_cluster_functions_vector_forward, average_cluster_functions_vector_backward};
+// }
 
 Cluster_Map_t GetAverageClusterParametersMapping(
     const cfg::Config &config) {
