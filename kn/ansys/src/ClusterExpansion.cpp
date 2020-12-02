@@ -115,6 +115,30 @@ static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
 //   return {GetSymmetricallySortedAtomVector(config, jump_pair),
 //           GetSymmetricallySortedAtomVector(back_config, jump_pair)};
 // }
+static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
+    std::vector<cfg::Atom> &&atom_list,
+    const cfg::Config &reference_config,
+    const std::pair<size_t, size_t> &jump_pair) {
+  RotateAtomVector(atom_list, GetPairRotationMatrix(reference_config, jump_pair));
+  //sort by position
+  std::sort(atom_list.begin(), atom_list.end(),
+            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
+              return lhs.GetRelativePosition() < rhs.GetRelativePosition();
+            });
+  //sort using mm2 group point
+  std::sort(atom_list.begin(), atom_list.end(),
+            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
+              return IsAtomSmallerSymmetrically(lhs, rhs);
+            });
+
+  size_t new_id = 0;
+  for (auto &atom : atom_list) {
+    atom.SetId(new_id++);
+  }
+  cfg::Config config(reference_config.GetBasis(), std::move(atom_list));
+  config.UpdateNeighbors();
+  return config.GetAtomList();
+}
 static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
     const cfg::Config &config,
     const std::pair<size_t, size_t> &jump_pair) {
@@ -157,44 +181,12 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
   jump_atom_it_backward->SetRelativePosition(vacancy_relative_position);
   jump_atom_it_backward->SetCartesianPosition(vacancy_cartesian_position);
 
-  RotateAtomVector(atom_list_backward,
-                   GetPairRotationMatrix(config, {jump_pair.second, jump_pair.first}));
-  //sort using mm2 group point
-  std::sort(atom_list_backward.begin(), atom_list_backward.end(),
-            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return lhs.GetRelativePosition() < rhs.GetRelativePosition();
-            });
-
-  std::sort(atom_list_backward.begin(), atom_list_backward.end(),
-            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return IsAtomSmallerSymmetrically(lhs, rhs);
-            });
-  size_t new_id;
-  new_id = 0;
-  for (auto &atom : atom_list_backward) {
-    atom.SetId(new_id++);
-  }
-  cfg::Config config_after_jump(config.GetBasis(), std::move(atom_list_backward));
-  config_after_jump.UpdateNeighbors();
-
-  RotateAtomVector(atom_list_forward,
-                   GetPairRotationMatrix(config, jump_pair));
-  std::sort(atom_list_forward.begin(), atom_list_forward.end(),
-            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return lhs.GetRelativePosition() < rhs.GetRelativePosition();
-            });
-  std::sort(atom_list_forward.begin(), atom_list_forward.end(),
-            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return IsAtomSmallerSymmetrically(lhs, rhs);
-            });
-  new_id = 0;
-  for (auto &atom : atom_list_forward) {
-    atom.SetId(new_id++);
-  }
-  cfg::Config config_before_jump(config.GetBasis(), std::move(atom_list_forward));
-  config_before_jump.UpdateNeighbors();
-
-  return {config_before_jump.GetAtomList(), config_after_jump.GetAtomList()};
+  return {RotateAtomVectorAndSortHelper(std::move(atom_list_forward),
+                                        config,
+                                        jump_pair),
+          RotateAtomVectorAndSortHelper(std::move(atom_list_backward),
+                                        config,
+                                        {jump_pair.second, jump_pair.first})};
 }
 
 // Update the average cluster functions vector from the cluster vector
