@@ -329,17 +329,17 @@ static void GetAverageParametersMappingFromClusterVectorHelper(
               return IsClusterSmallerSymmetrically(lhs, rhs);
             });
   // start to point at Cluster in the first range
-  typename std::vector<cfg::Cluster<DataSize>>::const_iterator lower_it_pair, upper_it_pair;
-  lower_it_pair = cluster_vector.cbegin();
+  typename std::vector<cfg::Cluster<DataSize>>::const_iterator lower_it, upper_it;
+  lower_it = cluster_vector.cbegin();
 
   do {
-    upper_it_pair = std::upper_bound(lower_it_pair, cluster_vector.cend(),
-                                     *lower_it_pair,
-                                     [](const auto &lhs, const auto &rhs) {
+    upper_it = std::upper_bound(lower_it, cluster_vector.cend(),
+                                *lower_it,
+                                [](const auto &lhs, const auto &rhs) {
                                        return IsClusterSmallerSymmetrically(lhs, rhs);
                                      });
     std::vector<std::vector<size_t>> cluster_index_vector;
-    for (auto it = lower_it_pair; it != upper_it_pair; ++it) {
+    for (auto it = lower_it; it != upper_it; ++it) {
       std::vector<size_t> cluster_index;
       cluster_index.reserve(DataSize);
       for (size_t i = 0; i < DataSize; ++i) {
@@ -350,8 +350,8 @@ static void GetAverageParametersMappingFromClusterVectorHelper(
     cluster_mapping.push_back(cluster_index_vector);
 
     // update to next range
-    lower_it_pair = upper_it_pair;
-  } while (upper_it_pair != cluster_vector.cend());
+    lower_it = upper_it;
+  } while (upper_it != cluster_vector.cend());
 
 }
 
