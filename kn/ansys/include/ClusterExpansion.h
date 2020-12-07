@@ -20,6 +20,8 @@ bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs);
 //     const std::pair<size_t, size_t> &jump_pair,
 //     const std::unordered_map<std::string, double> &type_category_hashmap);
 
+// this function rotates and sorts the config in a particular way, basically from center to outside
+// and returns a mapping of it
 Cluster_Map_t GetAverageClusterParametersMapping(
     const cfg::Config &config);
 

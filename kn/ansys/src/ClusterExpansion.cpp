@@ -22,7 +22,9 @@ using Triplet_t = cfg::Cluster<3>;
 /// When we treat this vector, we don't care the sign of y and z, and y and z should be
 /// indistinguishable. If sum and diff of abs of y and abs of z are same, these atoms should
 /// be considered same positions
-bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
+
+// Helps to sort the atoms first symmetrically and then positionally
+static bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
 
@@ -144,6 +146,7 @@ static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
 //   return {GetSymmetricallySortedAtomVector(config, jump_pair),
 //           GetSymmetricallySortedAtomVector(back_config, jump_pair)};
 // }
+
 static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     std::vector<cfg::Atom> &&atom_list,
     const cfg::Config &reference_config,
@@ -163,6 +166,8 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
   config.UpdateNeighbors();
   return config.GetAtomList();
 }
+
+// Returns forward and backward sorted atom lists
 static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
     const cfg::Config &config,
     const std::pair<size_t, size_t> &jump_pair) {
