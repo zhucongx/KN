@@ -22,13 +22,44 @@ using Triplet_t = cfg::Cluster<3>;
 /// When we treat this vector, we don't care the sign of y and z, and y and z should be
 /// indistinguishable. If sum and diff of abs of y and abs of z are same, these atoms should
 /// be considered same positions
+bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
+  const auto &relative_position_lhs = lhs.GetRelativePosition();
+  const auto &relative_position_rhs = rhs.GetRelativePosition();
+
+  const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+  if (diff_x < -kEpsilon)
+    return true;
+  if (diff_x > kEpsilon)
+    return false;
+
+  const double diff_y_sym = std::abs(relative_position_lhs[kYDimension] - 0.5)
+      - std::abs(relative_position_rhs[kYDimension] - 0.5);
+  if (diff_y_sym < -kEpsilon)
+    return true;
+  if (diff_y_sym > kEpsilon)
+    return false;
+
+  const double diff_z_sym = std::abs(relative_position_lhs[kZDimension] - 0.5)
+      - std::abs(relative_position_rhs[kZDimension] - 0.5);
+  if (diff_z_sym < -kEpsilon)
+    return true;
+  if (diff_z_sym > kEpsilon)
+    return false;
+  // sort by position if they are same
+  const double y_diff = relative_position_lhs[kYDimension] - relative_position_rhs[kYDimension];
+  if (y_diff < -kEpsilon)
+    return true;
+  if (y_diff > kEpsilon)
+    return false;
+
+  return relative_position_lhs[kZDimension] < relative_position_rhs[kZDimension] - kEpsilon;
+}
 // Helps to sort the atoms symmetrically
 bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
 
   const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
-
   if (diff_x < -kEpsilon)
     return true;
   if (diff_x > kEpsilon)
@@ -118,15 +149,10 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     const cfg::Config &reference_config,
     const std::pair<size_t, size_t> &jump_pair) {
   RotateAtomVector(atom_list, GetPairRotationMatrix(reference_config, jump_pair));
-  //sort by position
-  std::sort(atom_list.begin(), atom_list.end(),
-            [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return lhs.GetRelativePosition() < rhs.GetRelativePosition();
-            });
   //sort using mm2 group point
   std::sort(atom_list.begin(), atom_list.end(),
             [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return IsAtomSmallerSymmetrically(lhs, rhs);
+              return AtomSortCompare(lhs, rhs);
             });
 
   size_t new_id = 0;
