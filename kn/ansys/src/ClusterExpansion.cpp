@@ -57,35 +57,53 @@ static bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   return relative_position_lhs[kZDimension] < relative_position_rhs[kZDimension] - kEpsilon;
 }
 // Helps to sort the atoms symmetrically
-bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
-  const auto &relative_position_lhs = lhs.GetRelativePosition();
-  const auto &relative_position_rhs = rhs.GetRelativePosition();
-
-  const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
-  if (diff_x < -kEpsilon)
-    return true;
-  if (diff_x > kEpsilon)
-    return false;
-
-  const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5)
-      - std::abs(relative_position_rhs[kYDimension] - 0.5);
-  if (diff_y < -kEpsilon)
-    return true;
-  if (diff_y > kEpsilon)
-    return false;
-
-  return (std::abs(relative_position_lhs[kZDimension] - 0.5)
-      < std::abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon);
-}
+// bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs) {
+//   const auto &relative_position_lhs = lhs.GetRelativePosition();
+//   const auto &relative_position_rhs = rhs.GetRelativePosition();
+//
+//   const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+//   if (diff_x < -kEpsilon)
+//     return true;
+//   if (diff_x > kEpsilon)
+//     return false;
+//
+//   const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5)
+//       - std::abs(relative_position_rhs[kYDimension] - 0.5);
+//   if (diff_y < -kEpsilon)
+//     return true;
+//   if (diff_y > kEpsilon)
+//     return false;
+//
+//   return (std::abs(relative_position_lhs[kZDimension] - 0.5)
+//       < std::abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon);
+// }
 
 // Helps to sort the atoms symmetrically
 template<size_t DataSize>
 static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
                                           const cfg::Cluster<DataSize> &rhs) {
   for (size_t i = 0; i < DataSize; ++i) {
-    if (IsAtomSmallerSymmetrically(lhs.GetAtomAt(i), rhs.GetAtomAt(i)))
+    const auto &relative_position_lhs = lhs.GetAtomAt(i).GetRelativePosition();
+    const auto &relative_position_rhs = rhs.GetAtomAt(i).GetRelativePosition();
+
+    const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+    if (diff_x < -kEpsilon)
       return true;
-    if (IsAtomSmallerSymmetrically(rhs.GetAtomAt(i), lhs.GetAtomAt(i)))
+    if (diff_x > kEpsilon)
+      return false;
+
+    const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5)
+        - std::abs(relative_position_rhs[kYDimension] - 0.5);
+    if (diff_y < -kEpsilon)
+      return true;
+    if (diff_y > kEpsilon)
+      return false;
+
+    const double diff_z = std::abs(relative_position_lhs[kZDimension] - 0.5)
+        - std::abs(relative_position_rhs[kZDimension] - 0.5);
+    if (diff_z < -kEpsilon)
+      return true;
+    if (diff_z > kEpsilon)
       return false;
   }
   // if it reaches here, it means that the clusters are same symmetrically. Returns false.
@@ -336,8 +354,8 @@ static void GetAverageParametersMappingFromClusterVectorHelper(
     upper_it = std::upper_bound(lower_it, cluster_vector.cend(),
                                 *lower_it,
                                 [](const auto &lhs, const auto &rhs) {
-                                       return IsClusterSmallerSymmetrically(lhs, rhs);
-                                     });
+                                  return IsClusterSmallerSymmetrically(lhs, rhs);
+                                });
     std::vector<std::vector<size_t>> cluster_index_vector;
     for (auto it = lower_it; it != upper_it; ++it) {
       std::vector<size_t> cluster_index;

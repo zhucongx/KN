@@ -12,7 +12,7 @@
 
 namespace ansys::ClusterExpansion {
 using Cluster_Map_t = std::vector<std::vector<std::vector<size_t>>>;
-bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs);
+// bool IsAtomSmallerSymmetrically(const cfg::Atom &lhs, const cfg::Atom &rhs);
 
 // this function rotate and sort the config in a particular way, basically from center to outside
 // std::array<std::vector<double>, 2> GetAverageClusterParametersForwardAndBackward(

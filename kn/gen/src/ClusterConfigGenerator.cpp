@@ -35,8 +35,25 @@ static std::vector<size_t> GetEquivalentSingletIndexVector(
   }
   RotateAtomVector(atom_list, GetPairRotationMatrix(config, jump_pair));
 
-  auto IsSmallerSymmetrically = [](const auto &lhs, const auto &rhs) {
-    return ansys::ClusterExpansion::IsAtomSmallerSymmetrically(lhs, rhs);
+  auto IsSmallerSymmetrically = [](const auto &lhs, const auto &rhs) -> bool {
+    const auto &relative_position_lhs = lhs.GetRelativePosition();
+    const auto &relative_position_rhs = rhs.GetRelativePosition();
+
+    const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+    if (diff_x < -kEpsilon)
+      return true;
+    if (diff_x > kEpsilon)
+      return false;
+
+    const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5)
+        - std::abs(relative_position_rhs[kYDimension] - 0.5);
+    if (diff_y < -kEpsilon)
+      return true;
+    if (diff_y > kEpsilon)
+      return false;
+
+    return (std::abs(relative_position_lhs[kZDimension] - 0.5)
+        < std::abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon);
   };
   std::set<cfg::Atom, decltype(IsSmallerSymmetrically)> atom_set;
   for (auto &atom:atom_list) {
