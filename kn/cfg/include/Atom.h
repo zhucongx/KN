@@ -25,7 +25,6 @@ class Atom {
     [[nodiscard]] const std::vector<size_t> &GetFirstNearestNeighborsList() const;
     [[nodiscard]] const std::vector<size_t> &GetSecondNearestNeighborsList() const;
     [[nodiscard]] const std::vector<size_t> &GetThirdNearestNeighborsList() const;
-    [[nodiscard]] std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSet() const;
     /// Operators
     // bool operator<(const Atom &rhs) const;
     /// Setter
@@ -59,8 +58,8 @@ class Atom {
     // atom id which is an unique Rank for every atom indexed form 0
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair);
-    friend void AtomsJumpWithIdPair(Config &config, std::pair<size_t, size_t> jump_pair);
+    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 };
 Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second);
 double FindMass(const std::string &elem);

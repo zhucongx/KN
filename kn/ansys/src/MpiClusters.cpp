@@ -6,7 +6,7 @@
 
 #include "ClustersFinder.h"
 
-namespace kn {
+namespace ansys {
 MpiClusters::MpiClusters(unsigned long long int initial_number,
                          unsigned long long int increment_number,
                          unsigned long long int finial_number,
@@ -19,6 +19,22 @@ MpiClusters::MpiClusters(unsigned long long int initial_number,
     solvent_element_(std::move(solvent_element)),
     smallest_cluster_criteria_(smallest_cluster_criteria),
     solvent_bond_criteria_(solvent_bond_criteria) {
+  if (mpi_rank_ == 0) {
+    std::ifstream ifs("kmc_log.txt", std::ifstream::in);
+    if (!ifs.is_open()) {
+      std::cout << "Cannot open kmc_log.txt\n";
+      return;
+    }
+    unsigned long long filename;
+    double time;
+    ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    while (ifs >> filename >> time) {
+      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      if (filename >= initial_number_ && filename <= finial_number_
+          && (filename - initial_number_) % increment_number == 0)
+        filename_time_hashset_[filename] = time;
+    }
+  }
 }
 
 MpiClusters::~MpiClusters() = default;
@@ -28,6 +44,11 @@ void MpiClusters::IterateToRun() {
   auto quotient = num_total_loop / static_cast<unsigned long long int>(mpi_size_);
   auto remainder = num_total_loop % static_cast<unsigned long long int>(mpi_size_);
   auto num_cycle = remainder ? (quotient + 1) : quotient;
+  // start
+  std::ofstream ofs("clusters_info.json", std::ofstream::out);
+  if (mpi_rank_ == 0) {
+    ofs << "[ \n";
+  }
 
   for (unsigned long long i = 0; i < num_cycle; ++i) {
     auto num_file = initial_number_ +
@@ -48,15 +69,42 @@ void MpiClusters::IterateToRun() {
       std::vector<ClustersFinder::ClusterElementNumMap> all_num_different_element;
       boost::mpi::gather(world_, num_different_element, all_num_different_element, 0);
 
-      std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
       auto file_index = num_file;
       for (const auto &this_num_different_element : all_num_different_element) {
         if (file_index > finial_number_)
           break;
-        ClustersFinder::PrintLog(std::to_string(file_index), this_num_different_element);
+        ofs << "{ \n"
+            << "\"index\" : " << "\"" << std::to_string(file_index) << "\",\n"
+            << "\"time\" : " << 10 * filename_time_hashset_[file_index] << ",\n"
+            << "\"clusters\" : [ \n";
+
+        for (size_t j = 0; j < this_num_different_element.size(); j++) {
+          const auto &cluster = this_num_different_element[j];
+          ofs << "[ ";
+
+          std::for_each(cluster.cbegin(), --cluster.cend(), [&ofs](auto it) {
+            ofs << it.second << ", ";
+          });
+          ofs << (--cluster.cend())->second;
+          if (j == this_num_different_element.size() - 1) {
+            ofs << "] \n";
+          } else {
+            ofs << "], \n";
+          }
+        }
+        ofs << "]\n";
+        if (file_index != finial_number_) {
+          ofs << "}, \n";
+        } else {
+          ofs << "} \n";
+        }
         file_index += increment_number_;
       }
     }
   }
+
+  if (mpi_rank_ == 0) {
+    ofs << " ]";
+  }
 }
-} // namespace kn
+} // namespace ansys

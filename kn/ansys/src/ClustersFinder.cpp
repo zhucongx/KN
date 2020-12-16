@@ -3,8 +3,9 @@
 #include <queue>
 #include <unordered_map>
 #include <utility>
+#include <filesystem>
 
-namespace kn {
+namespace ansys {
 ClustersFinder::ClustersFinder(std::string cfg_filename,
                                std::string solvent_atom_type,
                                size_t smallest_cluster_criteria,
@@ -35,23 +36,20 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
 
     num_atom_in_clusters_set.push_back(std::move(num_atom_in_one_cluster));
   }
-  auto output_name(cfg_filename_);
+  std::filesystem::create_directories("cluster");
+  auto output_name("cluster/" + cfg_filename_);
   auto const pos = output_name.find_last_of('.');
   output_name.insert(pos, "_cluster");
   cfg::Config::WriteConfig(config_out, output_name, false);
   return num_atom_in_clusters_set;
 }
 
-void ClustersFinder::PrintLog(const std::string &filename,
+void ClustersFinder::PrintLog(const unsigned long long int &file_index,
+                              double time,
                               const ClusterElementNumMap &found_data) {
-  std::ofstream ofs("clusters_info.txt", std::ofstream::out | std::ofstream::app);
-  ofs << '#' << filename << '\n';
-  for (const auto &cluster : found_data) {
-    for (const auto &[key, count] : cluster) {
-      ofs << count << ' ';
-    }
-    ofs << '\n';
-  }
+  std::ofstream ofs("clusters_info.json", std::ofstream::out | std::ofstream::app);
+
+
 }
 
 void ClustersFinder::ReadFileAndUpdateNeighbor() {

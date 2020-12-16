@@ -113,18 +113,18 @@ void Config::UpdateNeighbors(double first_r_cutoff,
                              double third_r_cutoff) {
   ClearNeighbors();
 
-  double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
-  double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
-  double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
+  const double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
+  const double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
+  const double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
 
-  for (auto it1 = atom_list_.begin(); it1 < atom_list_.end(); ++it1) {
-    for (auto it2 = atom_list_.begin(); it2 < it1; ++it2) {
+  for (auto it1 = atom_list_.begin(); it1 != atom_list_.end(); ++it1) {
+    for (auto it2 = atom_list_.begin(); it2 != it1; ++it2) {
       Vector_t absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
-      if (absolute_distance_vector[kXDimension] > third_r_cutoff_square)
+      if (std::abs(absolute_distance_vector[kXDimension]) > third_r_cutoff)
         continue;
-      if (absolute_distance_vector[kYDimension] > third_r_cutoff_square)
+      if (std::abs(absolute_distance_vector[kYDimension]) > third_r_cutoff)
         continue;
-      if (absolute_distance_vector[kZDimension] > third_r_cutoff_square)
+      if (std::abs(absolute_distance_vector[kZDimension]) > third_r_cutoff)
         continue;
       double absolute_distance_square = Inner(absolute_distance_vector);
       if (absolute_distance_square <= third_r_cutoff_square) {
@@ -197,7 +197,8 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
     all_num_atoms += num_atoms;
   }
   getline(ifs, buffer);
-  bool relative_option = buffer[0] == 'D' || buffer[0] == 'd';
+  bool relative_option =
+      buffer[0] != 'C' && buffer[0] != 'c' && buffer[0] != 'K' && buffer[0] != 'k';
   Config config(basis * scale, all_num_atoms);
 
   // If relative_option is ture, only relative position need to scaled, set it to 1
@@ -311,21 +312,21 @@ void Config::WritePOSCAR(const Config &config,
   ofs << "#comment\n1.0\n";
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
-
-  for (const auto &[element, element_list] : config.GetElementListMap()) {
-    if (show_vacancy_option || element != "X") {
-      ele_oss << element << ' ';
-      count_oss << element_list.size() << ' ';
-    }
+  const auto element_list_map = config.GetElementListMap();
+  for (const auto &[element, element_list] : element_list_map) {
+    if (!show_vacancy_option && element == "X")
+      continue;
+    ele_oss << element << ' ';
+    count_oss << element_list.size() << ' ';
   }
   ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
   ofs << "Direct\n";
 
-  for (const auto &[element, element_list] : config.GetElementListMap()) {
-    if (show_vacancy_option || element != "X") {
-      for (auto index : element_list) {
-        ofs << config.GetAtomList()[index].GetRelativePosition() << '\n';
-      }
+  for (const auto &[element, element_list] : element_list_map) {
+    if (!show_vacancy_option && element == "X")
+      continue;
+    for (auto index : element_list) {
+      ofs << config.GetAtomList()[index].GetRelativePosition() << '\n';
     }
   }
 }
@@ -353,7 +354,7 @@ void Config::WriteConfig(const Config &config,
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
     if (neighbors_info) {
-      ofs << " #";
+      ofs << " # ";
       for (auto neighbor_index : atom.GetFirstNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
@@ -367,145 +368,118 @@ void Config::WriteConfig(const Config &config,
     ofs << '\n';
   }
 }
+std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
+    const Config &config, const std::pair<size_t, size_t> &jump_pair) {
+
+  std::unordered_set<size_t> near_neighbors_hashset;
+  for (const auto i : {jump_pair.first, jump_pair.second}) {
+    const auto &atom = config.GetAtomList()[i];
+    std::copy(atom.GetFirstNearestNeighborsList().begin(),
+              atom.GetFirstNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetSecondNearestNeighborsList().begin(),
+              atom.GetSecondNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetThirdNearestNeighborsList().begin(),
+              atom.GetThirdNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+  }
+  return near_neighbors_hashset;
+}
+
 // lhs : vacancy_index; rhs : neighbor_index
-void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair) {
+void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
   const auto[lhs, rhs] = jump_pair;
+  auto &atom_list = config.atom_list_;
+  //   auto it_lhs = std::find_if(config.atom_list_.begin(),
+  //                              config.atom_list_.end(),
+  //                              [jump_pair](const auto &atom) {
+  //                                return atom.GetId() == jump_pair.first;
+  //                              });
+  //   auto it_rhs = std::find_if(config.atom_list_.begin(),
+  //                              config.atom_list_.end(),
+  //                              [jump_pair](const auto &atom) {
+  //                                return atom.GetId() == jump_pair.second;
+  //                              });
+  //   const auto lhs = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_lhs));
+  //   const auto rhs = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_rhs));
+
   // three things to swap here:
   // 1) element coordinates
-  std::swap(config.atom_list_[lhs].relative_position_,
-            config.atom_list_[rhs].relative_position_);
-  std::swap(config.atom_list_[lhs].cartesian_position_,
-            config.atom_list_[rhs].cartesian_position_);
+  std::swap(atom_list[lhs].relative_position_,
+            atom_list[rhs].relative_position_);
+  std::swap(atom_list[lhs].cartesian_position_,
+            atom_list[rhs].cartesian_position_);
 
   // 2) jump pair neighbour lists
-  std::swap(config.atom_list_[lhs].first_nearest_neighbors_list_,
-            config.atom_list_[rhs].first_nearest_neighbors_list_);
-  std::replace(config.atom_list_[lhs].first_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].first_nearest_neighbors_list_.end(),
-               lhs, rhs);
-  std::replace(config.atom_list_[rhs].first_nearest_neighbors_list_.begin(),
-               config.atom_list_[rhs].first_nearest_neighbors_list_.end(),
-               rhs, lhs);
+  std::swap(atom_list[lhs].first_nearest_neighbors_list_,
+            atom_list[rhs].first_nearest_neighbors_list_);
 
-  std::swap(config.atom_list_[lhs].second_nearest_neighbors_list_,
-            config.atom_list_[rhs].second_nearest_neighbors_list_);
-  std::replace(config.atom_list_[lhs].second_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].second_nearest_neighbors_list_.end(),
-               lhs, rhs);
-  std::replace(config.atom_list_[rhs].second_nearest_neighbors_list_.begin(),
-               config.atom_list_[rhs].second_nearest_neighbors_list_.end(),
-               rhs, lhs);
+  std::swap(atom_list[lhs].second_nearest_neighbors_list_,
+            atom_list[rhs].second_nearest_neighbors_list_);
 
-  std::swap(config.atom_list_[lhs].third_nearest_neighbors_list_,
-            config.atom_list_[rhs].third_nearest_neighbors_list_);
-  std::replace(config.atom_list_[lhs].third_nearest_neighbors_list_.begin(),
-               config.atom_list_[lhs].third_nearest_neighbors_list_.end(),
-               lhs, rhs);
-  std::replace(config.atom_list_[rhs].third_nearest_neighbors_list_.begin(),
-               config.atom_list_[rhs].third_nearest_neighbors_list_.end(),
-               rhs, lhs);
-  // auto lhs_lists = {&config.atom_list_[lhs].first_nearest_neighbors_list_,
-  //                   &config.atom_list_[lhs].second_nearest_neighbors_list_,
-  //                   &config.atom_list_[lhs].third_nearest_neighbors_list_};
-  // auto rhs_lists = {&config.atom_list_[rhs].first_nearest_neighbors_list_,
-  //                   &config.atom_list_[rhs].second_nearest_neighbors_list_,
-  //                   &config.atom_list_[rhs].third_nearest_neighbors_list_};
-  // for (const auto[lhs_neighbor_list_pointer,
-  //   rhs_neighbor_list_pointer] : boost::combine(lhs_lists, rhs_lists)) {
-  //   std::swap(*lhs_neighbor_list_pointer, *rhs_neighbor_list_pointer);
-  //   std::replace(lhs_neighbor_list_pointer->begin(),
-  //                lhs_neighbor_list_pointer->end(),
-  //                lhs, rhs);
-  //   std::replace(rhs_neighbor_list_pointer->begin(),
-  //                rhs_neighbor_list_pointer->end(),
-  //                rhs, lhs);
-  // }
-  // 3) neighbor atom's neighbor list
-  std::unordered_set<size_t> atom_id_hashset;
-  atom_id_hashset.merge(config.GetAtomList()[lhs].GetFirstAndSecondThirdNeighborsSet());
-  atom_id_hashset.merge(config.GetAtomList()[rhs].GetFirstAndSecondThirdNeighborsSet());
+  std::swap(atom_list[lhs].third_nearest_neighbors_list_,
+            atom_list[rhs].third_nearest_neighbors_list_);
+
+  // 3) jump atoms' and neighbor atom's neighbor list
+  std::unordered_set<size_t>
+      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
 
   for (auto i : atom_id_hashset) {
-    if (i == lhs || i == rhs)
-      continue;
-    for (auto &j : config.atom_list_[i].first_nearest_neighbors_list_) {
-      if (j == lhs)
-        j = rhs;
-      else if (j == rhs)
-        j = lhs;
-    }
-    for (auto &j : config.atom_list_[i].second_nearest_neighbors_list_) {
-      if (j == lhs)
-        j = rhs;
-      else if (j == rhs)
-        j = lhs;
-    }
-    for (auto &j : config.atom_list_[i].third_nearest_neighbors_list_) {
-      if (j == lhs)
-        j = rhs;
-      else if (j == rhs)
-        j = lhs;
-    }
+    // auto it_id = std::find_if(config.atom_list_.begin(),
+    //                           config.atom_list_.end(),
+    //                           [id](const auto &atom) {
+    //                             return atom.GetId() == id;
+    //                           });
+    // const auto i = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_id));
+    for (auto neighbors_list : {&atom_list[i].first_nearest_neighbors_list_,
+                                &atom_list[i].second_nearest_neighbors_list_,
+                                &atom_list[i].third_nearest_neighbors_list_})
+      for (auto &j : *neighbors_list) {
+        if (j == lhs)
+          j = rhs;
+        else if (j == rhs)
+          j = lhs;
+      }
   }
 }
-// void AtomsJumpWithIdPair(Config &config, std::pair<size_t, size_t> jump_pair) {
-//   auto it_lhs = std::find_if(config.atom_list_.begin(),
-//                              config.atom_list_.end(),
-//                              [jump_pair](const auto &atom) {
-//                                return atom.GetId() == jump_pair.first;
-//                              });
-//   auto it_rhs = std::find_if(config.atom_list_.begin(),
-//                              config.atom_list_.end(),
-//                              [jump_pair](const auto &atom) {
-//                                return atom.GetId() == jump_pair.second;
-//                              });
-//   const auto lhs = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_lhs));
-//   const auto rhs = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_rhs));
-//   std::swap(config.atom_list_[lhs].relative_position_,
-//             config.atom_list_[rhs].relative_position_);
-//   std::swap(config.atom_list_[lhs].cartesian_position_,
-//             config.atom_list_[rhs].cartesian_position_);
-//   auto lhs_lists = {&config.atom_list_[lhs].first_nearest_neighbors_list_,
-//                     &config.atom_list_[lhs].second_nearest_neighbors_list_,
-//                     &config.atom_list_[lhs].third_nearest_neighbors_list_};
-//   auto rhs_lists = {&config.atom_list_[rhs].first_nearest_neighbors_list_,
-//                     &config.atom_list_[rhs].second_nearest_neighbors_list_,
-//                     &config.atom_list_[rhs].third_nearest_neighbors_list_};
-//   for (const auto[lhs_neighbor_list_pointer,
-//     rhs_neighbor_list_pointer] : boost::combine(lhs_lists, rhs_lists)) {
-//     std::swap(*lhs_neighbor_list_pointer, *rhs_neighbor_list_pointer);
-//     std::replace(lhs_neighbor_list_pointer->begin(),
-//                  lhs_neighbor_list_pointer->end(),
-//                  lhs, rhs);
-//     std::replace(rhs_neighbor_list_pointer->begin(),
-//                  rhs_neighbor_list_pointer->end(),
-//                  rhs, lhs);
-//   }
-//   std::unordered_set<size_t> atom_id_hashset;
-//   atom_id_hashset.merge(config.GetAtomList()[lhs].GetFirstAndSecondThirdNeighborsSet());
-//   atom_id_hashset.merge(config.GetAtomList()[rhs].GetFirstAndSecondThirdNeighborsSet());
-//   for (auto id : atom_id_hashset) {
-//     auto it_id = std::find_if(config.atom_list_.begin(),
-//                               config.atom_list_.end(),
-//                               [id](const auto &atom) {
-//                                 return atom.GetId() == id;
-//                               });
-//     const auto i = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_id));
-//
-//     if (id == lhs || id == rhs)
-//       continue;
-//     for (auto neighbor_list:{&config.atom_list_[i].first_nearest_neighbors_list_,
-//                              &config.atom_list_[i].second_nearest_neighbors_list_,
-//                              &config.atom_list_[i].third_nearest_neighbors_list_}) {
-//       for (auto &j : *neighbor_list) {
-//         if (j == lhs)
-//           j = rhs;
-//         else if (j == rhs)
-//           j = lhs;
-//       }
-//     }
-//   }
-// }
+void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair) {
+  const auto[lhs, rhs] = jump_pair;
+  auto &atom_list = config.atom_list_;
+  // three things to swap here:
+  // 1) element coordinates
+  std::swap(atom_list[lhs].relative_position_,
+            atom_list[rhs].relative_position_);
+  std::swap(atom_list[lhs].cartesian_position_,
+            atom_list[rhs].cartesian_position_);
+
+  // 2) jump pair neighbour lists
+  std::swap(atom_list[lhs].first_nearest_neighbors_list_,
+            atom_list[rhs].first_nearest_neighbors_list_);
+
+  std::swap(atom_list[lhs].second_nearest_neighbors_list_,
+            atom_list[rhs].second_nearest_neighbors_list_);
+
+  std::swap(atom_list[lhs].third_nearest_neighbors_list_,
+            atom_list[rhs].third_nearest_neighbors_list_);
+
+  // 3) jump atoms' and neighbor atom's neighbor list
+  std::unordered_set<size_t>
+      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
+
+  for (auto i : atom_id_hashset) {
+    for (auto neighbors_list : {&atom_list[i].first_nearest_neighbors_list_,
+                                &atom_list[i].second_nearest_neighbors_list_,
+                                &atom_list[i].third_nearest_neighbors_list_})
+      for (auto &j : *neighbors_list) {
+        if (j == lhs)
+          j = rhs;
+        else if (j == rhs)
+          j = lhs;
+      }
+  }
+
+}
 std::map<Bond, size_t> CountAllBonds(const Config &config) {
   std::map<Bond, size_t> bonds_count_map;
   std::string type1, type2;
@@ -559,11 +533,8 @@ Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, siz
     const Vector_t jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
     const double dot_prod = Dot(pair_direction, jump_vector);
     if (std::abs(dot_prod) < 1e-6) {
-      double absolute_distance_square = Inner(jump_vector * config.GetBasis());
-      if (absolute_distance_square < pow(Al_const::kFirstNearestNeighborsCutoff, 2)) {
-        vertical_vector = Normalize(jump_vector);
-        break;
-      }
+      vertical_vector = Normalize(jump_vector);
+      break;
     }
   }
   // The third row is normalized since it is a cross product of two normalized vectors.

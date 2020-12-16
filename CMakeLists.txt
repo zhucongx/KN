@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-#set(CMAKE_C_COMPILER "mpicc") # {gcc, mpicc, icc}
-#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, mpicxx, icc}
+set(CMAKE_C_COMPILER "mpicc") # {gcc, clang, mpicc, icc}
+set(CMAKE_CXX_COMPILER "mpicxx") # {g++, clang++, mpicxx, icpc}
 
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
@@ -70,19 +70,27 @@ add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 
+# Stampede2 doesn't have boost-mpi. Use self-compiled version
+SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/home1/07075/tg863748/library/boost/include")
+SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/home1/07075/tg863748/library/boost/lib")
+find_package(Boost COMPONENTS mpi serialization REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
+
+#find_package(ARMADILLO REQUIRED)
+#target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+#target_link_libraries(${PROJECT_NAME} PUBLIC ${ARMADILLO_LIBRARIES})
+#
+#find_package(EIGEN3 REQUIRED)
+#target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
+##############################################################################################
+
 #set(Boost_NO_SYSTEM_PATHS TRUE)
 #if (Boost_NO_SYSTEM_PATHS)
 #    set(BOOST_ROOT "/opt/apps/intel18/impi18_0/boost-mpi/1.68")
 #    set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
 #    set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
 #endif (Boost_NO_SYSTEM_PATHS)
-find_package(Boost COMPONENTS mpi serialization REQUIRED)
-target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
-##############################################################################################
-
-#find_package(EIGEN3 REQUIRED)
-#include_directories(${EIGEN3_INCLUDE_DIR})
 
 
 #find_package(TensorFlow REQUIRED)
@@ -102,6 +110,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 
+
 #find_package(OpenMP REQUIRED)
 ## include directories
 #target_include_directories(${PROJECT_NAME} INTERFACE ${OpenMP_C_INCLUDE_DIRS} ${OpenMP_CXX_INCLUDE_DIRS})
@@ -112,9 +121,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${Boost_LIBRARIES})
 #        "${OpenMP_C_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 
-#find_package(ARMADILLO REQUIRED)
-#target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} INTERFACE ${ARMADILLO_LIBRARIES})
+
 #
 ## Lib keras2cpp
 #add_subdirectory(external/keras2cpp)

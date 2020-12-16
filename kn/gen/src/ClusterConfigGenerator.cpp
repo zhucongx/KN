@@ -14,17 +14,16 @@ static std::vector<size_t> GetEquivalentSingletIndexVector(
     const cfg::Config &config,
     const std::pair<size_t, size_t> &jump_pair) {
   // Get first, second, third nearest neighbors of the jump pairs
-  std::unordered_set<size_t> atom_id_set;
-  atom_id_set.merge(config.GetAtomList()[jump_pair.first].GetFirstAndSecondThirdNeighborsSet());
-  atom_id_set.merge(config.GetAtomList()[jump_pair.second].GetFirstAndSecondThirdNeighborsSet());
-  atom_id_set.erase(jump_pair.first);
-  atom_id_set.erase(jump_pair.second);
+  std::unordered_set<size_t>
+      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
+  atom_id_hashset.erase(jump_pair.first);
+  atom_id_hashset.erase(jump_pair.second);
 
   std::vector<cfg::Atom> atom_list;
-  atom_list.reserve(atom_id_set.size());
+  atom_list.reserve(atom_id_hashset.size());
 
   const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
-  for (auto id : atom_id_set) {
+  for (auto id : atom_id_hashset) {
     cfg::Atom atom = config.GetAtomList()[id];
 
     // move to center
@@ -36,8 +35,25 @@ static std::vector<size_t> GetEquivalentSingletIndexVector(
   }
   RotateAtomVector(atom_list, GetPairRotationMatrix(config, jump_pair));
 
-  auto IsSmallerSymmetrically = [](const auto &lhs, const auto &rhs) {
-    return ansys::ClusterExpansion::IsAtomSmallerSymmetrically(lhs, rhs);
+  auto IsSmallerSymmetrically = [](const auto &lhs, const auto &rhs) -> bool {
+    const auto &relative_position_lhs = lhs.GetRelativePosition();
+    const auto &relative_position_rhs = rhs.GetRelativePosition();
+
+    const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+    if (diff_x < -kEpsilon)
+      return true;
+    if (diff_x > kEpsilon)
+      return false;
+
+    const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5)
+        - std::abs(relative_position_rhs[kYDimension] - 0.5);
+    if (diff_y < -kEpsilon)
+      return true;
+    if (diff_y > kEpsilon)
+      return false;
+
+    return (std::abs(relative_position_lhs[kZDimension] - 0.5)
+        < std::abs(relative_position_rhs[kZDimension] - 0.5) - kEpsilon);
   };
   std::set<cfg::Atom, decltype(IsSmallerSymmetrically)> atom_set;
   for (auto &atom:atom_list) {

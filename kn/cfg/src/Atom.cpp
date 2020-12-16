@@ -47,19 +47,6 @@ const std::vector<size_t> &Atom::GetSecondNearestNeighborsList() const {
 const std::vector<size_t> &Atom::GetThirdNearestNeighborsList() const {
   return third_nearest_neighbors_list_;
 }
-std::unordered_set<size_t> Atom::GetFirstAndSecondThirdNeighborsSet() const {
-  std::unordered_set<size_t> near_neighbors_hashset;
-  std::copy(first_nearest_neighbors_list_.begin(),
-            first_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  std::copy(second_nearest_neighbors_list_.begin(),
-            second_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  std::copy(third_nearest_neighbors_list_.begin(),
-            third_nearest_neighbors_list_.end(),
-            std::inserter(near_neighbors_hashset, near_neighbors_hashset.end()));
-  return near_neighbors_hashset;
-}
 // bool Atom::operator<(const Atom &rhs) const {
 //   return id_ < rhs.id_;
 // }
@@ -94,9 +81,9 @@ Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second) {
   Vector_t relative_distance_vector = second.GetRelativePosition() - first.GetRelativePosition();
   // periodic boundary conditions
   for (const auto kDim : All_Dimensions) {
-    if (relative_distance_vector[kDim] >= 0.5)
+    while (relative_distance_vector[kDim] >= 0.5)
       relative_distance_vector[kDim] -= 1;
-    else if (relative_distance_vector[kDim] < -0.5)
+    while (relative_distance_vector[kDim] < -0.5)
       relative_distance_vector[kDim] += 1;
   }
   return relative_distance_vector;
@@ -108,7 +95,7 @@ double FindMass(const std::string &elem) {
   * Atomic weights of the elements 2009 (IUPAC Technical Report)
   * -------------------------------------------------------------------------- */
   static const std::vector<double> mass_list = {
-      0.0,                                                              // Vacancy
+      0.0,                                                             // Vacancy
       1.00797,     4.0026,      6.939,       9.012182,    10.811,      // H  - B
       12.01115,    14.0067,     15.9994,     18.9984032,  20.17976,    // C  - Ne
       22.989769,   24.30506,    26.9815386,  28.086,      30.973762,   // Na - P

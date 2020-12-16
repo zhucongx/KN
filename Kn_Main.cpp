@@ -1,6 +1,6 @@
-// #include "MpiClusters.h"
 // #include "Encode.h"
 // #include "ConfigGenerator.h"
+#include <SizeMisfitGenerator.h>
 #include "Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
@@ -9,34 +9,37 @@ using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
+#include "MpiClusters.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
   //                            {2, 2, 2},
   //                            "Al",
-  //                            {"Al", "Cu", "Mg", "Zn"},
+  //                            {"Al", "Cu", "Mg", "Zn", "X"},
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-                       1e5,
-                       1e7,
-                       1e10,
-                       {{"Al", 1},
-                        {"Mg", -1},
-                        {"Zn", 2},
-                        {"X", 0}
-                       },
-                       0, 0, 0);
-  a.Simulate();
-// unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
-//                                                          {"Mg", -1},
-//                                                          {"Zn", 2},
-//                                                          {"X", 0}};
-// ansys::PrintOutClusterExpansionAverage("log.txt",type_category_hashmap);
-// auto cfg = ansys::ClusterExpansion::GetAverageClusterParametersForward(cfg::Config::ReadConfig("start.cfg"),
+
+  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+  //                      1e5,
+  //                      1e7,
+  //                      1e10,
+  //                      {{"Al", 1},
+  //                       {"Mg", -2},
+  //                       {"Zn", 2},
+  //                       {"X", 6}
+  //                      },
+  //                      0, 0, 0);
+  // a.Simulate();
+  unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
+                                                           {"Mg", -1},
+                                                           {"Zn", 2},
+                                                           {"X",  0}};
+  ansys::PrintOutClusterExpansionAverage("log.txt", type_category_hashmap);
+
+// auto cfg = ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackward(cfg::Config::ReadConfig("start.cfg"),
 //                                                         {82, 83},
-//                                                         type_category_hashmap);
+//                                                         type_category_hashmap)[0];
 // for (auto kI : cfg) {
 //   cout << kI << " ";
 // }
@@ -52,7 +55,7 @@ int main(int argc, char *argv[]) {
 // test.UpdateNeighbors(Al_const::kFirstNearestNeighborsCutoff,
 //                      Al_const::kNearNeighborsCutoff);
 // ConfigIO::WriteConfig(test, "0_f.cfg", false);
-// MpiClusters test(370000000, 1000000, 6252000000,
+// ansys::MpiClusters test(0, 10000000, 2440000000,
 //                  "Al", 3, 3);
 // test.IterateToRun();
 

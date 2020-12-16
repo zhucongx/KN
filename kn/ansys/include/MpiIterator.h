@@ -2,9 +2,8 @@
 #define KN_KN_KMC_INCLUDE_MPIITERATOR_H_
 
 #include <boost/mpi.hpp>
-#include "ClustersFinder.h"
 
-namespace kn {
+namespace ansys {
 
 class MpiIterator {
   public:
@@ -17,15 +16,17 @@ class MpiIterator {
   protected:
     boost::mpi::environment env_;
     boost::mpi::communicator world_;
-    int mpi_rank_;
-    int mpi_size_;
 
-    unsigned long long initial_number_;
-    unsigned long long increment_number_;
-    unsigned long long finial_number_;
+
+    const unsigned long long initial_number_;
+    const unsigned long long increment_number_;
+    const unsigned long long finial_number_;
+
+    const int mpi_rank_;
+    const int mpi_size_;
 };
 
-} // namespace kn
+} // namespace ansys
 
 
 #endif //KN_KN_KMC_INCLUDE_MPIITERATOR_H_

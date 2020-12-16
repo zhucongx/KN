@@ -6,7 +6,7 @@
 
 #include "Config.h"
 
-namespace kn {
+namespace ansys {
 class ClustersFinder {
   public:
     using ClusterElementNumMap = std::vector<std::map<std::string, size_t>>;
@@ -18,7 +18,9 @@ class ClustersFinder {
     // element in one cluster
     ClusterElementNumMap FindClustersAndOutput();
 
-    static void PrintLog(const std::string &filename, const ClusterElementNumMap &found_data);
+    static void PrintLog(const unsigned long long int &file_index,
+                         double time,
+                         const ClusterElementNumMap &found_data);
   private:
     void ReadFileAndUpdateNeighbor();
     [[nodiscard]] std::unordered_set<size_t> FindSoluteAtomsHelper() const;
@@ -33,7 +35,7 @@ class ClustersFinder {
     size_t smallest_cluster_criteria_{};
     size_t solvent_bond_criteria_{};
 };
-} // namespace kn
+} // namespace ansys
 
 
 #endif //KN_KN_KMC_INCLUDE_CLUSTERSFINDER_H_

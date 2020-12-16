@@ -78,13 +78,15 @@ class Config {
     std::vector<Atom> atom_list_;
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair);
-    friend void AtomsJumpWithIdPair(Config &config, std::pair<size_t, size_t> jump_pair);
+    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
-void AtomsJump(Config &config, std::pair<size_t, size_t> jump_pair);
-void AtomsJumpWithIdPair(Config &config, std::pair<size_t, size_t> jump_pair);
+std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
+    const Config &config, const std::pair<size_t, size_t> &jump_pair);
+void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
+void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 
 std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label
