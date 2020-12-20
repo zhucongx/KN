@@ -82,11 +82,21 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
 ############################################ FIND  JSON ############################################
 # Typically you don't care so much for a third party library's tests to be
 # run from your own project's code.
-set(JSON_BuildTests OFF CACHE INTERNAL "")
+#set(JSON_BuildTests OFF CACHE INTERNAL "")
 # If you only include this third party in PRIVATE source files, you do not
 # need to install it when your main project gets installed.
 # set(JSON_Install OFF CACHE INTERNAL "")
-add_subdirectory(external/json)
+#add_subdirectory(external/json)
+include(FetchContent)
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+        GIT_TAG v3.9.1)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 ############################################# FIND MPI #############################################
 #find_package(MPI REQUIRED)
