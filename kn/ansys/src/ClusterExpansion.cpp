@@ -432,23 +432,23 @@ Cluster_Map_t GetAverageClusterParametersMapping(
   }
   GetAverageParametersMappingFromClusterVectorHelper(
       std::vector<Pair_t>(second_pair_set.begin(), second_pair_set.end()), cluster_mapping);
-  /// first nearest triplets
-  // find all triplets
-  std::unordered_set<Triplet_t, boost::hash<Triplet_t>> triplets_set;
-  for (const auto &atom1 : atom_vector) {
-    for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
-      const auto &atom2 = atom_vector[atom2_index];
-      for (const auto &atom3_index : atom2.GetFirstNearestNeighborsList()) {
-        if (std::find(atom1.GetFirstNearestNeighborsList().begin(),
-                      atom1.GetFirstNearestNeighborsList().end(),
-                      atom3_index) != atom1.GetFirstNearestNeighborsList().end()) {
-          triplets_set.emplace(atom1, atom2, atom_vector.at(atom3_index));
-        }
-      }
-    }
-  }
-  GetAverageParametersMappingFromClusterVectorHelper(
-      std::vector<Triplet_t>(triplets_set.begin(), triplets_set.end()), cluster_mapping);
+  // /// first nearest triplets
+  // // find all triplets
+  // std::unordered_set<Triplet_t, boost::hash<Triplet_t>> triplets_set;
+  // for (const auto &atom1 : atom_vector) {
+  //   for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
+  //     const auto &atom2 = atom_vector[atom2_index];
+  //     for (const auto &atom3_index : atom2.GetFirstNearestNeighborsList()) {
+  //       if (std::find(atom1.GetFirstNearestNeighborsList().begin(),
+  //                     atom1.GetFirstNearestNeighborsList().end(),
+  //                     atom3_index) != atom1.GetFirstNearestNeighborsList().end()) {
+  //         triplets_set.emplace(atom1, atom2, atom_vector.at(atom3_index));
+  //       }
+  //     }
+  //   }
+  // }
+  // GetAverageParametersMappingFromClusterVectorHelper(
+  //     std::vector<Triplet_t>(triplets_set.begin(), triplets_set.end()), cluster_mapping);
   return cluster_mapping;
 }
 
@@ -460,12 +460,18 @@ std::array<std::vector<double>, 2> GetAverageClusterParametersForwardAndBackward
 
   const auto atom_vectors = GetSymmetricallySortedAtomVectors(config, jump_pair);
 
+  [[maybe_unused]] constexpr size_t kEncodeListSizeThirdToDimer = 116;
+  [[maybe_unused]] constexpr size_t kEncodeListSizeThirdToTrimer = 179;
   std::array<std::vector<double>, 2> result;
+  result[0].reserve(kEncodeListSizeThirdToDimer);
+  result[1].reserve(kEncodeListSizeThirdToDimer);
 
   for (size_t i = 0; i < 2; ++i) {
     const auto &atom_vector = atom_vectors[i];
 
-    std::vector<double> encode_list{1};
+    std::vector<double> encode_list{1.0};
+
+    encode_list.reserve(kEncodeListSizeThirdToDimer);
     for (const auto &cluster_vector : cluster_mapping) {
       double sum_of_functional = 0;
       for (const auto &cluster : cluster_vector) {

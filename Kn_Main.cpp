@@ -31,10 +31,10 @@ int main(int argc, char *argv[]) {
   //                      },
   //                      0, 0, 0);
   // a.Simulate();
-  unordered_map<std::string, double> type_category_hashmap{{"Al", 1},
-                                                           {"Mg", -1},
-                                                           {"Zn", 2},
-                                                           {"X",  0}};
+  unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
+                                                           {"Mg", 2},
+                                                           {"Zn", -1},
+                                                           {"X",  3}};
   ansys::PrintOutClusterExpansionAverage("log.txt", type_category_hashmap);
 
 // auto cfg = ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackward(cfg::Config::ReadConfig("start.cfg"),
