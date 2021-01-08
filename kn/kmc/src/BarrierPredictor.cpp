@@ -1,31 +1,27 @@
 #include "BarrierPredictor.h"
 
-// #include <chrono>
-#include <boost/range/combine.hpp>
-
 #include <utility>
+#include <boost/range/combine.hpp>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 namespace kmc {
 BarrierPredictor::BarrierPredictor(
-     const cfg::Config& reference_config,
+    const std::string &predictor_filename,
+    const cfg::Config &reference_config,
     std::unordered_map<std::string, double> type_category_hashmap)
     : mapping_(ansys::ClusterExpansion::GetAverageClusterParametersMapping(reference_config)),
       type_category_hashmap_(std::move(type_category_hashmap)) {
+  std::ifstream ifs(predictor_filename, std::ifstream::in);
+  json all_parameters;
+  ifs >> all_parameters;
+  for (const auto &[element, parameters] : all_parameters.items()) {
 
-  auto element_set = reference_config.GetTypeSet();
-  for (const auto &element : element_set) {
-    // if (element == "X")
-    //   continue;
-    std::ifstream ifs(element + ".weight", std::ifstream::in);
-    if (!ifs.is_open()) {
-      std::cout << "Cannot open " << element << ".weight\n";
-      break;
-    }
-    double weight;
-    std::vector<double> weight_vector;
-    while (ifs >> weight) {
-      weight_vector.emplace_back(weight);
-    }
-    element_weight_hashmap_[element] = weight_vector;
+    element_parameters_hashmap_[element] = Element_Parameters{
+        parameters.at("mu_x"),
+        parameters.at("transform_matrix"),
+        parameters.at("theta"),
+        parameters.at("mean_y")};
   }
 }
 std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
@@ -35,14 +31,37 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
   auto[forward_encode_list, backward_encode_list] =
   ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackwardFromMap(
       config, jump_pair, type_category_hashmap_, mapping_);
-  const auto &weights
-      = element_weight_hashmap_.at(config.GetAtomList().at(jump_pair.second).GetType());
-  // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
-  double forward_barrier = 0, backward_barrier = 0;
-  for (size_t i = 0; i < weights.size(); ++i) {
-    forward_barrier += forward_encode_list[i] * weights[i];
-    backward_barrier += backward_encode_list[i] * weights[i];
+  const auto &element_parameter =
+      element_parameters_hashmap_.at(config.GetAtomList().at(jump_pair.second).GetType());
+  const auto &mu_x = element_parameter.mu_x;
+  const auto &transform_matrix = element_parameter.transform_matrix;
+  const auto &theta = element_parameter.theta;
+  const auto mean_y = element_parameter.mean_y;
+
+  const size_t old_size = mu_x.size();
+  const size_t new_size = theta.size();
+
+  for (size_t i = 0; i < old_size; ++i) {
+    forward_encode_list[i] -= mu_x[i];
+    backward_encode_list[i] -= mu_x[i];
   }
+  double forward_barrier = 0;
+  double backward_barrier = 0;
+
+  for (size_t j = 0; j < new_size; ++j) {
+    double pca_dot_forward = 0;
+    double pca_dot_backward = 0;
+    for (size_t i = 0; i < old_size; ++i) {
+      pca_dot_forward += forward_encode_list[i] * transform_matrix[j][i];
+      pca_dot_backward += backward_encode_list[i] * transform_matrix[j][i];
+    }
+    forward_barrier += pca_dot_forward * theta[j];
+    backward_barrier += pca_dot_backward * theta[j];
+  }
+  forward_barrier -= mean_y;
+  backward_barrier -= mean_y;
+  // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
+
   // std::cerr << forward_barrier << "\n";
   // static std::mt19937_64 generator(static_cast<unsigned long long int>(
   //                                      std::chrono::system_clock::now().time_since_epoch().count()));
