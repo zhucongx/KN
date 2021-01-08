@@ -66,7 +66,7 @@ set(PROJECT_INCLUDE
 add_executable(${PROJECT_NAME} Kn_Main.cpp ${PROJECT_SRC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
-############################################ FIND BOOST ############################################
+############################################## BOOST ###############################################
 #set(Boost_NO_SYSTEM_PATHS TRUE)
 #if (Boost_NO_SYSTEM_PATHS)
 #    set(BOOST_ROOT "/opt/apps/intel18/impi18_0/boost-mpi/1.68")
@@ -79,7 +79,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 find_package(Boost COMPONENTS mpi serialization REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
-############################################ FIND  JSON ############################################
+############################################### JSON ###############################################
 # Typically you don't care so much for a third party library's tests to be
 # run from your own project's code.
 #set(JSON_BuildTests OFF CACHE INTERNAL "")
@@ -98,7 +98,7 @@ if(NOT json_POPULATED)
     add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-############################################# FIND MPI #############################################
+############################################### MPI ################################################
 #find_package(MPI REQUIRED)
 ## include directories
 #target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
@@ -111,7 +111,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 #        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
-########################################### FIND  OPENMP ###########################################
+############################################## OPENMP ##############################################
 #find_package(OpenMP REQUIRED)
 ## include directories
 #target_include_directories(${PROJECT_NAME} INTERFACE ${OpenMP_C_INCLUDE_DIRS} ${OpenMP_CXX_INCLUDE_DIRS})
@@ -120,21 +120,21 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 ## set interface target compile options
 #target_compile_options(${PROJECT_NAME} INTERFACE
 #        "${OpenMP_C_FLAGS} ${OpenMP_CXX_FLAGS}")
-######################################### FIND  GOOGLETEST #########################################
+############################################ GOOGLETEST ############################################
 #include(FetchContent)
 #FetchContent_GetProperties(googletest)
 #if (NOT googletest_POPULATED)
 #    FetchContent_Populate(googletest)
 #    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 #endif ()
-########################################## FIND ARMADILLO ##########################################
+############################################ ARMADILLO #############################################
 #find_package(ARMADILLO REQUIRED)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 #target_link_libraries(${PROJECT_NAME} PUBLIC ${ARMADILLO_LIBRARIES})
-############################################ FIND EIGEN ############################################
+############################################## EIGEN ###############################################
 #find_package(EIGEN3 REQUIRED)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})
-######################################### FIND  TENSORFLOW #########################################
+############################################ TENSORFLOW ############################################
 #find_package(TensorFlow REQUIRED)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${TensorFlow_INCLUDE_DIRS})
 #target_link_libraries(${PROJECT_NAME} PUBLIC ${TensorFlow_LIBRARIES})
