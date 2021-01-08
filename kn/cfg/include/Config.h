@@ -75,7 +75,7 @@ class Config {
     // Three translational Bravais lattice vector
     // Matrix_t reciprocal_matrix_{},
     // The index of atom in the vector is not always same as of the id of the atom
-    std::vector<Atom> atom_list_;
+    std::vector<Atom> atom_list_{};
   public:
     /// Friend function
     friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);

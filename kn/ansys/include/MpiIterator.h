@@ -14,8 +14,7 @@ class MpiIterator {
     virtual ~MpiIterator();
 
   protected:
-    boost::mpi::environment env_;
-    boost::mpi::communicator world_;
+    boost::mpi::communicator world_{};
 
 
     const unsigned long long initial_number_;

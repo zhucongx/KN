@@ -39,12 +39,11 @@ class KMCSimulation {
 
     // helpful properties
     double total_rate_{0.0};
-    boost::mpi::environment env_;
-    boost::mpi::communicator world_;
+    boost::mpi::communicator world_{};
     const size_t mpi_rank_;
     const size_t mpi_size_;
 
-    std::vector<KMCEvent> event_list_;
+    std::vector<KMCEvent> event_list_{};
     const BarrierPredictor barrier_predictor_;
     mutable std::mt19937_64 generator_;
 };

@@ -124,7 +124,7 @@ size_t KMCSimulation::SelectEvent() const {
   }
   return static_cast<size_t>(std::distance(event_list_.begin(), it));
 }
-void KMCSimulation::CheckAndFix(double one_step_time) {}
+void KMCSimulation::CheckAndFix([[maybe_unused]] double one_step_time) {}
 void KMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
   if (mpi_rank_ == 0) {

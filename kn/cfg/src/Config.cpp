@@ -565,9 +565,9 @@ size_t GetVacancyIndex(const Config &config) {
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors) {
 
   double mass = FindMass(element);
-  Config config({{{lattice_constant_a * factors[kXDimension], 0, 0},
-                  {0, lattice_constant_a * factors[kYDimension], 0},
-                  {0, 0, lattice_constant_a * factors[kZDimension]}}},
+  Config config({{{lattice_constant_a * static_cast<double>(factors[kXDimension]), 0, 0},
+                  {0, lattice_constant_a * static_cast<double>(factors[kYDimension]), 0},
+                  {0, 0, lattice_constant_a * static_cast<double>(factors[kZDimension])}}},
                 4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
   size_t atoms_counter = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);

@@ -11,10 +11,11 @@ ClustersFinder::ClustersFinder(std::string cfg_filename,
                                size_t smallest_cluster_criteria,
                                size_t solvent_bond_criteria)
     : cfg_filename_(std::move(cfg_filename)),
+      config_(cfg::Config::ReadConfig(cfg_filename_, true)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
       solvent_bond_criteria_(solvent_bond_criteria) {
-  ReadFileAndUpdateNeighbor();
+  UpdateElementSet();
 }
 
 ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
@@ -44,16 +45,14 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   return num_atom_in_clusters_set;
 }
 
-void ClustersFinder::PrintLog(const unsigned long long int &file_index,
-                              double time,
-                              const ClusterElementNumMap &found_data) {
-  std::ofstream ofs("clusters_info.json", std::ofstream::out | std::ofstream::app);
+// void ClustersFinder::PrintLog(const unsigned long long int &file_index,
+//                               double time,
+//                               const ClusterElementNumMap &found_data) {
+//   std::ofstream ofs("clusters_info.json", std::ofstream::out | std::ofstream::app);
+//
+// }
 
-
-}
-
-void ClustersFinder::ReadFileAndUpdateNeighbor() {
-  config_ = cfg::Config::ReadConfig(cfg_filename_, true);
+void ClustersFinder::UpdateElementSet() {
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
     if (element_type == "X")
       continue;

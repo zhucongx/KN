@@ -11,7 +11,7 @@ using namespace std;
 #include "KMCSimulation.h"
 #include "MpiClusters.h"
 // #include "ClusterExpansion.h"
-int main(int argc, char *argv[]) {
+int main(int argc,  char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
   //                            {2, 2, 2},
   //                            "Al",
