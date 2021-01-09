@@ -4,7 +4,7 @@
 #include <boost/mpi.hpp>
 
 #include "KMCEvent.h"
-#include "BarrierPredictor.h"
+#include "LRUCacheBarrierPredictor.h"
 
 namespace kmc {
 class KMCSimulation {
@@ -13,10 +13,12 @@ class KMCSimulation {
                   unsigned long long int log_dump_steps,
                   unsigned long long int config_dump_steps,
                   unsigned long long int maximum_number,
-                  std::unordered_map<std::string, double> type_category_hashmap,
+                  const std::set<std::string>& type_set,
                   unsigned long long int steps,
                   double energy,
-                  double time);
+                  double time,
+                  const std::string& json_parameters_filename,
+                  size_t lru_size);
     virtual ~KMCSimulation();
     virtual void CheckAndFix(double one_step_time);
     virtual void Simulate();
@@ -39,12 +41,13 @@ class KMCSimulation {
 
     // helpful properties
     double total_rate_{0.0};
+    boost::mpi::environment environment_{};
     boost::mpi::communicator world_{};
     const size_t mpi_rank_;
     const size_t mpi_size_;
 
     std::vector<KMCEvent> event_list_{};
-    const BarrierPredictor barrier_predictor_;
+    const LRUCacheBarrierPredictor lru_cache_barrier_predictor_;
     mutable std::mt19937_64 generator_;
 };
 } // namespace kmc

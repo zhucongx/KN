@@ -3,20 +3,21 @@
 #include <chrono>
 #include <utility>
 #include <boost/serialization/vector.hpp>
-#include "BarrierPredictor.h"
+#include "LRUCacheBarrierPredictor.h"
 
 namespace kmc {
 
 constexpr size_t kEventListSize = Al_const::kNumFirstNearestNeighbors;
-KMCSimulation::KMCSimulation(
-    cfg::Config config,
-    unsigned long long int log_dump_steps,
-    unsigned long long int config_dump_steps,
-    unsigned long long int maximum_number,
-    std::unordered_map<std::string, double> type_category_hashmap,
-    unsigned long long int steps,
-    double energy,
-    double time)
+KMCSimulation::KMCSimulation(cfg::Config config,
+                             unsigned long long int log_dump_steps,
+                             unsigned long long int config_dump_steps,
+                             unsigned long long int maximum_number,
+                             const std::set<std::string>& type_set,
+                             unsigned long long int steps,
+                             double energy,
+                             double time,
+                             const std::string& json_parameters_filename,
+                             size_t lru_size)
     : config_(std::move(config)),
       log_dump_steps_(log_dump_steps),
       config_dump_steps_(config_dump_steps),
@@ -27,7 +28,8 @@ KMCSimulation::KMCSimulation(
       vacancy_index_(cfg::GetVacancyIndex(config_)),
       mpi_rank_(static_cast<size_t>(world_.rank())),
       mpi_size_(static_cast<size_t>(world_.size())),
-      barrier_predictor_(config_, std::move(type_category_hashmap)),
+      lru_cache_barrier_predictor_(json_parameters_filename,
+                                   config_, type_set, lru_size),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
   event_list_.reserve(kEventListSize);
@@ -42,7 +44,7 @@ void KMCSimulation::BuildEventListSerial() {
   for (const auto neighbor_index :
       config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()) {
     std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
-    KMCEvent event(jump_pair, barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
+    KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
     total_rate_ += event.GetRate();
     event_list_.push_back(std::move(event));
@@ -59,7 +61,7 @@ void KMCSimulation::BuildEventListParallel() {
     auto i = j * mpi_size_ + mpi_rank_;
     auto neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
     std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
-    KMCEvent event(jump_pair, barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
+    KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
     if (mpi_rank_ == 0) {
       std::vector<KMCEvent> collected_list;
@@ -80,7 +82,7 @@ void KMCSimulation::BuildEventListParallel() {
     auto i = quotient * mpi_size_ + mpi_rank_;
     auto neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
     std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
-    KMCEvent event(jump_pair, barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
+    KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
     if (mpi_rank_ == 0) {
       total_rate_ += event.GetRate();
