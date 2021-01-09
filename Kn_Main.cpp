@@ -1,7 +1,7 @@
 // #include "Encode.h"
 // #include "ConfigGenerator.h"
 #include <SizeMisfitGenerator.h>
-#include "Analysis.h"
+#include "deprecated/Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 // using namespace kn;
@@ -11,7 +11,7 @@ using namespace std;
 #include "KMCSimulation.h"
 #include "MpiClusters.h"
 // #include "ClusterExpansion.h"
-int main(int argc,  char *argv[]) {
+int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
   //                            {2, 2, 2},
   //                            "Al",
@@ -20,22 +20,18 @@ int main(int argc,  char *argv[]) {
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
 
-  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-  //                      1e5,
-  //                      1e7,
-  //                      1e10,
-  //                      {{"Al", 1},
-  //                       {"Mg", -2},
-  //                       {"Zn", 2},
-  //                       {"X", 6}
-  //                      },
-  //                      0, 0, 0);
-  // a.Simulate();
-  unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
-                                                           {"Mg", 2},
-                                                           {"Zn", -1},
-                                                           {"X",  3}};
-  ansys::PrintOutClusterExpansionAverage("log.txt", type_category_hashmap);
+  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+                       1e5,
+                       1e7,
+                       1e10,
+                       {"Al", "Mg", "Zn"},
+                       0, 0, 0, "kmc_parameters.json", 3000);
+  a.Simulate();
+  // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
+  //                                                          {"Mg", 2},
+  //                                                          {"Zn", -1},
+  //                                                          {"X",  3}};
+  // ansys::PrintOutClusterExpansionAverage("log.txt", type_category_hashmap);
 
 // auto cfg = ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackward(cfg::Config::ReadConfig("start.cfg"),
 //                                                         {82, 83},
