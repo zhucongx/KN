@@ -9,14 +9,14 @@ namespace kmc {
 BarrierPredictor::BarrierPredictor(
     const std::string &predictor_filename,
     const cfg::Config &reference_config,
-    std::unordered_map<std::string, double> type_category_hashmap)
+    const std::set<std::string> &type_set)
     : mapping_(ansys::ClusterExpansion::GetAverageClusterParametersMapping(reference_config)),
-      type_category_hashmap_(std::move(type_category_hashmap)) {
+      one_hot_encode_hash_map_(ansys::ClusterExpansion::GetOneHotEncodeHashmap(type_set)),
+      num_of_elements_(type_set.size()) {
   std::ifstream ifs(predictor_filename, std::ifstream::in);
   json all_parameters;
   ifs >> all_parameters;
   for (const auto &[element, parameters] : all_parameters.items()) {
-
     element_parameters_hashmap_[element] = Element_Parameters{
         parameters.at("mu_x"),
         parameters.at("transform_matrix"),
@@ -24,15 +24,15 @@ BarrierPredictor::BarrierPredictor(
         parameters.at("mean_y")};
   }
 }
-std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
-    const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) const {
+BarrierPredictor::~BarrierPredictor() = default;
+double BarrierPredictor::GetBarrierFromEncode(
+    const std::string &element_type,
+    const std::vector<std::string>& encode_list) const{
 
-  auto[forward_encode_list, backward_encode_list] =
-  ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackwardFromMap(
-      config, jump_pair, type_category_hashmap_, mapping_);
-  const auto &element_parameter =
-      element_parameters_hashmap_.at(config.GetAtomList().at(jump_pair.second).GetType());
+  auto one_hot_parameters = ansys::ClusterExpansion::GetOneHotParametersFromMap(
+      encode_list, one_hot_encode_hash_map_, num_of_elements_, mapping_);
+
+  const auto &element_parameter = element_parameters_hashmap_.at(element_type);
   const auto &mu_x = element_parameter.mu_x;
   const auto &transform_matrix = element_parameter.transform_matrix;
   const auto &theta = element_parameter.theta;
@@ -42,24 +42,32 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
   const size_t new_size = theta.size();
 
   for (size_t i = 0; i < old_size; ++i) {
-    forward_encode_list[i] -= mu_x[i];
-    backward_encode_list[i] -= mu_x[i];
+    one_hot_parameters[i] -= mu_x[i];
   }
-  double forward_barrier = 0;
-  double backward_barrier = 0;
+  double barrier = 0;
 
   for (size_t j = 0; j < new_size; ++j) {
-    double pca_dot_forward = 0;
-    double pca_dot_backward = 0;
+    double pca_dot = 0;
     for (size_t i = 0; i < old_size; ++i) {
-      pca_dot_forward += forward_encode_list[i] * transform_matrix[j][i];
-      pca_dot_backward += backward_encode_list[i] * transform_matrix[j][i];
+      pca_dot += one_hot_parameters[i] * transform_matrix[j][i];
     }
-    forward_barrier += pca_dot_forward * theta[j];
-    backward_barrier += pca_dot_backward * theta[j];
+    barrier += pca_dot * theta[j];
   }
-  forward_barrier -= mean_y;
-  backward_barrier -= mean_y;
+  barrier += mean_y;
+
+  return barrier;
+}
+
+std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
+    const cfg::Config &config,
+    const std::pair<size_t, size_t> &jump_pair) const {
+  const auto &element_type = config.GetAtomList().at(jump_pair.second).GetType();
+  auto[forward_encode_list, backward_encode_list] =
+  ansys::ClusterExpansion::GetForwardAndBackwardEncode(config, jump_pair);
+
+  auto forward_barrier = GetBarrierFromEncode(element_type, forward_encode_list);
+  auto backward_barrier = GetBarrierFromEncode(element_type, backward_encode_list);
+
   // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";
