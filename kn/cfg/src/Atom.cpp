@@ -133,7 +133,7 @@ double FindMass(const std::string &elem) {
       "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th",
       "Pa", "U",  "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm",
       "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds",
-      "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Os"
+      "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"
   };
   // static const std::vector<int> atomic_num_list = {
   //     0,
