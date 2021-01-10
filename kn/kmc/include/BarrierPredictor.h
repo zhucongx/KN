@@ -4,10 +4,10 @@
 
 namespace kmc {
 struct Element_Parameters {
-  std::vector<double> mu_x;
-  std::vector<std::vector<double>> transform_matrix;
-  std::vector<double> theta;
-  double mean_y;
+  std::vector<double> mu_x{};
+  std::vector<std::vector<double>> transform_matrix{};
+  std::vector<double> theta{};
+  double mean_y{};
 };
 
 class BarrierPredictor {

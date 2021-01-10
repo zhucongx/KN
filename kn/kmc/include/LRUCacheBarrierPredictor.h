@@ -18,10 +18,10 @@ class LRUCacheBarrierPredictor : BarrierPredictor {
   private:
     void Add(const std::vector<std::string> & key, double value) const;
     size_t cache_size_;
-    mutable std::list<std::pair<std::vector<std::string>, double>> cache_list_;
+    mutable std::list<std::pair<std::vector<std::string>, double>> cache_list_{};
     mutable std::unordered_map<std::vector<std::string>,
                        std::list<std::pair<std::vector<std::string>, double>>::iterator,
-                       boost::hash<std::vector<std::string>>> hashmap_;
+                       boost::hash<std::vector<std::string>>> hashmap_{};
 
 };
 } // namespace kmc

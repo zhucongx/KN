@@ -169,7 +169,7 @@ void KMCSimulation::Simulate() {
       if (steps_ % config_dump_steps_ == 0)
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
     }
-    steps_++;
+    ++steps_;
     // world_.barrier();
   }
 
