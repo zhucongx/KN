@@ -20,7 +20,7 @@ class KMCSimulation {
                   const std::string &json_parameters_filename,
                   size_t lru_size);
     virtual ~KMCSimulation();
-    virtual void CheckAndFix(double one_step_time);
+    virtual void CheckTimeAndFix(double one_step_time);
     virtual void Simulate();
   protected:
     void BuildEventListSerial();
