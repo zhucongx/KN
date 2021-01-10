@@ -40,7 +40,7 @@ class Atom {
   private:
     size_t id_{};
     double mass_{};
-    std::string type_;
+    std::string type_{};
     // absolute position
     Vector_t cartesian_position_{};
     // relative position in the box
@@ -48,11 +48,11 @@ class Atom {
     // // near neighbor hashset
     // std::unordered_set<size_t> near_neighbor_hashset_;
     // First nearest neighbor list
-    std::vector<size_t> first_nearest_neighbors_list_;
+    std::vector<size_t> first_nearest_neighbors_list_{};
     // Second nearest neighbor list
-    std::vector<size_t> second_nearest_neighbors_list_;
+    std::vector<size_t> second_nearest_neighbors_list_{};
     // Third nearest neighbor list
-    std::vector<size_t> third_nearest_neighbors_list_;
+    std::vector<size_t> third_nearest_neighbors_list_{};
     // Fourth nearest neighbor list
     // std::vector<size_t> fourth_nearest_neighbors_list_;
     // atom id which is an unique Rank for every atom indexed form 0

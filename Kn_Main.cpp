@@ -1,7 +1,7 @@
 // #include "Encode.h"
 // #include "ConfigGenerator.h"
 #include <SizeMisfitGenerator.h>
-#include "Analysis.h"
+#include "deprecated/Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 // using namespace kn;
@@ -19,23 +19,21 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-
+  ansys::MpiClusters test(0, 10000000, 180000000,
+                          "Al", 3, 3);
+  test.IterateToRun();
   // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
   //                      1e5,
   //                      1e7,
   //                      1e10,
-  //                      {{"Al", 1},
-  //                       {"Mg", -2},
-  //                       {"Zn", 2},
-  //                       {"X", 6}
-  //                      },
-  //                      0, 0, 0);
+  //                      {"Al", "Mg", "Zn"},
+  //                      0, 0, 0, "kmc_parameters.json", 3000);
   // a.Simulate();
-  unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
-                                                           {"Mg", 2},
-                                                           {"Zn", -1},
-                                                           {"X",  3}};
-  ansys::PrintOutClusterExpansionAverage("log.txt", type_category_hashmap);
+  // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
+  //                                                          {"Mg", 2},
+  //                                                          {"Zn", -1},
+  //                                                          {"X",  3}};
+  // ansys::PrintOutClusterExpansionAverage("log.txt", type_category_hashmap);
 
 // auto cfg = ansys::ClusterExpansion::GetAverageClusterParametersForwardAndBackward(cfg::Config::ReadConfig("start.cfg"),
 //                                                         {82, 83},
@@ -55,9 +53,7 @@ int main(int argc, char *argv[]) {
 // test.UpdateNeighbors(Al_const::kFirstNearestNeighborsCutoff,
 //                      Al_const::kNearNeighborsCutoff);
 // ConfigIO::WriteConfig(test, "0_f.cfg", false);
-// ansys::MpiClusters test(0, 10000000, 2440000000,
-//                  "Al", 3, 3);
-// test.IterateToRun();
+
 
 // MpiNeighbors test(370000000, 1000000, 6252000000);
 // test.IterateToRun();

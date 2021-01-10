@@ -18,9 +18,9 @@ class MpiClusters : public MpiIterator {
     void IterateToRun() override;
   private:
     std::string solvent_element_;
-    size_t smallest_cluster_criteria_{};
-    size_t solvent_bond_criteria_{};
-    std::unordered_map<unsigned long long, double> filename_time_hashset_;
+    size_t smallest_cluster_criteria_;
+    size_t solvent_bond_criteria_;
+    std::unordered_map<unsigned long long, double> filename_time_hashset_{};
 };
 
 }// namespace ansys

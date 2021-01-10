@@ -18,11 +18,11 @@ class ClustersFinder {
     // element in one cluster
     ClusterElementNumMap FindClustersAndOutput();
 
-    static void PrintLog(const unsigned long long int &file_index,
-                         double time,
-                         const ClusterElementNumMap &found_data);
+    // static void PrintLog(const unsigned long long int &file_index,
+    //                      double time,
+    //                      const ClusterElementNumMap &found_data);
   private:
-    void ReadFileAndUpdateNeighbor();
+    void UpdateElementSet();
     [[nodiscard]] std::unordered_set<size_t> FindSoluteAtomsHelper() const;
     [[nodiscard]] std::vector<std::vector<size_t>> FindAtomListOfClustersBFSHelper(
         std::unordered_set<size_t> unvisited_atoms_id_set) const;
@@ -31,7 +31,7 @@ class ClustersFinder {
     std::string cfg_filename_;
     cfg::Config config_;
     std::string solvent_element_;
-    std::set<std::string> element_set_;
+    std::set<std::string> element_set_{};
     size_t smallest_cluster_criteria_{};
     size_t solvent_bond_criteria_{};
 };
