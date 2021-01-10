@@ -108,6 +108,19 @@ void KMCSimulation::BuildEventListParallel() {
     cumulative_provability += event.GetProbability();
     event.SetCumulativeProvability(cumulative_provability);
   }
+#ifndef NDEBUG
+  if (mpi_rank_ == 0) {
+
+    for (const auto &event : event_list_) {
+      std::cerr << event.GetBarrier() << '\t';
+    }
+    std::cerr << '\n';
+    for (const auto &event : event_list_) {
+      std::cerr << event.GetRate() << '\t';
+    }
+    std::cerr << '\n';
+  }
+#endif
 }
 
 size_t KMCSimulation::SelectEvent() const {
@@ -135,6 +148,17 @@ void KMCSimulation::Simulate() {
   }
 
   while (steps_ < maximum_number_) {
+
+    if (mpi_rank_ == 0) {
+      // log and config file
+      if (steps_ % log_dump_steps_ == 0) {
+        ofs << steps_ << " " << time_ << " " << energy_ << " "
+            << this_barrier_ << std::endl;
+      }
+      if (steps_ % config_dump_steps_ == 0)
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+    }
+
     if (mpi_size_ == 1) {
       BuildEventListSerial();
     } else {
@@ -143,6 +167,9 @@ void KMCSimulation::Simulate() {
     size_t event_index;
     if (mpi_rank_ == 0) {
       event_index = SelectEvent();
+#ifndef NDEBUG
+      std::cerr << "event choose " << event_index << '\n';
+#endif
     }
     // world_.barrier();
     boost::mpi::broadcast(world_, event_index, 0);
@@ -158,16 +185,8 @@ void KMCSimulation::Simulate() {
       auto one_step_time = log(distribution(generator_)) / (total_rate_ * 1e14);
       time_ -= one_step_time;
       energy_ += event_list_[event_index].GetEnergyChange();
-
-      CheckAndFix(-one_step_time);
-
-      // log and config file
-      if (steps_ % log_dump_steps_ == 0) {
-        ofs << steps_ << " " << time_ << " " << energy_ << " "
-            << event_list_[event_index].GetBarrier() << std::endl;
-      }
-      if (steps_ % config_dump_steps_ == 0)
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+      this_barrier_ = event_list_[event_index].GetBarrier();
+      CheckTimeAndFix(-one_step_time);
     }
     ++steps_;
     // world_.barrier();

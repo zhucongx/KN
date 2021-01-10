@@ -38,6 +38,7 @@ class KMCSimulation {
     double energy_;
     double time_;
     const size_t vacancy_index_;
+    double this_barrier_{0.0};
 
     // helpful properties
     double total_rate_{0.0};
