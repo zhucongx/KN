@@ -19,16 +19,31 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  ansys::MpiClusters test(0, 10000000, 180000000,
-                          "Al", 3, 3);
-  test.IterateToRun();
-  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-  //                      1e5,
-  //                      1e7,
-  //                      1e10,
-  //                      {"Al", "Mg", "Zn"},
-  //                      0, 0, 0, "kmc_parameters.json", 3000);
-  // a.Simulate();
+  // ansys::MpiClusters test(0, 10000000, 180000000,
+  //                         "Al", 3, 3);
+  // test.IterateToRun();
+  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+                       1e5,
+                       1e7,
+                       1e10,
+                       {"Al", "Mg", "Zn"},
+                       0, 0, 0, "kmc_parameters.json", 3000);
+  a.Simulate();
+
+  // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
+  // auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
+  // vector<size_t> index_v;
+  // index_v.resize(108000);
+  // for (size_t i = 0; i < 108000; ++i)
+  //   index_v[i] = i;
+  // shuffle(index_v.begin(), index_v.end(), generator);
+  // for (size_t i = 0; i < 3240; ++i){
+  //   config.atom_list_[index_v[i]].SetType("Mg");
+  // }
+  // for (size_t i = 3240; i < 3240+2700; ++i){
+  //   config.atom_list_[index_v[i]].SetType("Zn");
+  // }
+  // cfg::Config::WriteConfig(config, "start_mf.cfg");
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 2},
   //                                                          {"Zn", -1},
