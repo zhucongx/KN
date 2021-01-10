@@ -13,11 +13,11 @@ class KMCSimulation {
                   unsigned long long int log_dump_steps,
                   unsigned long long int config_dump_steps,
                   unsigned long long int maximum_number,
-                  const std::set<std::string>& type_set,
+                  const std::set<std::string> &type_set,
                   unsigned long long int steps,
                   double energy,
                   double time,
-                  const std::string& json_parameters_filename,
+                  const std::string &json_parameters_filename,
                   size_t lru_size);
     virtual ~KMCSimulation();
     virtual void CheckAndFix(double one_step_time);
