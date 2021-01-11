@@ -366,6 +366,7 @@ void Config::WriteConfig(const Config &config,
       }
     }
     ofs << '\n';
+    ofs << std::flush;
   }
 }
 std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(

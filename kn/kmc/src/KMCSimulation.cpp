@@ -49,6 +49,16 @@ void KMCSimulation::BuildEventListSerial() {
     total_rate_ += event.GetRate();
     event_list_.push_back(std::move(event));
   }
+#ifndef NDEBUG
+    for (const auto &event : event_list_) {
+      std::cerr << event.GetBarrier() << '\t';
+    }
+    std::cerr << '\n';
+    for (const auto &event : event_list_) {
+      std::cerr << event.GetRate() << '\t';
+    }
+    std::cerr << '\n';
+#endif
 }
 void KMCSimulation::BuildEventListParallel() {
   event_list_.clear();
@@ -110,7 +120,6 @@ void KMCSimulation::BuildEventListParallel() {
   }
 #ifndef NDEBUG
   if (mpi_rank_ == 0) {
-
     for (const auto &event : event_list_) {
       std::cerr << event.GetBarrier() << '\t';
     }
@@ -143,21 +152,28 @@ void KMCSimulation::CheckTimeAndFix([[maybe_unused]] double one_step_time) {}
 void KMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
   if (mpi_rank_ == 0) {
-    ofs << "steps    time    energy    barrier\n";
+    ofs << "steps\ttime\tenergy\tEa\tdE\n";
     ofs.precision(8);
   }
 
   while (steps_ < maximum_number_) {
-
+    // log and config file
     if (mpi_rank_ == 0) {
-      // log and config file
       if (steps_ % log_dump_steps_ == 0) {
-        ofs << steps_ << " " << time_ << " " << energy_ << " "
-            << this_barrier_ << std::endl;
+#ifndef NDEBUG
+        ofs << steps_ << '\t' << time_ << '\t' << energy_
+            << '\t' << one_step_barrier_ << '\t' << one_step_change_ << '\t'
+            << lru_cache_barrier_predictor_.count_ << std::endl;
+#else
+        ofs << steps_ << '\t' << time_ << '\t' << energy_
+            << '\t' << one_step_barrier_ << '\t' << one_step_change_ << std::endl;
+#endif
       }
-      if (steps_ % config_dump_steps_ == 0)
+      if (steps_ % config_dump_steps_ == 0) {
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+      }
     }
+    world_.barrier();
 
     if (mpi_size_ == 1) {
       BuildEventListSerial();
@@ -184,9 +200,10 @@ void KMCSimulation::Simulate() {
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
       auto one_step_time = log(distribution(generator_)) / (total_rate_ * 1e14);
       time_ -= one_step_time;
-      energy_ += event_list_[event_index].GetEnergyChange();
-      this_barrier_ = event_list_[event_index].GetBarrier();
-      CheckTimeAndFix(-one_step_time);
+      one_step_change_ = event_list_[event_index].GetEnergyChange();
+      energy_ += one_step_change_;
+      one_step_barrier_ = event_list_[event_index].GetBarrier();
+      // CheckTimeAndFix(-one_step_time);
     }
     ++steps_;
     // world_.barrier();

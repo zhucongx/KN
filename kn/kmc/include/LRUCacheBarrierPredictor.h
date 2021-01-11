@@ -16,13 +16,16 @@ class LRUCacheBarrierPredictor : BarrierPredictor {
         const cfg::Config &config,
         const std::pair<size_t, size_t> &jump_pair) const override;
   private:
-    void Add(const std::vector<std::string> & key, double value) const;
+    void Add(const std::vector<std::string> &key, double value) const;
     size_t cache_size_;
     mutable std::list<std::pair<std::vector<std::string>, double>> cache_list_{};
     mutable std::unordered_map<std::vector<std::string>,
-                       std::list<std::pair<std::vector<std::string>, double>>::iterator,
-                       boost::hash<std::vector<std::string>>> hashmap_{};
-
+                               std::list<std::pair<std::vector<std::string>, double>>::iterator,
+                               boost::hash<std::vector<std::string>>> hashmap_{};
+#ifndef NDEBUG
+  public:
+    mutable size_t count_{0};
+#endif
 };
 } // namespace kmc
 
