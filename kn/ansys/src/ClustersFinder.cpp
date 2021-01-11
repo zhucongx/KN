@@ -92,12 +92,15 @@ std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClustersBFSHelper
       visit_id_queue.pop();
 
       atom_list_of_one_cluster.push_back(atom_id);
-      for (const auto
-            &neighbor_id : config_.GetAtomList()[atom_id].GetFirstNearestNeighborsList()) {
-        it = unvisited_atoms_id_set.find(neighbor_id);
-        if (it != unvisited_atoms_id_set.end()) {
-          visit_id_queue.push(*it);
-          unvisited_atoms_id_set.erase(it);
+
+      for (auto neighbors_list : {&config_.GetAtomList()[atom_id].GetFirstNearestNeighborsList(),
+                                  &config_.GetAtomList()[atom_id].GetSecondNearestNeighborsList()}) {
+        for (auto neighbor_id : *neighbors_list) {
+          it = unvisited_atoms_id_set.find(neighbor_id);
+          if (it != unvisited_atoms_id_set.end()) {
+            visit_id_queue.push(*it);
+            unvisited_atoms_id_set.erase(it);
+          }
         }
       }
     }
@@ -119,29 +122,58 @@ std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClusters() const 
     }
   }
 
-  // add solvent neighbors
-  for (auto &atom_list : cluster_atom_list) {
-    std::unordered_map<size_t, size_t> neighbor_bond_count;
-    for (const auto &atom_index : atom_list) {
-      for (auto neighbor_id : config_.GetAtomList()[atom_index].GetFirstNearestNeighborsList()) {
-        if (config_.GetAtomList()[neighbor_id].GetType() == solvent_element_)
-          neighbor_bond_count[neighbor_id]++;
-      }
-    }
-    for (auto[neighbor_id, bond_count] : neighbor_bond_count) {
-      if (bond_count >= solvent_bond_criteria_)
-        atom_list.push_back(neighbor_id);
-    }
-  }
-
-  // remove duplicate outer layer
-  std::unordered_set<size_t> unvisited_atoms_id_set;
+  std::unordered_set<size_t> all_found_solute_set;
   for (const auto &singe_cluster_vector : cluster_atom_list) {
     std::copy(singe_cluster_vector.begin(),
               singe_cluster_vector.end(),
-              std::inserter(unvisited_atoms_id_set, unvisited_atoms_id_set.end()));
+              std::inserter(all_found_solute_set, all_found_solute_set.end()));
   }
-  auto cluster_atom_list_after_removing = FindAtomListOfClustersBFSHelper(unvisited_atoms_id_set);
+
+  // add solvent neighbors
+  for (const auto &atom : config_.GetAtomList()) {
+    if (atom.GetType() != solvent_element_)
+      continue;
+    size_t neighbor_bond_count = 0;
+    for (auto neighbors_list : {&atom.GetFirstNearestNeighborsList()}) {
+      for (auto neighbor_id : *neighbors_list) {
+        const auto &neighbor_type = config_.GetAtomList()[neighbor_id].GetType();
+        if (neighbor_type != solvent_element_ && neighbor_type != "X"
+            && all_found_solute_set.find(config_.GetAtomList()[neighbor_id].GetId())
+                != all_found_solute_set.end())
+          neighbor_bond_count++;
+      }
+    }
+    if (neighbor_bond_count >= solvent_bond_criteria_)
+      all_found_solute_set.insert(atom.GetId());
+  }
+
+
+
+  // // add solvent neighbors
+  // for (auto &atom_list : cluster_atom_list) {
+  //   std::unordered_map<size_t, size_t> neighbor_bond_count;
+  //   for (const auto &atom_index : atom_list) {
+  //     for (auto neighbors_list : {&config_.GetAtomList()[atom_index].GetFirstNearestNeighborsList()}) {
+  //       for (auto neighbor_id : *neighbors_list) {
+  //         if (config_.GetAtomList()[neighbor_id].GetType() == solvent_element_)
+  //           neighbor_bond_count[neighbor_id]++;
+  //       }
+  //     }
+  //   }
+  //   for (auto[neighbor_id, bond_count] : neighbor_bond_count) {
+  //     if (bond_count >= solvent_bond_criteria_)
+  //       atom_list.push_back(neighbor_id);
+  //   }
+  // }
+  //
+  // // remove duplicate outer layer
+  // std::unordered_set<size_t> unvisited_atoms_id_set;
+  // for (const auto &singe_cluster_vector : cluster_atom_list) {
+  //   std::copy(singe_cluster_vector.begin(),
+  //             singe_cluster_vector.end(),
+  //             std::inserter(unvisited_atoms_id_set, unvisited_atoms_id_set.end()));
+  // }
+  auto cluster_atom_list_after_removing = FindAtomListOfClustersBFSHelper(all_found_solute_set);
 
   return cluster_atom_list_after_removing;
 }
