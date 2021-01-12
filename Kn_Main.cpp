@@ -22,13 +22,13 @@ int main(int argc, char *argv[]) {
   // ansys::MpiClusters test(0, 10000000, 180000000,
   //                         "Al", 3, 3);
   // test.IterateToRun();
-  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-                       1e5,
-                       1e6,
-                       1e10,
-                       {"Al", "Mg", "Zn"},
-                       0, 0, 0, "kmc_parameters.json", 1000);
-  a.Simulate();
+  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+  //                      1e5,
+  //                      1e6,
+  //                      1e10,
+  //                      {"Al", "Mg", "Zn"},
+  //                      0, 0, 0, "kmc_parameters.json", 1000);
+  // a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
   // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
   // for (size_t i = Mg; i < Mg+Zn; ++i){
   //   config.atom_list_[index_v[i]].SetType("Zn");
   // }
+  // config.atom_list_[index_v[Mg+Zn]].SetType("X");
   // cfg::Config::WriteConfig(config, "start_liu.cfg");
 
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
