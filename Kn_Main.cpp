@@ -24,26 +24,32 @@ int main(int argc, char *argv[]) {
   // test.IterateToRun();
   kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
                        1e5,
-                       1e7,
+                       1e6,
                        1e10,
                        {"Al", "Mg", "Zn"},
-                       0, 0, 0, "kmc_parameters.json", 3000);
+                       0, 0, 0, "kmc_parameters.json", 1000);
   a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
-  // auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
+  // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
   // vector<size_t> index_v;
-  // index_v.resize(108000);
-  // for (size_t i = 0; i < 108000; ++i)
+  // constexpr size_t All = 10976;
+  // constexpr size_t Mg = 113;
+  // constexpr size_t Zn = 215;
+  //
+  // index_v.resize(All);
+  // for (size_t i = 0; i < All; ++i)
   //   index_v[i] = i;
   // shuffle(index_v.begin(), index_v.end(), generator);
-  // for (size_t i = 0; i < 3240; ++i){
+  //
+  // for (size_t i = 0; i < Mg; ++i){
   //   config.atom_list_[index_v[i]].SetType("Mg");
   // }
-  // for (size_t i = 3240; i < 3240+2700; ++i){
+  // for (size_t i = Mg; i < Mg+Zn; ++i){
   //   config.atom_list_[index_v[i]].SetType("Zn");
   // }
-  // cfg::Config::WriteConfig(config, "start_mf.cfg");
+  // cfg::Config::WriteConfig(config, "start_liu.cfg");
+
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 2},
   //                                                          {"Zn", -1},
