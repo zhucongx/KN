@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 ########################################## SET  COMPILERS ##########################################
-#set(CMAKE_C_COMPILER "mpicc") # {gcc, clang, mpicc, icc}
-#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, clang++, mpicxx, icpc}
+set(CMAKE_C_COMPILER "mpicc") # {gcc, clang, mpicc, icc}
+set(CMAKE_CXX_COMPILER "mpicxx") # {g++, clang++, mpicxx, icpc}
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
 ############################################ SET  PATHS ############################################

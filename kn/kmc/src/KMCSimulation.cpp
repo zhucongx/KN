@@ -45,7 +45,7 @@ KMCSimulation::KMCSimulation(cfg::Config config,
 }
 KMCSimulation::~KMCSimulation() {
   MPI_Finalize();
-};
+}
 void KMCSimulation::BuildEventListSerial() {
   event_list_.clear();
   total_rate_ = 0;

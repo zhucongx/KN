@@ -1,6 +1,7 @@
 #ifndef KN_KN_KMC_INCLUDE_KMCEVENT_H_
 #define KN_KN_KMC_INCLUDE_KMCEVENT_H_
 #include <utility>
+#include <stddef.h>
 // #include <boost/serialization/serialization.hpp>
 // #include <boost/serialization/utility.hpp>
 
