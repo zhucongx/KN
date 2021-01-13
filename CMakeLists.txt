@@ -101,7 +101,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 ############################################### MPI ################################################
 find_package(MPI REQUIRED)
 # include directories
-target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_DIRS} ${MPI_CXX_INCLUDE_DIRS})
 # link libraries
 target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
 # set interface target compile options
