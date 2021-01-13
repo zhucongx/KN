@@ -42,7 +42,7 @@ void Config::ConvertRelativeToCartesian() {
   }
 }
 void Config::ConvertCartesianToRelative() {
-  auto inverse_basis = InverseMatrix33(basis_);
+  auto inverse_basis = InverseMatrix(basis_);
   for (auto &atom : atom_list_) {
     atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
   }
@@ -59,7 +59,7 @@ void Config::WrapAtomRelative() {
   }
 }
 void Config::WrapAtomCartesian() {
-  auto inverse_basis = InverseMatrix33(basis_);
+  auto inverse_basis = InverseMatrix(basis_);
   for (auto &atom : atom_list_) {
     atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
     atom.SetRelativePosition(
@@ -540,8 +540,8 @@ Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, siz
   }
   // The third row is normalized since it is a cross product of two normalized vectors.
   // We use transposed matrix here because transpose of an orthogonal matrix equals its inverse
-  return TransposeMatrix33({pair_direction, vertical_vector,
-                            Cross(pair_direction, vertical_vector)});
+  return TransposeMatrix({pair_direction, vertical_vector,
+                          Cross(pair_direction, vertical_vector)});
 }
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix) {
   const auto move_distance_after_rotation = Vector_t{0.5, 0.5, 0.5}
