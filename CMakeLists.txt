@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 ########################################## SET  COMPILERS ##########################################
-set(CMAKE_C_COMPILER "mpicc") # {gcc, clang, mpicc, icc}
-set(CMAKE_CXX_COMPILER "mpicxx") # {g++, clang++, mpicxx, icpc}
+#set(CMAKE_C_COMPILER "mpicc") # {gcc, clang, mpicc, icc}
+#set(CMAKE_CXX_COMPILER "mpicxx") # {g++, clang++, mpicxx, icpc}
 project(KN)
 set(CMAKE_CXX_STANDARD 20)
 ############################################ SET  PATHS ############################################
@@ -99,18 +99,18 @@ if(NOT json_POPULATED)
 endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 ############################################### MPI ################################################
-#find_package(MPI REQUIRED)
-## include directories
-#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-## link libraries
-#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-## set interface target compile options
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+find_package(MPI REQUIRED)
+# include directories
+target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
+# link libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+# set interface target compile options
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 ############################################## OPENMP ##############################################
 #find_package(OpenMP REQUIRED)
 ## include directories
