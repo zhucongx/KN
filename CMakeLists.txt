@@ -76,7 +76,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 # Stampede2 doesn't have boost-mpi. Use self-compiled version
 #SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/home1/07075/tg863748/library/boost/include")
 #SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/home1/07075/tg863748/library/boost/lib")
-find_package(Boost COMPONENTS mpi serialization REQUIRED)
+#find_package(Boost COMPONENTS mpi serialization REQUIRED)
+find_package(Boost REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
 ############################################### JSON ###############################################
