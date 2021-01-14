@@ -223,19 +223,20 @@ void KMCSimulation::Simulate() {
     MPI_Bcast(&event_index, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
     // boost::mpi::broadcast(world_, event_index, 0);
     // world_.barrier();
-    const auto &executed_invent_pair = event_list_[event_index].GetJumpPair();
-    cfg::AtomsJump(config_, executed_invent_pair);
+    const auto &executed_invent = event_list_[event_index];
+    cfg::AtomsJump(config_, executed_invent.GetJumpPair());
 
     // std::pair<size_t,size_t> CheckingPair{0,0};
 
     if (mpi_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      auto one_step_time = log(distribution(generator_)) / (total_rate_ * 1e14);
+      constexpr double kDebyeFrequency = 1e14;
+      auto one_step_time = log(distribution(generator_)) / (total_rate_ * kDebyeFrequency);
       time_ -= one_step_time;
-      one_step_change_ = event_list_[event_index].GetEnergyChange();
+      one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
-      one_step_barrier_ = event_list_[event_index].GetBarrier();
+      one_step_barrier_ = executed_invent.GetBarrier();
       // CheckTimeAndFix(-one_step_time);
     }
     ++steps_;
