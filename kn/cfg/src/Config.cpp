@@ -8,7 +8,7 @@ namespace cfg {
 
 Config::Config() = default;
 Config::Config(const Matrix_t &basis, size_t atom_size) : basis_(basis) {
-  if (!atom_size)
+  if (atom_size)
     atom_list_.reserve(atom_size);
 }
 Config::Config(const Matrix_t &basis, std::vector<Atom> atom_list)
