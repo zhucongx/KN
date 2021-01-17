@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <utility>
-#include <boost/serialization/vector.hpp>
+#include <mpi.h>
 #include "LRUCacheBarrierPredictor.h"
 
 namespace kmc {
@@ -12,11 +12,11 @@ KMCSimulation::KMCSimulation(cfg::Config config,
                              unsigned long long int log_dump_steps,
                              unsigned long long int config_dump_steps,
                              unsigned long long int maximum_number,
-                             const std::set<std::string>& type_set,
+                             const std::set<std::string> &type_set,
                              unsigned long long int steps,
                              double energy,
                              double time,
-                             const std::string& json_parameters_filename,
+                             const std::string &json_parameters_filename,
                              size_t lru_size)
     : config_(std::move(config)),
       log_dump_steps_(log_dump_steps),
@@ -26,18 +26,26 @@ KMCSimulation::KMCSimulation(cfg::Config config,
       energy_(energy),
       time_(time),
       vacancy_index_(cfg::GetVacancyIndex(config_)),
-      mpi_rank_(static_cast<size_t>(world_.rank())),
-      mpi_size_(static_cast<size_t>(world_.size())),
       lru_cache_barrier_predictor_(json_parameters_filename,
                                    config_, type_set, lru_size),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
+  MPI_Init(nullptr, nullptr);
+  int mpi_rank, mpi_size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+  mpi_rank_ = static_cast<size_t>(mpi_rank);
+  mpi_size_ = static_cast<size_t>(mpi_size);
+
   event_list_.reserve(kEventListSize);
-  if (world_.rank() == 0) {
-    std::cout << "Using " << world_.size() << " processes." << std::endl;
+  if (mpi_rank_ == 0) {
+    std::cout << "Using " << mpi_size_ << " processes." << std::endl;
   }
+
 }
-KMCSimulation::~KMCSimulation() = default;
+KMCSimulation::~KMCSimulation() {
+  MPI_Finalize();
+}
 void KMCSimulation::BuildEventListSerial() {
   event_list_.clear();
   total_rate_ = 0;
@@ -49,6 +57,16 @@ void KMCSimulation::BuildEventListSerial() {
     total_rate_ += event.GetRate();
     event_list_.push_back(std::move(event));
   }
+#ifndef NDEBUG
+  for (const auto &event : event_list_) {
+    std::cerr << event.GetBarrier() << '\t';
+  }
+  std::cerr << '\n';
+  for (const auto &event : event_list_) {
+    std::cerr << event.GetRate() << '\t';
+  }
+  std::cerr << '\n';
+#endif
 }
 void KMCSimulation::BuildEventListParallel() {
   event_list_.clear();
@@ -58,24 +76,43 @@ void KMCSimulation::BuildEventListParallel() {
   auto remainder = kEventListSize % mpi_size_;
   // quotient part
   for (size_t j = 0; j < quotient; ++j) {
-    auto i = j * mpi_size_ + mpi_rank_;
-    auto neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
+    const auto i = j * mpi_size_ + mpi_rank_;
+    const auto
+        neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
     std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
     KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
+    const double this_rate = event.GetRate();
+    double sum_rates = 0;
+    MPI_Reduce(&this_rate, &sum_rates, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
     if (mpi_rank_ == 0) {
-      std::vector<KMCEvent> collected_list;
-      double sum_rates_;
+      std::vector<KMCEvent> collected_event_ctor_pair_list(mpi_size_);
+      MPI_Gather(&event, sizeof(KMCEvent), MPI_BYTE,
+                 collected_event_ctor_pair_list.data(),
+                 sizeof(KMCEvent), MPI_BYTE, 0, MPI_COMM_WORLD);
 
-      boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus<>(), 0);
-      boost::mpi::gather(world_, event, collected_list, 0);
-
-      total_rate_ += sum_rates_;
-      std::copy(collected_list.begin(), collected_list.end(), std::back_inserter(event_list_));
+      total_rate_ += sum_rates;
+      std::copy(collected_event_ctor_pair_list.begin(),
+                     collected_event_ctor_pair_list.end(),
+                     std::back_inserter(event_list_));
     } else {
-      boost::mpi::reduce(world_, event.GetRate(), std::plus<>(), 0);
-      boost::mpi::gather(world_, event, 0);
+      MPI_Gather(&event, sizeof(KMCEvent), MPI_BYTE,
+                 nullptr, 0, MPI_BYTE, 0, MPI_COMM_WORLD);
     }
+    // if (mpi_rank_ == 0) {
+    //   std::vector<KMCEvent> collected_list;
+    //   double sum_rates_;
+    //
+    //   boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus<>(), 0);
+    //   boost::mpi::gather(world_, event, collected_list, 0);
+    //
+    //   total_rate_ += sum_rates_;
+    //   std::copy(collected_list.begin(), collected_list.end(), std::back_inserter(event_list_));
+    // } else {
+    //   boost::mpi::reduce(world_, event.GetRate(), std::plus<>(), 0);
+    //   boost::mpi::gather(world_, event, 0);
+    // }
   }
   // remainder part
   if (remainder) {
@@ -87,19 +124,24 @@ void KMCSimulation::BuildEventListParallel() {
     if (mpi_rank_ == 0) {
       total_rate_ += event.GetRate();
       event_list_.push_back(event);
-      for (int j = 1; j < static_cast<int>(remainder); ++j) {
-        world_.recv(j, 0, event);
+      for (size_t j = 1; j < remainder; ++j) {
+        MPI_Recv(&event, sizeof(KMCEvent), MPI_BYTE,
+                 static_cast<int>(j), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         total_rate_ += event.GetRate();
         event_list_.push_back(event);
       }
     } else {
-      if (i < kEventListSize)
-        world_.send(0, 0, event);
+      if (i < kEventListSize) {
+        MPI_Send(&event, sizeof(KMCEvent), MPI_BYTE,
+                 0, 0, MPI_COMM_WORLD);
+      }
     }
   }
+  MPI_Bcast(event_list_.data(), sizeof(KMCEvent) * kEventListSize, MPI_BYTE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&total_rate_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-  boost::mpi::broadcast(world_, event_list_, 0);
-  boost::mpi::broadcast(world_, total_rate_, 0);
+  // boost::mpi::broadcast(world_, event_list_, 0);
+  // boost::mpi::broadcast(world_, total_rate_, 0);
 
   /* calculate relative and cumulative probability */
   double cumulative_provability = 0.0;
@@ -108,6 +150,18 @@ void KMCSimulation::BuildEventListParallel() {
     cumulative_provability += event.GetProbability();
     event.SetCumulativeProvability(cumulative_provability);
   }
+#ifndef NDEBUG
+  if (mpi_rank_ == 0) {
+    for (const auto &event : event_list_) {
+      std::cerr << event.GetBarrier() << '\t';
+    }
+    std::cerr << '\n';
+    for (const auto &event : event_list_) {
+      std::cerr << event.GetRate() << '\t';
+    }
+    std::cerr << '\n';
+  }
+#endif
 }
 
 size_t KMCSimulation::SelectEvent() const {
@@ -126,15 +180,33 @@ size_t KMCSimulation::SelectEvent() const {
   }
   return static_cast<size_t>(std::distance(event_list_.begin(), it));
 }
-void KMCSimulation::CheckAndFix([[maybe_unused]] double one_step_time) {}
+void KMCSimulation::CheckTimeAndFix([[maybe_unused]] double one_step_time) {}
 void KMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
   if (mpi_rank_ == 0) {
-    ofs << "steps    time    energy    barrier\n";
+    ofs << "steps\ttime\tenergy\tEa\tdE\n";
     ofs.precision(8);
   }
 
   while (steps_ < maximum_number_) {
+    // log and config file
+    if (mpi_rank_ == 0) {
+      if (steps_ % log_dump_steps_ == 0) {
+#ifndef NDEBUG
+        ofs << steps_ << '\t' << time_ << '\t' << energy_
+            << '\t' << one_step_barrier_ << '\t' << one_step_change_ << '\t'
+            << lru_cache_barrier_predictor_.count_ << std::endl;
+#else
+        ofs << steps_ << '\t' << time_ << '\t' << energy_
+            << '\t' << one_step_barrier_ << '\t' << one_step_change_ << std::endl;
+#endif
+      }
+      if (steps_ % config_dump_steps_ == 0) {
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+      }
+    }
+    // world_.barrier();
+    MPI_Barrier(MPI_COMM_WORLD);
     if (mpi_size_ == 1) {
       BuildEventListSerial();
     } else {
@@ -143,9 +215,13 @@ void KMCSimulation::Simulate() {
     size_t event_index;
     if (mpi_rank_ == 0) {
       event_index = SelectEvent();
+#ifndef NDEBUG
+      std::cerr << "event choose " << event_index << '\n';
+#endif
     }
     // world_.barrier();
-    boost::mpi::broadcast(world_, event_index, 0);
+    MPI_Bcast(&event_index, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
+    // boost::mpi::broadcast(world_, event_index, 0);
     // world_.barrier();
     const auto &executed_invent_pair = event_list_[event_index].GetJumpPair();
     cfg::AtomsJump(config_, executed_invent_pair);
@@ -157,17 +233,10 @@ void KMCSimulation::Simulate() {
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
       auto one_step_time = log(distribution(generator_)) / (total_rate_ * 1e14);
       time_ -= one_step_time;
-      energy_ += event_list_[event_index].GetEnergyChange();
-
-      CheckAndFix(-one_step_time);
-
-      // log and config file
-      if (steps_ % log_dump_steps_ == 0) {
-        ofs << steps_ << " " << time_ << " " << energy_ << " "
-            << event_list_[event_index].GetBarrier() << std::endl;
-      }
-      if (steps_ % config_dump_steps_ == 0)
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+      one_step_change_ = event_list_[event_index].GetEnergyChange();
+      energy_ += one_step_change_;
+      one_step_barrier_ = event_list_[event_index].GetBarrier();
+      // CheckTimeAndFix(-one_step_time);
     }
     ++steps_;
     // world_.barrier();

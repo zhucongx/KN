@@ -24,19 +24,22 @@ std::pair<double, double> LRUCacheBarrierPredictor::GetBarrierAndDiff(
 
   double forward_barrier, backward_barrier;
   auto it1 = hashmap_.find(forward_encode_list);
-  if (it1 == hashmap_.end()){
+  if (it1 == hashmap_.end()) {
     forward_barrier = GetBarrierFromEncode(element_type, forward_encode_list);
     Add(forward_encode_list, forward_barrier);
-  } else{
+  } else {
     cache_list_.splice(cache_list_.begin(), cache_list_, it1->second);
     forward_barrier = it1->second->second;
   }
 
   auto it2 = hashmap_.find(backward_encode_list);
-  if (it2 == hashmap_.end()){
+  if (it2 == hashmap_.end()) {
     backward_barrier = GetBarrierFromEncode(element_type, backward_encode_list);
     Add(backward_encode_list, backward_barrier);
-  } else{
+  } else {
+#ifndef NDEBUG
+    ++count_;
+#endif
     cache_list_.splice(cache_list_.begin(), cache_list_, it2->second);
     backward_barrier = it2->second->second;
   }
@@ -50,17 +53,18 @@ std::pair<double, double> LRUCacheBarrierPredictor::GetBarrierAndDiff(
   return {forward_barrier,
           forward_barrier - backward_barrier};
 }
-void LRUCacheBarrierPredictor::Add(const std::vector<std::string> &key, double value) const{
+void LRUCacheBarrierPredictor::Add(const std::vector<std::string> &key, double value) const {
   auto it = hashmap_.find(key);
-  if(it != hashmap_.end()) {
+  if (it != hashmap_.end()) {
     cache_list_.erase(it->second);
   }
   cache_list_.push_front(std::make_pair(key, value));
   hashmap_[key] = cache_list_.begin();
-  if (hashmap_.size()>cache_size_){
+  if (hashmap_.size() > cache_size_) {
     auto last = cache_list_.rbegin()->first;
     cache_list_.pop_back();
     hashmap_.erase(last);
   }
 }
+
 } // namespace kmc

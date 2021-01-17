@@ -1,8 +1,6 @@
 #ifndef KN_KN_KMC_INCLUDE_MPIITERATOR_H_
 #define KN_KN_KMC_INCLUDE_MPIITERATOR_H_
 
-#include <boost/mpi.hpp>
-
 namespace ansys {
 
 class MpiIterator {
@@ -14,16 +12,12 @@ class MpiIterator {
     virtual ~MpiIterator();
 
   protected:
-    boost::mpi::environment environment_{};
-    boost::mpi::communicator world_{};
-
-
     const unsigned long long initial_number_;
     const unsigned long long increment_number_;
     const unsigned long long finial_number_;
 
-    const int mpi_rank_;
-    const int mpi_size_;
+    int mpi_rank_;
+    int mpi_size_;
 };
 
 } // namespace ansys

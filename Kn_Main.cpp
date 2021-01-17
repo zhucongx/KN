@@ -1,7 +1,6 @@
 // #include "Encode.h"
 // #include "ConfigGenerator.h"
 #include <SizeMisfitGenerator.h>
-#include "deprecated/Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 // using namespace kn;
@@ -19,16 +18,37 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  ansys::MpiClusters test(0, 10000000, 180000000,
-                          "Al", 3, 3);
-  test.IterateToRun();
-  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-  //                      1e5,
-  //                      1e7,
-  //                      1e10,
-  //                      {"Al", "Mg", "Zn"},
-  //                      0, 0, 0, "kmc_parameters.json", 3000);
-  // a.Simulate();
+  // ansys::MpiClusters test(0, 1e6, 210e6,
+  //                         "Al", 3, 3);
+  // test.SerialRun();
+  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+                       1e5,
+                       1e6,
+                       1e10,
+                       {"Al", "Mg", "Zn"},
+                       0, 0, 0, "kmc_parameters.json", 1000);
+  a.Simulate();
+
+  // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
+  // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
+  // vector<size_t> index_v;
+  // constexpr size_t All = 10976;
+  // constexpr size_t Mg = 113;
+  // constexpr size_t Zn = 215;
+  //
+  // index_v.resize(All);
+  // for (size_t i = 0; i < All; ++i)
+  //   index_v[i] = i;
+  // shuffle(index_v.begin(), index_v.end(), generator);
+  //
+  // for (size_t i = 0; i < Mg; ++i){
+  //   config.atom_list_[index_v[i]].SetType("Mg");
+  // }
+  // for (size_t i = Mg; i < Mg+Zn; ++i){
+  //   config.atom_list_[index_v[i]].SetType("Zn");
+  // }
+  // cfg::Config::WriteConfig(config, "start_liu.cfg");
+
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 2},
   //                                                          {"Zn", -1},

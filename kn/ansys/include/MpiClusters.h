@@ -6,7 +6,7 @@
 
 namespace ansys {
 
-class MpiClusters : public MpiIterator {
+class MpiClusters{
   public:
     MpiClusters(unsigned long long int initial_number,
                 unsigned long long int increment_number,
@@ -14,9 +14,12 @@ class MpiClusters : public MpiIterator {
                 std::string solvent_element,
                 size_t smallest_cluster_criteria,
                 size_t solvent_bond_criteria);
-    ~MpiClusters() override;
-    void IterateToRun() override;
+    ~MpiClusters();
+    void SerialRun() const;
   private:
+    const unsigned long long initial_number_;
+    const unsigned long long increment_number_;
+    const unsigned long long finial_number_;
     std::string solvent_element_;
     size_t smallest_cluster_criteria_;
     size_t solvent_bond_criteria_;
