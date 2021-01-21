@@ -1,14 +1,11 @@
 #ifndef KN_KN_KMC_INCLUDE_KMCEVENT_H_
 #define KN_KN_KMC_INCLUDE_KMCEVENT_H_
 #include <utility>
-#include <stddef.h>
+#include <cstddef>
 // #include <boost/serialization/serialization.hpp>
 // #include <boost/serialization/utility.hpp>
 
 namespace kmc {
-constexpr double kBoltzmannConstant = 8.617333262145e-5;
-constexpr double kTemperature = 300;
-constexpr double kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBoltzmannConstant;
 
 class KMCEvent {
     // Todo reduce KMCEvent
