@@ -481,10 +481,18 @@ void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair) {
   }
 
 }
+std::map<std::string, size_t> CountAllType(const Config &config) {
+  std::map<std::string, size_t> types_count_map;
+  for (const auto &atom : config.GetAtomList()) {
+    types_count_map[atom.GetType()]++;
+  }
+  return types_count_map;
+}
+
 std::map<Bond, size_t> CountAllBonds(const Config &config) {
   std::map<Bond, size_t> bonds_count_map;
   std::string type1, type2;
-  auto atom_list = config.GetAtomList();
+  const auto &atom_list = config.GetAtomList();
   for (const auto &atom : atom_list) {
     type1 = atom.GetType();
     for (const auto &atom2_id : atom.GetFirstNearestNeighborsList()) {

@@ -87,7 +87,7 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &jump_pair);
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
 void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
-
+std::map<std::string, size_t> CountAllType(const Config &config);
 std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config);
