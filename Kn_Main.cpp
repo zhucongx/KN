@@ -1,5 +1,5 @@
 // #include "Encode.h"
-// #include "ConfigGenerator.h"
+#include "InitialConfigGenerator.h"
 #include <SizeMisfitGenerator.h>
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
@@ -18,16 +18,27 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  // ansys::MpiClusters test(0, 1e6, 210e6,
-  //                         "Al", 3, 3);
-  // test.SerialRun();
-  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-                       1e5,
-                       1e6,
-                       1e10,
-                       {"Al", "Mg", "Zn"},
-                       0, 0, 0, "kmc_parameters.json", 1000);
-  a.Simulate();
+  // auto a = gen::InitialConfigGenerator::GenerateL10(4.046, {"Mg", "Zn"}, {1, 2, 2});
+  // auto b = gen::InitialConfigGenerator::EmbedToLarge(4.046,
+  //                                                    {14, 14, 14},
+  //                                                    {1, 2, 2},
+  //                                                    a,
+  //                                                    {{"Al", 10421}, {"Mg", 302}, {"Zn", 262},
+  //                                                    {"X", 1}});
+  //
+  // cfg::Config::WriteConfig(b, "start_l10.cfg");
+
+  ansys::MpiClusters test(0, 1e6, 424e6,
+                          "Al", 3, 6);
+  test.SerialRun();
+
+  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+  //                      1e5,
+  //                      1e6,
+  //                      1e10,
+  //                      {"Al", "Mg", "Zn"},
+  //                      0, 0, 0, "kmc_parameters.json", 1000);
+  // a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
   // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
