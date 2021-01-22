@@ -19,8 +19,16 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  // ansys::MpiClusters test(0, 10000000, 180000000,
+  // ansys::MpiClusters test(0, 1e6, 210e6,
   //                         "Al", 3, 3);
+  // test.SerialRun();
+  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
+                       1e5,
+                       1e6,
+                       1e10,
+                       {"Al", "Mg", "Zn"},
+                       0, 0, 0, "kmc_parameters.json", 1000);
+  a.Simulate();
   // test.IterateToRun();
   // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
   //                      1e5,
@@ -48,7 +56,6 @@ int main(int argc, char *argv[]) {
   // for (size_t i = Mg; i < Mg+Zn; ++i){
   //   config.atom_list_[index_v[i]].SetType("Zn");
   // }
-  // config.atom_list_[index_v[Mg+Zn]].SetType("X");
   // cfg::Config::WriteConfig(config, "start_liu.cfg");
 
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},

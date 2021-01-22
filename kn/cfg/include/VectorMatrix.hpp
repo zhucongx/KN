@@ -249,7 +249,7 @@ inline double Determinant(const Matrix_t &input) {
       - input[kXDimension][kZDimension] * input[kYDimension][kYDimension]
           * input[kZDimension][kXDimension]);
 }
-inline Matrix_t TransposeMatrix33(const Matrix_t &input) {
+inline Matrix_t TransposeMatrix(const Matrix_t &input) {
   return {{{input[kXDimension][kXDimension], input[kYDimension][kXDimension],
             input[kZDimension][kXDimension]},
            {input[kXDimension][kYDimension], input[kYDimension][kYDimension],
@@ -257,7 +257,7 @@ inline Matrix_t TransposeMatrix33(const Matrix_t &input) {
            {input[kXDimension][kZDimension], input[kYDimension][kZDimension],
             input[kZDimension][kZDimension]}}};
 }
-inline Matrix_t InverseMatrix33(const Matrix_t &input) {
+inline Matrix_t InverseMatrix(const Matrix_t &input) {
   // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
   //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
   //                        {input[kZDimension][kXDimension], input[kZDimension][kYDimension], input[kZDimension][kZDimension]}};

@@ -76,7 +76,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "kn.exe")
 # Stampede2 doesn't have boost-mpi. Use self-compiled version
 #SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/home1/07075/tg863748/library/boost/include")
 #SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/home1/07075/tg863748/library/boost/lib")
-find_package(Boost COMPONENTS mpi serialization REQUIRED)
+#find_package(Boost COMPONENTS mpi serialization REQUIRED)
+find_package(Boost REQUIRED)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
 ############################################### JSON ###############################################
@@ -99,18 +100,18 @@ if(NOT json_POPULATED)
 endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 ############################################### MPI ################################################
-#find_package(MPI REQUIRED)
-## include directories
-#target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_PATH} ${MPI_CXX_INCLUDE_PATH})
-## link libraries
-#target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
-## set interface target compile options
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
-#target_compile_options(${PROJECT_NAME} INTERFACE
-#        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
+find_package(MPI REQUIRED)
+# include directories
+target_include_directories(${PROJECT_NAME} INTERFACE ${MPI_C_INCLUDE_DIRS} ${MPI_CXX_INCLUDE_DIRS})
+# link libraries
+target_link_libraries(${PROJECT_NAME} INTERFACE ${MPI_C_LIBRARIES} ${MPI_CXX_LIBRARIES})
+# set interface target compile options
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_DEFINITIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
+target_compile_options(${PROJECT_NAME} INTERFACE
+        "${MPI_C_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_OPTIONS}")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        INTERFACE_LINK_OPTIONS "${MPI_C_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS}")
 ############################################## OPENMP ##############################################
 #find_package(OpenMP REQUIRED)
 ## include directories
