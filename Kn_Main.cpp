@@ -1,5 +1,5 @@
 // #include "Encode.h"
-// #include "ConfigGenerator.h"
+#include "InitialConfigGenerator.h"
 #include <SizeMisfitGenerator.h>
 #include "deprecated/Analysis.h"
 // #include "ClusterExpansion.h"
@@ -22,14 +22,21 @@ int main(int argc, char *argv[]) {
   // ansys::MpiClusters test(0, 1e6, 210e6,
   //                         "Al", 3, 3);
   // test.SerialRun();
-  kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-                       1e5,
-                       1e6,
-                       1e10,
-                       {"Al", "Mg", "Zn"},
-                       0, 0, 0, "kmc_parameters.json", 1000);
-  a.Simulate();
-  // test.IterateToRun();
+
+  // auto a = gen::InitialConfigGenerator::GenerateL10(4.046, {"Mg", "Zn"}, {1, 2, 2});
+  // auto b = gen::InitialConfigGenerator::EmbedToLarge(4.046,
+  //                                                    {14, 14, 14},
+  //                                                    {1, 2, 2},
+  //                                                    a,
+  //                                                    {{"Al", 10421}, {"Mg", 302}, {"Zn", 262},
+  //                                                    {"X", 1}});
+  //
+  // cfg::Config::WriteConfig(b, "start_l10.cfg");
+
+  // ansys::MpiClusters test(0, 1e6, 424e6,
+  //                         "Al", 3, 6);
+  // test.SerialRun();
+
   // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
   //                      1e5,
   //                      1e6,
