@@ -567,9 +567,15 @@ void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_mat
 }
 size_t GetVacancyIndex(const Config &config) {
   const auto &atom_vector = config.GetAtomList();
-  return std::find_if(atom_vector.cbegin(), atom_vector.cend(), [](const auto &atom) {
+  auto it = std::find_if(atom_vector.cbegin(), atom_vector.cend(), [](const auto &atom) {
     return atom.GetType() == "X";
-  })->GetId();
+  });
+  if (it != atom_vector.end()) {
+    return it->GetId();
+  } else {
+    std::cout << "Warning: vacancy not found" << std::endl;
+  }
+  return 0;
 }
 Config GenerateFCC(double lattice_constant_a, const std::string &element, const Factor_t &factors) {
 

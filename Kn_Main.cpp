@@ -1,6 +1,7 @@
 // #include "Encode.h"
 #include "InitialConfigGenerator.h"
 #include <SizeMisfitGenerator.h>
+#include "deprecated/Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 // using namespace kn;
@@ -18,6 +19,10 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
+  // ansys::MpiClusters test(0, 1e6, 210e6,
+  //                         "Al", 3, 3);
+  // test.SerialRun();
+
   // auto a = gen::InitialConfigGenerator::GenerateL10(4.046, {"Mg", "Zn"}, {1, 2, 2});
   // auto b = gen::InitialConfigGenerator::EmbedToLarge(4.046,
   //                                                    {14, 14, 14},
@@ -28,9 +33,9 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  ansys::MpiClusters test(0, 1e6, 424e6,
-                          "Al", 3, 6);
-  test.SerialRun();
+  // ansys::MpiClusters test(0, 1e6, 424e6,
+  //                         "Al", 3, 6);
+  // test.SerialRun();
 
   // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
   //                      1e5,
