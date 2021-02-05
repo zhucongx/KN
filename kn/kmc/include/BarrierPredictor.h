@@ -1,6 +1,7 @@
 #ifndef KN_KN_KMC_INCLUDE_BARRIERPREDICTOR_H_
 #define KN_KN_KMC_INCLUDE_BARRIERPREDICTOR_H_
 #include "ClusterExpansion.h"
+#include "BondCounting.h"
 
 namespace kmc {
 struct Element_Parameters {
@@ -21,11 +22,15 @@ class BarrierPredictor {
         const cfg::Config &config,
         const std::pair<size_t, size_t> &jump_pair) const;
   protected:
-    [[nodiscard]] double GetBarrierFromEncode(
+    [[nodiscard]] double GetE0FromEncode(
         const std::string &element_type,
-        const std::vector<std::string>& encode_list) const;
+        const std::vector<std::string> &encode_list) const;
+    [[nodiscard]] double GetDEFromConfig(const cfg::Config &config,
+                                         const std::pair<size_t, size_t> &jump_pair) const;
   private:
+    std::vector<double> theta_{};
     std::unordered_map<std::string, Element_Parameters> element_parameters_hashmap_{};
+    const std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond>> initialized_hashmap_;
     const std::vector<std::vector<std::vector<size_t>>> mapping_;
     const std::unordered_map<std::string, std::vector<double>> one_hot_encode_hash_map_;
     const size_t num_of_elements_;
