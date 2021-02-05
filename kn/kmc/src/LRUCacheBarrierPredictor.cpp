@@ -45,7 +45,7 @@ std::pair<double, double> LRUCacheBarrierPredictor::GetBarrierAndDiff(
 
   auto e0 = 0.5 * (forward_e0 + backward_e0);
   auto dE = GetDEFromConfig(config, jump_pair);
-#ifdef NDEBUG
+#ifndef NDEBUG
   std::cout << forward_e0 << '\t' << backward_e0 << '\n';
   std::cout << dE << '\n';
 #endif
