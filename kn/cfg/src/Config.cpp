@@ -110,40 +110,108 @@ void Config::ClearNeighbors() {
 // TODO rewrite this function
 void Config::UpdateNeighbors(double first_r_cutoff,
                              double second_r_cutoff,
-                             double third_r_cutoff) {
+                             double third_r_cutoff,
+                             double fourth_r_cutoff,
+                             double fifth_r_cutoff,
+                             double sixth_r_cutoff,
+                             double seventh_r_cutoff) {
   ClearNeighbors();
 
   const double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
   const double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
   const double third_r_cutoff_square = third_r_cutoff * third_r_cutoff;
+  const double fourth_r_cutoff_square = fourth_r_cutoff * fourth_r_cutoff;
+  const double fifth_r_cutoff_square = fifth_r_cutoff * fifth_r_cutoff;
+  const double sixth_r_cutoff_square = sixth_r_cutoff * sixth_r_cutoff;
+  const double seventh_r_cutoff_square = seventh_r_cutoff * seventh_r_cutoff;
 
   for (auto it1 = atom_list_.begin(); it1 != atom_list_.end(); ++it1) {
     for (auto it2 = atom_list_.begin(); it2 != it1; ++it2) {
       Vector_t absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
-      if (std::abs(absolute_distance_vector[kXDimension]) > third_r_cutoff)
+      if (std::abs(absolute_distance_vector[kXDimension]) > seventh_r_cutoff)
         continue;
-      if (std::abs(absolute_distance_vector[kYDimension]) > third_r_cutoff)
+      if (std::abs(absolute_distance_vector[kYDimension]) > seventh_r_cutoff)
         continue;
-      if (std::abs(absolute_distance_vector[kZDimension]) > third_r_cutoff)
+      if (std::abs(absolute_distance_vector[kZDimension]) > seventh_r_cutoff)
         continue;
-      double absolute_distance_square = Inner(absolute_distance_vector);
-      if (absolute_distance_square <= third_r_cutoff_square) {
-        if (absolute_distance_square <= second_r_cutoff_square) {
-          if (absolute_distance_square <= first_r_cutoff_square) {
-            it1->AppendFirstNearestNeighborsList(it2->GetId());
-            it2->AppendFirstNearestNeighborsList(it1->GetId());
+      const double absolute_distance_square = Inner(absolute_distance_vector);
+      if (absolute_distance_square < seventh_r_cutoff_square) {
+        if (absolute_distance_square < sixth_r_cutoff_square) {
+          if (absolute_distance_square < fifth_r_cutoff_square) {
+            if (absolute_distance_square < fourth_r_cutoff_square) {
+              if (absolute_distance_square < third_r_cutoff_square) {
+                if (absolute_distance_square < second_r_cutoff_square) {
+                  if (absolute_distance_square < first_r_cutoff_square) {
+                    it1->AppendFirstNearestNeighborsList(it2->GetId());
+                    it2->AppendFirstNearestNeighborsList(it1->GetId());
+                  } else {
+                    it1->AppendSecondNearestNeighborsList(it2->GetId());
+                    it2->AppendSecondNearestNeighborsList(it1->GetId());
+                  }
+                } else {
+                  it1->AppendThirdNearestNeighborsList(it2->GetId());
+                  it2->AppendThirdNearestNeighborsList(it1->GetId());
+                }
+              } else {
+                it1->AppendFourthNearestNeighborsList(it2->GetId());
+                it2->AppendFourthNearestNeighborsList(it1->GetId());
+              }
+            } else {
+              it1->AppendFifthNearestNeighborsList(it2->GetId());
+              it2->AppendFifthNearestNeighborsList(it1->GetId());
+            }
           } else {
-            it1->AppendSecondNearestNeighborsList(it2->GetId());
-            it2->AppendSecondNearestNeighborsList(it1->GetId());
+            it1->AppendSixthNearestNeighborsList(it2->GetId());
+            it2->AppendSixthNearestNeighborsList(it1->GetId());
           }
         } else {
-          it1->AppendThirdNearestNeighborsList(it2->GetId());
-          it2->AppendThirdNearestNeighborsList(it1->GetId());
+          it1->AppendSeventhNearestNeighborsList(it2->GetId());
+          it2->AppendSeventhNearestNeighborsList(it1->GetId());
+        }
+      }
+    }
+  }
+#ifndef NDEBUG
+  for (const auto &it : atom_list_) {
+    std::cerr << "First neighbors " << it.GetFirstNearestNeighborsList().size() << '\n';
+    std::cerr << "Second neighbors " << it.GetSecondNearestNeighborsList().size() << '\n';
+    std::cerr << "Third neighbors " << it.GetThirdNearestNeighborsList().size() << '\n';
+    std::cerr << "Fourth neighbors " << it.GetFourthNearestNeighborsList().size() << '\n';
+    std::cerr << "Fifth neighbors " << it.GetFifthNearestNeighborsList().size() << '\n';
+    std::cerr << "Sixth neighbors " << it.GetSixthNearestNeighborsList().size() << '\n';
+    std::cerr << "Seventh neighbors " << it.GetSeventhNearestNeighborsList().size() << '\n';
+  }
+#endif
+}
+void Config::UpdateFirstAndSecondNeighbors(double first_r_cutoff, double second_r_cutoff) {
+  ClearNeighbors();
+
+  const double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
+  const double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
+
+  for (auto it1 = atom_list_.begin(); it1 != atom_list_.end(); ++it1) {
+    for (auto it2 = atom_list_.begin(); it2 != it1; ++it2) {
+      Vector_t absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
+      if (std::abs(absolute_distance_vector[kXDimension]) > second_r_cutoff)
+        continue;
+      if (std::abs(absolute_distance_vector[kYDimension]) > second_r_cutoff)
+        continue;
+      if (std::abs(absolute_distance_vector[kZDimension]) > second_r_cutoff)
+        continue;
+      const double absolute_distance_square = Inner(absolute_distance_vector);
+      if (absolute_distance_square < second_r_cutoff_square) {
+        if (absolute_distance_square < first_r_cutoff_square) {
+          it1->AppendFirstNearestNeighborsList(it2->GetId());
+          it2->AppendFirstNearestNeighborsList(it1->GetId());
+        } else {
+          it1->AppendSecondNearestNeighborsList(it2->GetId());
+          it2->AppendSecondNearestNeighborsList(it1->GetId());
         }
       }
     }
   }
 }
+
 void Config::AppendAtomWithoutChangingAtomID(const Atom &atom) {
   atom_list_.push_back(atom);
   // element_list_map_[atom.GetType()].emplace_back(atom.GetId());
@@ -292,6 +360,22 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
         ifs >> index;
         atom.AppendThirdNearestNeighborsList(index);
       }
+      for (size_t i = 0; i < Al_const::kNumFourthNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendFourthNearestNeighborsList(index);
+      }
+      for (size_t i = 0; i < Al_const::kNumFifthNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendFifthNearestNeighborsList(index);
+      }
+      for (size_t i = 0; i < Al_const::kNumSixthNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendSixthNearestNeighborsList(index);
+      }
+      for (size_t i = 0; i < Al_const::kNumSeventhNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendSeventhNearestNeighborsList(index);
+      }
       neighbor_found = true;
     }
     config.AppendAtomWithoutChangingAtomID(atom);
@@ -364,6 +448,18 @@ void Config::WriteConfig(const Config &config,
       for (auto neighbor_index : atom.GetThirdNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
+      for (auto neighbor_index : atom.GetFourthNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetFifthNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetSixthNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetSeventhNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
     }
     ofs << '\n';
     ofs << std::flush;
@@ -387,7 +483,36 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
   }
   return near_neighbors_hashset;
 }
+static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
+    const Config &config, const std::pair<size_t, size_t> &jump_pair) {
 
+  std::unordered_set<size_t> near_neighbors_hashset;
+  for (const auto i : {jump_pair.first, jump_pair.second}) {
+    const auto &atom = config.GetAtomList()[i];
+    std::copy(atom.GetFirstNearestNeighborsList().begin(),
+              atom.GetFirstNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetSecondNearestNeighborsList().begin(),
+              atom.GetSecondNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetThirdNearestNeighborsList().begin(),
+              atom.GetThirdNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetFourthNearestNeighborsList().begin(),
+              atom.GetFourthNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetFifthNearestNeighborsList().begin(),
+              atom.GetFifthNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetSixthNearestNeighborsList().begin(),
+              atom.GetSixthNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+    std::copy(atom.GetSeventhNearestNeighborsList().begin(),
+              atom.GetSeventhNearestNeighborsList().end(),
+              std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
+  }
+  return near_neighbors_hashset;
+}
 // lhs : vacancy_index; rhs : neighbor_index
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
   const auto[lhs, rhs] = jump_pair;
@@ -422,9 +547,20 @@ void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
   std::swap(atom_list[lhs].third_nearest_neighbors_list_,
             atom_list[rhs].third_nearest_neighbors_list_);
 
+  std::swap(atom_list[lhs].fourth_nearest_neighbors_list_,
+            atom_list[rhs].fourth_nearest_neighbors_list_);
+
+  std::swap(atom_list[lhs].fifth_nearest_neighbors_list_,
+            atom_list[rhs].fifth_nearest_neighbors_list_);
+
+  std::swap(atom_list[lhs].sixth_nearest_neighbors_list_,
+            atom_list[rhs].sixth_nearest_neighbors_list_);
+
+  std::swap(atom_list[lhs].seventh_nearest_neighbors_list_,
+            atom_list[rhs].seventh_nearest_neighbors_list_);
   // 3) jump atoms' and neighbor atom's neighbor list
   std::unordered_set<size_t>
-      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
+      atom_id_hashset = GetAllNeighborsSetOfJumpPair(config, jump_pair);
 
   for (auto i : atom_id_hashset) {
     // auto it_id = std::find_if(config.atom_list_.begin(),
@@ -435,7 +571,11 @@ void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
     // const auto i = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_id));
     for (auto neighbors_list : {&atom_list[i].first_nearest_neighbors_list_,
                                 &atom_list[i].second_nearest_neighbors_list_,
-                                &atom_list[i].third_nearest_neighbors_list_})
+                                &atom_list[i].third_nearest_neighbors_list_,
+                                &atom_list[i].fourth_nearest_neighbors_list_,
+                                &atom_list[i].fifth_nearest_neighbors_list_,
+                                &atom_list[i].sixth_nearest_neighbors_list_,
+                                &atom_list[i].seventh_nearest_neighbors_list_})
       for (auto &j : *neighbors_list) {
         if (j == lhs)
           j = rhs;
@@ -444,43 +584,43 @@ void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
       }
   }
 }
-void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair) {
-  const auto[lhs, rhs] = jump_pair;
-  auto &atom_list = config.atom_list_;
-  // three things to swap here:
-  // 1) element coordinates
-  std::swap(atom_list[lhs].relative_position_,
-            atom_list[rhs].relative_position_);
-  std::swap(atom_list[lhs].cartesian_position_,
-            atom_list[rhs].cartesian_position_);
 
-  // 2) jump pair neighbour lists
-  std::swap(atom_list[lhs].first_nearest_neighbors_list_,
-            atom_list[rhs].first_nearest_neighbors_list_);
-
-  std::swap(atom_list[lhs].second_nearest_neighbors_list_,
-            atom_list[rhs].second_nearest_neighbors_list_);
-
-  std::swap(atom_list[lhs].third_nearest_neighbors_list_,
-            atom_list[rhs].third_nearest_neighbors_list_);
-
-  // 3) jump atoms' and neighbor atom's neighbor list
-  std::unordered_set<size_t>
-      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
-
-  for (auto i : atom_id_hashset) {
-    for (auto neighbors_list : {&atom_list[i].first_nearest_neighbors_list_,
-                                &atom_list[i].second_nearest_neighbors_list_,
-                                &atom_list[i].third_nearest_neighbors_list_})
-      for (auto &j : *neighbors_list) {
-        if (j == lhs)
-          j = rhs;
-        else if (j == rhs)
-          j = lhs;
-      }
-  }
-
-}
+// void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair) {
+//   const auto[lhs, rhs] = jump_pair;
+//   auto &atom_list = config.atom_list_;
+//   // three things to swap here:
+//   // 1) element coordinates
+//   std::swap(atom_list[lhs].relative_position_,
+//             atom_list[rhs].relative_position_);
+//   std::swap(atom_list[lhs].cartesian_position_,
+//             atom_list[rhs].cartesian_position_);
+//
+//   // 2) jump pair neighbour lists
+//   std::swap(atom_list[lhs].first_nearest_neighbors_list_,
+//             atom_list[rhs].first_nearest_neighbors_list_);
+//
+//   std::swap(atom_list[lhs].second_nearest_neighbors_list_,
+//             atom_list[rhs].second_nearest_neighbors_list_);
+//
+//   std::swap(atom_list[lhs].third_nearest_neighbors_list_,
+//             atom_list[rhs].third_nearest_neighbors_list_);
+//
+//   // 3) jump atoms' and neighbor atom's neighbor list
+//   std::unordered_set<size_t>
+//       atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
+//
+//   for (auto i : atom_id_hashset) {
+//     for (auto neighbors_list : {&atom_list[i].first_nearest_neighbors_list_,
+//                                 &atom_list[i].second_nearest_neighbors_list_,
+//                                 &atom_list[i].third_nearest_neighbors_list_})
+//       for (auto &j : *neighbors_list) {
+//         if (j == lhs)
+//           j = rhs;
+//         else if (j == rhs)
+//           j = lhs;
+//       }
+//   }
+// }
 std::map<std::string, size_t> CountAllType(const Config &config) {
   std::map<std::string, size_t> types_count_map;
   for (const auto &atom : config.GetAtomList()) {
@@ -489,21 +629,21 @@ std::map<std::string, size_t> CountAllType(const Config &config) {
   return types_count_map;
 }
 
-std::map<Bond, size_t> CountAllBonds(const Config &config) {
-  std::map<Bond, size_t> bonds_count_map;
-  std::string type1, type2;
-  const auto &atom_list = config.GetAtomList();
-  for (const auto &atom : atom_list) {
-    type1 = atom.GetType();
-    for (const auto &atom2_id : atom.GetFirstNearestNeighborsList()) {
-      bonds_count_map[Bond{type1, atom_list[atom2_id].GetType()}]++;
-    }
-  }
-  for (auto &bond_count : bonds_count_map) {
-    bond_count.second /= 2;
-  }
-  return bonds_count_map;
-}
+// std::map<Bond, size_t> CountAllBonds(const Config &config) {
+//   std::map<Bond, size_t> bonds_count_map;
+//   std::string type1, type2;
+//   const auto &atom_list = config.GetAtomList();
+//   for (const auto &atom : atom_list) {
+//     type1 = atom.GetType();
+//     for (const auto &atom2_id : atom.GetFirstNearestNeighborsList()) {
+//       bonds_count_map[Bond{type1, atom_list[atom2_id].GetType()}]++;
+//     }
+//   }
+//   for (auto &bond_count : bonds_count_map) {
+//     bond_count.second /= 2;
+//   }
+//   return bonds_count_map;
+// }
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config) {
   size_t count = 1;
   std::unordered_map<std::string, size_t> type_category_hashmap;

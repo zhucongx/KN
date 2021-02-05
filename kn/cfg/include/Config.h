@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <random>
 #include "Atom.h"
-#include "Bond.h"
 #include "Cluster.hpp"
 namespace cfg {
 class Atom;
@@ -40,7 +39,14 @@ class Config {
     // TODO rewrite this function
     void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
                          double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff,
-                         double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff);
+                         double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff,
+                         double fourth_r_cutoff = Al_const::kFourthNearestNeighborsCutoff,
+                         double fifth_r_cutoff = Al_const::kFifthNearestNeighborsCutoff,
+                         double sixth_r_cutoff = Al_const::kSixthNearestNeighborsCutoff,
+                         double seventh_r_cutoff = Al_const::kSeventhNearestNeighborsCutoff);
+    void UpdateFirstAndSecondNeighbors(
+        double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
+        double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff);
     /// Add new atoms
     void AppendAtomWithoutChangingAtomID(const Atom &atom);
     void AppendAtomWithChangingAtomID(Atom atom);
@@ -79,7 +85,7 @@ class Config {
   public:
     /// Friend function
     friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-    friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    // friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
@@ -88,7 +94,7 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
 void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 std::map<std::string, size_t> CountAllType(const Config &config);
-std::map<Bond, size_t> CountAllBonds(const Config &config);
+// std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config);
 // std::set<std::string> GetTypeSet(const Config &config);

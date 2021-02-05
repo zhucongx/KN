@@ -36,14 +36,22 @@ int main(int argc, char *argv[]) {
   // ansys::MpiClusters test(0, 1e6, 424e6,
   //                         "Al", 3, 6);
   // test.SerialRun();
-
-  // kmc::KMCSimulation a(cfg::Config::ReadConfig("start.cfg"),
-  //                      1e5,
-  //                      1e6,
-  //                      1e10,
-  //                      {"Al", "Mg", "Zn"},
-  //                      0, 0, 0, "kmc_parameters.json", 1000);
-  // a.Simulate();
+  auto conf = cfg::Config::ReadConfig("start.cfg");
+  // conf.UpdateNeighbors();
+  // auto a = ansys::BondCounting::GetBondChange(conf,
+  //                                             {82, 83},
+  //                                             ansys::BondCounting::InitializeHashMap({"Al", "Mg",
+  //                                                                                     "Zn"}));
+  // for (auto aa:a) {
+  //   cout << aa << "\t";
+  // }
+  kmc::KMCSimulation a(conf,
+                       1e4,
+                       1e6,
+                       1e10,
+                       {"Al", "Mg", "Zn"},
+                       0, 0, 0, "kmc_parameters.json", 1000);
+  a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
   // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
