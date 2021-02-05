@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
   //   cout << aa << "\t";
   // }
   kmc::KMCSimulation a(conf,
-                       1e5,
+                       1e4,
                        1e6,
                        1e10,
                        {"Al", "Mg", "Zn"},
