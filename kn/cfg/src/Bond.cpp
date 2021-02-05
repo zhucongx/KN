@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &os, const Bond &bond) {
 bool operator<(const Bond &lhs, const Bond &rhs) {
   if (lhs.type1_ < rhs.type1_)
     return true;
-  if (rhs.type1_ < lhs.type1_)
+  if (rhs.type1_ > lhs.type1_)
     return false;
   return lhs.type2_ < rhs.type2_;
 }
