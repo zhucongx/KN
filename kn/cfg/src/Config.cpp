@@ -183,6 +183,35 @@ void Config::UpdateNeighbors(double first_r_cutoff,
   }
 #endif
 }
+void Config::UpdateFirstAndSecondNeighbors(double first_r_cutoff, double second_r_cutoff) {
+  ClearNeighbors();
+
+  const double first_r_cutoff_square = first_r_cutoff * first_r_cutoff;
+  const double second_r_cutoff_square = second_r_cutoff * second_r_cutoff;
+
+  for (auto it1 = atom_list_.begin(); it1 != atom_list_.end(); ++it1) {
+    for (auto it2 = atom_list_.begin(); it2 != it1; ++it2) {
+      Vector_t absolute_distance_vector = GetRelativeDistanceVector(*it1, *it2) * basis_;
+      if (std::abs(absolute_distance_vector[kXDimension]) > second_r_cutoff)
+        continue;
+      if (std::abs(absolute_distance_vector[kYDimension]) > second_r_cutoff)
+        continue;
+      if (std::abs(absolute_distance_vector[kZDimension]) > second_r_cutoff)
+        continue;
+      const double absolute_distance_square = Inner(absolute_distance_vector);
+      if (absolute_distance_square < second_r_cutoff_square) {
+        if (absolute_distance_square < first_r_cutoff_square) {
+          it1->AppendFirstNearestNeighborsList(it2->GetId());
+          it2->AppendFirstNearestNeighborsList(it1->GetId());
+        } else {
+          it1->AppendSecondNearestNeighborsList(it2->GetId());
+          it2->AppendSecondNearestNeighborsList(it1->GetId());
+        }
+      }
+    }
+  }
+}
+
 void Config::AppendAtomWithoutChangingAtomID(const Atom &atom) {
   atom_list_.push_back(atom);
   // element_list_map_[atom.GetType()].emplace_back(atom.GetId());

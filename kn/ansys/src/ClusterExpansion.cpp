@@ -132,7 +132,8 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     atom.SetId(new_id++);
   }
   cfg::Config config(reference_config.GetBasis(), std::move(atom_list));
-  config.UpdateNeighbors();
+  //Todo only update first nearest neighbors
+  config.UpdateFirstAndSecondNeighbors();
   return config.GetAtomList();
 }
 
