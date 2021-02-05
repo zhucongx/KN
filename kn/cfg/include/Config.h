@@ -40,7 +40,11 @@ class Config {
     // TODO rewrite this function
     void UpdateNeighbors(double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
                          double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff,
-                         double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff);
+                         double third_r_cutoff = Al_const::kThirdNearestNeighborsCutoff,
+                         double fourth_r_cutoff = Al_const::kFourthNearestNeighborsCutoff,
+                         double fifth_r_cutoff = Al_const::kFifthNearestNeighborsCutoff,
+                         double sixth_r_cutoff = Al_const::kSixthNearestNeighborsCutoff,
+                         double seventh_r_cutoff = Al_const::kSeventhNearestNeighborsCutoff);
     /// Add new atoms
     void AppendAtomWithoutChangingAtomID(const Atom &atom);
     void AppendAtomWithChangingAtomID(Atom atom);
@@ -79,7 +83,7 @@ class Config {
   public:
     /// Friend function
     friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-    friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    // friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
