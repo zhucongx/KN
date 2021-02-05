@@ -601,21 +601,21 @@ std::map<std::string, size_t> CountAllType(const Config &config) {
   return types_count_map;
 }
 
-std::map<Bond, size_t> CountAllBonds(const Config &config) {
-  std::map<Bond, size_t> bonds_count_map;
-  std::string type1, type2;
-  const auto &atom_list = config.GetAtomList();
-  for (const auto &atom : atom_list) {
-    type1 = atom.GetType();
-    for (const auto &atom2_id : atom.GetFirstNearestNeighborsList()) {
-      bonds_count_map[Bond{type1, atom_list[atom2_id].GetType()}]++;
-    }
-  }
-  for (auto &bond_count : bonds_count_map) {
-    bond_count.second /= 2;
-  }
-  return bonds_count_map;
-}
+// std::map<Bond, size_t> CountAllBonds(const Config &config) {
+//   std::map<Bond, size_t> bonds_count_map;
+//   std::string type1, type2;
+//   const auto &atom_list = config.GetAtomList();
+//   for (const auto &atom : atom_list) {
+//     type1 = atom.GetType();
+//     for (const auto &atom2_id : atom.GetFirstNearestNeighborsList()) {
+//       bonds_count_map[Bond{type1, atom_list[atom2_id].GetType()}]++;
+//     }
+//   }
+//   for (auto &bond_count : bonds_count_map) {
+//     bond_count.second /= 2;
+//   }
+//   return bonds_count_map;
+// }
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config) {
   size_t count = 1;
   std::unordered_map<std::string, size_t> type_category_hashmap;
