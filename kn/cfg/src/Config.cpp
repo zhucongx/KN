@@ -360,6 +360,22 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
         ifs >> index;
         atom.AppendThirdNearestNeighborsList(index);
       }
+      for (size_t i = 0; i < Al_const::kNumFourthNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendFourthNearestNeighborsList(index);
+      }
+      for (size_t i = 0; i < Al_const::kNumFifthNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendFifthNearestNeighborsList(index);
+      }
+      for (size_t i = 0; i < Al_const::kNumSixthNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendSixthNearestNeighborsList(index);
+      }
+      for (size_t i = 0; i < Al_const::kNumSeventhNearestNeighbors; ++i) {
+        ifs >> index;
+        atom.AppendSeventhNearestNeighborsList(index);
+      }
       neighbor_found = true;
     }
     config.AppendAtomWithoutChangingAtomID(atom);
@@ -430,6 +446,18 @@ void Config::WriteConfig(const Config &config,
         ofs << neighbor_index << ' ';
       }
       for (auto neighbor_index : atom.GetThirdNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetFourthNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetFifthNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetSixthNearestNeighborsList()) {
+        ofs << neighbor_index << ' ';
+      }
+      for (auto neighbor_index : atom.GetSeventhNearestNeighborsList()) {
         ofs << neighbor_index << ' ';
       }
     }
