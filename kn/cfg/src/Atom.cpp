@@ -9,9 +9,7 @@ Atom::Atom(size_t id, double mass, std::string type, double x, double y, double 
     type_(std::move(type)),
     cartesian_position_{x, y, z},
     relative_position_{x, y, z} {
-  first_nearest_neighbors_list_.reserve(Al_const::kNumFirstNearestNeighbors);
-  second_nearest_neighbors_list_.reserve(Al_const::kNumSecondNearestNeighbors);
-  third_nearest_neighbors_list_.reserve(Al_const::kNumThirdNearestNeighbors);
+  ReserveNeighborsVector();
 }
 Atom::Atom(size_t id, double mass, std::string type, Vector_t position) :
     id_(id),
@@ -19,9 +17,16 @@ Atom::Atom(size_t id, double mass, std::string type, Vector_t position) :
     type_(std::move(type)),
     cartesian_position_(position),
     relative_position_(position) {
+  ReserveNeighborsVector();
+}
+void Atom::ReserveNeighborsVector() {
   first_nearest_neighbors_list_.reserve(Al_const::kNumFirstNearestNeighbors);
   second_nearest_neighbors_list_.reserve(Al_const::kNumSecondNearestNeighbors);
   third_nearest_neighbors_list_.reserve(Al_const::kNumThirdNearestNeighbors);
+  fourth_nearest_neighbors_list_.reserve(Al_const::kNumFourthNearestNeighbors);
+  fifth_nearest_neighbors_list_.reserve(Al_const::kNumFifthNearestNeighbors);
+  sixth_nearest_neighbors_list_.reserve(Al_const::kNumSixthNearestNeighbors);
+  seventh_nearest_neighbors_list_.reserve(Al_const::kNumSeventhNearestNeighbors);
 }
 const Vector_t &Atom::GetCartesianPosition() const {
   return cartesian_position_;
@@ -47,9 +52,18 @@ const std::vector<size_t> &Atom::GetSecondNearestNeighborsList() const {
 const std::vector<size_t> &Atom::GetThirdNearestNeighborsList() const {
   return third_nearest_neighbors_list_;
 }
-// bool Atom::operator<(const Atom &rhs) const {
-//   return id_ < rhs.id_;
-// }
+const std::vector<size_t> &Atom::GetFourthNearestNeighborsList() const {
+  return fourth_nearest_neighbors_list_;
+}
+const std::vector<size_t> &Atom::GetFifthNearestNeighborsList() const {
+  return fifth_nearest_neighbors_list_;
+}
+const std::vector<size_t> &Atom::GetSixthNearestNeighborsList() const {
+  return sixth_nearest_neighbors_list_;
+}
+const std::vector<size_t> &Atom::GetSeventhNearestNeighborsList() const {
+  return seventh_nearest_neighbors_list_;
+}
 void Atom::SetCartesianPosition(const Vector_t &cartesian_position) {
   cartesian_position_ = cartesian_position;
 }
@@ -71,10 +85,26 @@ void Atom::AppendSecondNearestNeighborsList(size_t index) {
 void Atom::AppendThirdNearestNeighborsList(size_t index) {
   third_nearest_neighbors_list_.emplace_back(index);
 }
+void Atom::AppendFourthNearestNeighborsList(size_t index) {
+  fourth_nearest_neighbors_list_.emplace_back(index);
+}
+void Atom::AppendFifthNearestNeighborsList(size_t index) {
+  fifth_nearest_neighbors_list_.emplace_back(index);
+}
+void Atom::AppendSixthNearestNeighborsList(size_t index) {
+  sixth_nearest_neighbors_list_.emplace_back(index);
+}
+void Atom::AppendSeventhNearestNeighborsList(size_t index) {
+  seventh_nearest_neighbors_list_.emplace_back(index);
+}
 void Atom::CleanNeighborsLists() {
   first_nearest_neighbors_list_.clear();
   second_nearest_neighbors_list_.clear();
   third_nearest_neighbors_list_.clear();
+  fourth_nearest_neighbors_list_.clear();
+  fifth_nearest_neighbors_list_.clear();
+  sixth_nearest_neighbors_list_.clear();
+  seventh_nearest_neighbors_list_.clear();
 }
 
 Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second) {
