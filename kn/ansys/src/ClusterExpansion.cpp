@@ -55,10 +55,11 @@ static bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
 
-  const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
-  if (diff_x < -kEpsilon)
+  const double diff_x_sym = std::abs(relative_position_lhs[kXDimension] - 0.5)
+      - std::abs(relative_position_rhs[kXDimension] - 0.5);
+  if (diff_x_sym < -kEpsilon)
     return true;
-  if (diff_x > kEpsilon)
+  if (diff_x_sym > kEpsilon)
     return false;
 
   const double diff_y_sym = std::abs(relative_position_lhs[kYDimension] - 0.5)
@@ -74,13 +75,18 @@ static bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
     return true;
   if (diff_z_sym > kEpsilon)
     return false;
+
   // sort by position if they are same
+  const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+  if (diff_x < -kEpsilon)
+    return true;
+  if (diff_x > kEpsilon)
+    return false;
   const double y_diff = relative_position_lhs[kYDimension] - relative_position_rhs[kYDimension];
   if (y_diff < -kEpsilon)
     return true;
   if (y_diff > kEpsilon)
     return false;
-
   return relative_position_lhs[kZDimension] < relative_position_rhs[kZDimension] - kEpsilon;
 }
 
@@ -92,7 +98,8 @@ static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
     const auto &relative_position_lhs = lhs.GetAtomAt(i).GetRelativePosition();
     const auto &relative_position_rhs = rhs.GetAtomAt(i).GetRelativePosition();
 
-    const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+    const double diff_x = std::abs(relative_position_lhs[kXDimension] - 0.5)
+        - std::abs(relative_position_rhs[kXDimension] - 0.5);
     if (diff_x < -kEpsilon)
       return true;
     if (diff_x > kEpsilon)
@@ -132,7 +139,6 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     atom.SetId(new_id++);
   }
   cfg::Config config(reference_config.GetBasis(), std::move(atom_list));
-  //Todo only update first nearest neighbors
   config.UpdateFirstAndSecondNeighbors();
   return config.GetAtomList();
 }
@@ -308,7 +314,7 @@ std::vector<double> GetOneHotParametersFromMap(
     const std::unordered_map<std::string, std::vector<double>> &one_hot_encode_hashmap,
     size_t num_of_elements,
     const std::vector<std::vector<std::vector<size_t>>> &cluster_mapping) {
-  constexpr size_t kEncodeListSizeThirdToDimer = 909;
+  constexpr size_t kEncodeListSizeThirdToDimer = 522;
   std::vector<double> res_encode;
   res_encode.reserve(kEncodeListSizeThirdToDimer);
   for (const auto &cluster_vector : cluster_mapping) {
