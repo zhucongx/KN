@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
   //   cout << aa << "\t";
   // }
   kmc::SecondKMCSimulation a(conf,
-                             1e4,
-                             1e6,
+                             1e3,
+                             1e5,
                              1e10,
                              {"Al", "Mg", "Zn"},
                              0, 0, 0, "kmc_parameters.json", 1000);
