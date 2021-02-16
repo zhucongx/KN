@@ -71,7 +71,7 @@ SecondKMCSimulation::~SecondKMCSimulation() {
   MPI_Finalize();
 }
 std::pair<size_t, size_t> SecondKMCSimulation::BuildProbabilityListParallel(
-    double &first_probability) {
+    double &first_probability, double &first_energy_change) {
   if (first_comm_ == MPI_COMM_NULL)
     return {0, 0};
   first_total_rate_ = 0;
@@ -84,6 +84,7 @@ std::pair<size_t, size_t> SecondKMCSimulation::BuildProbabilityListParallel(
   const double this_rate = event.GetRate();
   MPI_Allreduce(&this_rate, &first_total_rate_, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
   first_probability = this_rate / first_total_rate_;
+  first_energy_change = event.GetEnergyChange();
   // MPI_Allgather(&first_probability_, 1, MPI_DOUBLE, probability_list_.data(), 1, MPI_DOUBLE, first_comm_);
   return jump_pair;
 }
@@ -109,9 +110,9 @@ std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
   return res;
 }
 void SecondKMCSimulation::BuildEventListParallel() {
-  double first_probability;
+  double first_probability, first_energy_change;
 
-  auto first_jump_pair = BuildProbabilityListParallel(first_probability);
+  auto first_jump_pair = BuildProbabilityListParallel(first_probability, first_energy_change);
   MPI_Bcast(&first_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, second_comm_);
   auto second_neighbors_indexes = GetSecondNeighborsIndexes();
   MPI_Bcast(static_cast<void *>(second_neighbors_indexes.data()),
@@ -124,13 +125,14 @@ void SecondKMCSimulation::BuildEventListParallel() {
   const auto
       second_neighbor_index = second_neighbors_indexes[static_cast<size_t>(second_group_rank_)];
   std::pair<size_t, size_t> second_jump_pair(vacancy_index_, second_neighbor_index);
-  KMCEvent event
+  KMCEvent second_event
       (second_jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, second_jump_pair));
 
-  event.SetRate(event.GetRate() * first_probability);
-  const double this_rate = event.GetRate();
+  second_event.SetRate(second_event.GetRate() * first_probability);
+  second_event.SetEnergyChange(second_event.GetEnergyChange() + first_energy_change);
+  const double this_rate = second_event.GetRate();
   MPI_Allreduce(&this_rate, &second_total_rate_, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  MPI_Allgather(&event,
+  MPI_Allgather(&second_event,
                 sizeof(KMCEvent),
                 MPI_BYTE,
                 event_list_.data(),

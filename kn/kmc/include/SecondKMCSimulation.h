@@ -22,7 +22,8 @@ class SecondKMCSimulation {
 
   protected:
     void BuildEventListParallel();
-    std::pair<size_t, size_t> BuildProbabilityListParallel(double &first_probability);
+    std::pair<size_t, size_t> BuildProbabilityListParallel(double &first_probability,
+                                                           double &first_energy_change);
     std::vector<size_t> GetSecondNeighborsIndexes();
     size_t SelectEvent() const;
 
