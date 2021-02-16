@@ -3,7 +3,6 @@
 #include <chrono>
 #include <utility>
 #include <mpi.h>
-#include "LRUCacheBarrierPredictor.h"
 
 namespace kmc {
 
@@ -94,8 +93,8 @@ void KMCSimulation::BuildEventListParallel() {
 
       total_rate_ += sum_rates;
       std::copy(collected_event_ctor_pair_list.begin(),
-                     collected_event_ctor_pair_list.end(),
-                     std::back_inserter(event_list_));
+                collected_event_ctor_pair_list.end(),
+                std::back_inserter(event_list_));
     } else {
       MPI_Gather(&event, sizeof(KMCEvent), MPI_BYTE,
                  nullptr, 0, MPI_BYTE, 0, MPI_COMM_WORLD);
@@ -180,7 +179,6 @@ size_t KMCSimulation::SelectEvent() const {
   }
   return static_cast<size_t>(std::distance(event_list_.begin(), it));
 }
-void KMCSimulation::CheckTimeAndFix([[maybe_unused]] double one_step_time) {}
 void KMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
   if (mpi_rank_ == 0) {
@@ -231,8 +229,8 @@ void KMCSimulation::Simulate() {
     if (mpi_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      constexpr double kDebyeFrequency = 1e14;
-      auto one_step_time = log(distribution(generator_)) / (total_rate_ * kDebyeFrequency);
+      constexpr double kPrefactor = 1e13;
+      auto one_step_time = log(distribution(generator_)) / (total_rate_ * kPrefactor);
       time_ -= one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
