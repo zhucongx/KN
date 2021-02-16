@@ -1,6 +1,6 @@
 // #include "Encode.h"
 #include "InitialConfigGenerator.h"
-#include <SizeMisfitGenerator.h>
+// #include <SizeMisfitGenerator.h>
 #include "deprecated/Analysis.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
@@ -10,6 +10,7 @@ using namespace std;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
 #include "MpiClusters.h"
+#include "SecondKMCSimulation.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e6, 424e6,
+  // ansys::MpiClusters test(0, 1e6, 542e6,
   //                         "Al", 3, 6);
   // test.SerialRun();
   auto conf = cfg::Config::ReadConfig("start.cfg");
@@ -45,20 +46,20 @@ int main(int argc, char *argv[]) {
   // for (auto aa:a) {
   //   cout << aa << "\t";
   // }
-  kmc::KMCSimulation a(conf,
-                       1e4,
-                       1e6,
-                       1e10,
-                       {"Al", "Mg", "Zn"},
-                       0, 0, 0, "kmc_parameters.json", 1000);
+  kmc::SecondKMCSimulation a(conf,
+                             1e4,
+                             1e6,
+                             1e10,
+                             {"Al", "Mg", "Zn"},
+                             0, 0, 0, "kmc_parameters.json", 1000);
   a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
-  // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
+  // auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
   // vector<size_t> index_v;
-  // constexpr size_t All = 10976;
-  // constexpr size_t Mg = 113;
-  // constexpr size_t Zn = 215;
+  // constexpr size_t All = 108000;
+  // constexpr size_t Mg = 1108;
+  // constexpr size_t Zn = 2114;
   //
   // index_v.resize(All);
   // for (size_t i = 0; i < All; ++i)
