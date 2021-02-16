@@ -47,7 +47,6 @@ class SecondKMCSimulation {
     MPI_Group world_group_, first_group_, second_group_;
     MPI_Comm first_comm_, second_comm_;
 
-    std::vector<double> probability_list_{};
     std::vector<KMCEvent> event_list_{};
     const LRUCacheBarrierPredictor lru_cache_barrier_predictor_;
     mutable std::mt19937_64 generator_;

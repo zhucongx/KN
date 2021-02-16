@@ -117,7 +117,7 @@ void KMCSimulation::BuildEventListParallel() {
   if (remainder) {
     auto i = quotient * mpi_size_ + mpi_rank_;
     auto neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
-    std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
+    const std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
     KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
     if (mpi_rank_ == 0) {

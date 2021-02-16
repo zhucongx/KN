@@ -30,7 +30,6 @@ SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
                                    config_, type_set, lru_size),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
-  probability_list_.resize(kFirstEventListSize);
   event_list_.resize(kFirstEventListSize * kSecondEventListSize);
 
   MPI_Init(nullptr, nullptr);
@@ -51,7 +50,7 @@ SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
   // if they are in first_rank
   MPI_Comm_create(MPI_COMM_WORLD, first_group_, &first_comm_);
 
-  if (first_comm_ != MPI_COMM_NULL) {
+  if (MPI_COMM_NULL != first_comm_) {
     MPI_Comm_rank(first_comm_, &first_group_rank_);
   }
 
@@ -71,24 +70,21 @@ SecondKMCSimulation::~SecondKMCSimulation() {
   if (MPI_COMM_NULL != second_comm_) MPI_Comm_free(&second_comm_);
   MPI_Finalize();
 }
-std::pair<size_t,
-          size_t> SecondKMCSimulation::BuildProbabilityListParallel(double &first_probability) {
+std::pair<size_t, size_t> SecondKMCSimulation::BuildProbabilityListParallel(
+    double &first_probability) {
   if (first_comm_ == MPI_COMM_NULL)
     return {0, 0};
-
-  probability_list_.clear();
   first_total_rate_ = 0;
 
   const auto first_neighbor_index =
       config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[static_cast<size_t>(first_group_rank_)];
-  std::pair<size_t, size_t> jump_pair(vacancy_index_, first_neighbor_index);
+  const std::pair<size_t, size_t> jump_pair(vacancy_index_, first_neighbor_index);
   KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
   const double this_rate = event.GetRate();
   MPI_Allreduce(&this_rate, &first_total_rate_, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
   first_probability = this_rate / first_total_rate_;
   // MPI_Allgather(&first_probability_, 1, MPI_DOUBLE, probability_list_.data(), 1, MPI_DOUBLE, first_comm_);
-
   return jump_pair;
 }
 std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
@@ -103,12 +99,12 @@ std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
   for (const auto second_neighbor_index
       : config_.GetAtomList()[first_neighbor_index].GetFirstNearestNeighborsList()) {
     if (vacancy_first_neighbors_hashset.find(second_neighbor_index)
-        == vacancy_first_neighbors_hashset.cend()) {
+        == vacancy_first_neighbors_hashset.cend() && second_neighbor_index != vacancy_index_) {
       res.push_back(second_neighbor_index);
     }
   }
 #ifdef NDEBUG
-  std::cerr << res.size() << '\n';
+  std::cout << "size :" << res.size() << '\n';
 #endif
   return res;
 }
@@ -116,8 +112,6 @@ void SecondKMCSimulation::BuildEventListParallel() {
   double first_probability;
 
   auto first_jump_pair = BuildProbabilityListParallel(first_probability);
-  std::cout << "you reached here\n";
-
   MPI_Bcast(&first_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, second_comm_);
   auto second_neighbors_indexes = GetSecondNeighborsIndexes();
   MPI_Bcast(static_cast<void *>(second_neighbors_indexes.data()),
