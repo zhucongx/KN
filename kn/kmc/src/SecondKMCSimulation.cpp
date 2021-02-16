@@ -114,6 +114,9 @@ void SecondKMCSimulation::BuildEventListParallel() {
 
   auto first_jump_pair = BuildProbabilityListParallel(first_probability, first_energy_change);
   MPI_Bcast(&first_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, second_comm_);
+  MPI_Bcast(&first_probability,1,MPI_DOUBLE,0,second_comm_);
+  MPI_Bcast(&first_energy_change,1,MPI_DOUBLE,0,second_comm_);
+
   auto second_neighbors_indexes = GetSecondNeighborsIndexes();
   MPI_Bcast(static_cast<void *>(second_neighbors_indexes.data()),
             kSecondEventListSize,
@@ -191,9 +194,9 @@ void SecondKMCSimulation::Simulate() {
     size_t event_index;
     if (world_rank_ == 0) {
       event_index = SelectEvent();
-#ifndef NDEBUG
-      std::cerr << "event choose " << event_index << '\n';
-#endif
+// #ifdef NDEBUG
+//       std::cout << "event choose " << event_index << '\n';
+// #endif
     }
     // world_.barrier();
     MPI_Bcast(&event_index, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
