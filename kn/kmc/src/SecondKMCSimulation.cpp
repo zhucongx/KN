@@ -6,7 +6,7 @@
 namespace kmc {
 
 constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
-constexpr size_t kSecondEventListSize = 7;
+constexpr size_t kSecondEventListSize = 11;
 
 SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
                                          unsigned long long int log_dump_steps,
@@ -44,7 +44,11 @@ SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
   }
   MPI_Comm_group(MPI_COMM_WORLD, &world_group_);
 
-  const int first_rank[12] = {0, 7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77};
+  const int first_rank[12] =
+      {0 * kSecondEventListSize, 1 * kSecondEventListSize, 2 * kSecondEventListSize,
+       3 * kSecondEventListSize, 4 * kSecondEventListSize, 5 * kSecondEventListSize,
+       6 * kSecondEventListSize, 7 * kSecondEventListSize, 8 * kSecondEventListSize,
+       9 * kSecondEventListSize, 10 * kSecondEventListSize, 11 * kSecondEventListSize};
   MPI_Group_incl(world_group_, 12, first_rank, &first_group_);
   // MPI_Group_excl(world_group, 12, first_rank, &nonfirst_group);
   // if they are in first_rank
@@ -92,15 +96,13 @@ std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
   if (first_comm_ == MPI_COMM_NULL)
     return std::vector<size_t>(kSecondEventListSize, 0);
   std::vector<size_t> res;
-  std::unordered_set<size_t> vacancy_first_neighbors_hashset(
-      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().begin(),
-      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().end());
+
   const auto first_neighbor_index =
-      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[static_cast< size_t>(first_group_rank_)];
+      config_.GetAtomList()[vacancy_index_].
+          GetFirstNearestNeighborsList()[static_cast< size_t>(first_group_rank_)];
   for (const auto second_neighbor_index
       : config_.GetAtomList()[first_neighbor_index].GetFirstNearestNeighborsList()) {
-    if (vacancy_first_neighbors_hashset.find(second_neighbor_index)
-        == vacancy_first_neighbors_hashset.cend() && second_neighbor_index != vacancy_index_) {
+    if (second_neighbor_index != vacancy_index_) {
       res.push_back(second_neighbor_index);
     }
   }
@@ -114,8 +116,8 @@ void SecondKMCSimulation::BuildEventListParallel() {
 
   auto first_jump_pair = BuildProbabilityListParallel(first_probability, first_energy_change);
   MPI_Bcast(&first_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, second_comm_);
-  MPI_Bcast(&first_probability,1,MPI_DOUBLE,0,second_comm_);
-  MPI_Bcast(&first_energy_change,1,MPI_DOUBLE,0,second_comm_);
+  MPI_Bcast(&first_probability, 1, MPI_DOUBLE, 0, second_comm_);
+  MPI_Bcast(&first_energy_change, 1, MPI_DOUBLE, 0, second_comm_);
 
   auto second_neighbors_indexes = GetSecondNeighborsIndexes();
   MPI_Bcast(static_cast<void *>(second_neighbors_indexes.data()),
@@ -205,8 +207,11 @@ void SecondKMCSimulation::Simulate() {
     std::pair<size_t, size_t> first_jump_pair{vacancy_index_,
                                               config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[
                                                   event_index / 12]};
+    // std::cout << first_jump_pair.first << ' ' << first_jump_pair.second << '\n';
 
     const auto &executed_invent = event_list_[event_index];
+    // std::cout << executed_invent.GetJumpPair().first << ' ' << executed_invent.GetJumpPair().second << '\n';
+
     cfg::AtomsJump(config_, first_jump_pair);
     cfg::AtomsJump(config_, executed_invent.GetJumpPair());
 

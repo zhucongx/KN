@@ -34,10 +34,21 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e6, 542e6,
-  //                         "Al", 3, 6);
+  // ansys::MpiClusters test(0, 1e5, 17e5,
+  //                         "Al", 4, 4);
   // test.SerialRun();
   auto conf = cfg::Config::ReadConfig("start.cfg");
+  // size_t v_i = cfg::GetVacancyIndex(conf);
+  // size_t n_i = conf.GetAtomList()[v_i].GetFirstNearestNeighborsList()[0];
+  //
+  // cfg::Config::WriteConfig(conf, "1");
+  // cfg::AtomsJump(conf, {v_i, n_i});
+  // cfg::Config::WriteConfig(conf, "2");
+  //
+  // cfg::AtomsJump(conf, {v_i, n_i});
+  // cfg::Config::WriteConfig(conf, "3");
+
+
   // conf.UpdateNeighbors();
   // auto a = ansys::BondCounting::GetBondChange(conf,
   //                                             {82, 83},
