@@ -109,9 +109,9 @@ std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
       res.push_back(second_neighbor_index);
     }
   }
-#ifdef NDEBUG
-  std::cout << "size :" << res.size() << '\n';
-#endif
+// #ifdef NDEBUG
+//   std::cout << "size :" << res.size() << '\n';
+// #endif
   return res;
 }
 void SecondKMCSimulation::BuildEventListParallel() {
