@@ -6,7 +6,7 @@
 namespace kmc {
 
 constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
-constexpr size_t kSecondEventListSize = 11;
+constexpr size_t kSecondEventListSize = 7;
 
 SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
                                          unsigned long long int log_dump_steps,
@@ -96,17 +96,20 @@ std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
   if (first_comm_ == MPI_COMM_NULL)
     return std::vector<size_t>(kSecondEventListSize, 0);
   std::vector<size_t> res;
-
+  std::unordered_set<size_t> vacancy_first_neighbors_hashset(
+      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().begin(),
+      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().end());
   const auto first_neighbor_index =
       config_.GetAtomList()[vacancy_index_].
           GetFirstNearestNeighborsList()[static_cast< size_t>(first_group_rank_)];
   for (const auto second_neighbor_index
       : config_.GetAtomList()[first_neighbor_index].GetFirstNearestNeighborsList()) {
-    if (second_neighbor_index != vacancy_index_) {
+    if (vacancy_first_neighbors_hashset.find(second_neighbor_index)
+        == vacancy_first_neighbors_hashset.cend() && second_neighbor_index != vacancy_index_) {
       res.push_back(second_neighbor_index);
     }
   }
-#ifndef NDEBUG
+#ifdef NDEBUG
   std::cout << "size :" << res.size() << '\n';
 #endif
   return res;
