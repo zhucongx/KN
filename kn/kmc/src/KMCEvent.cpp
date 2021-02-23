@@ -3,10 +3,6 @@
 #include "KMCEvent.h"
 
 namespace kmc {
-constexpr double kBoltzmannConstant = 8.617333262145e-5;
-constexpr double kTemperature = 300;
-constexpr double kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBoltzmannConstant;
-
 KMCEvent::KMCEvent() = default;
 
 KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair,
@@ -69,7 +65,7 @@ void KMCEvent::SetCumulativeProvability(double cumulative_provability) {
 }
 
 void KMCEvent::CalculateProbability(double total_rates) {
-  probability_ = rate_ / total_rates;
+  probability_ = forward_rate_ / total_rates;
 }
 
 } // namespace kmc
