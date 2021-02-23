@@ -6,7 +6,7 @@
 namespace kmc {
 
 constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
-constexpr size_t kSecondEventListSize = 11;
+constexpr size_t kSecondEventListSize = 7;
 
 SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
                                          unsigned long long int log_dump_steps,
