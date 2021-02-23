@@ -6,7 +6,7 @@
 namespace kmc {
 
 constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
-constexpr size_t kSecondEventListSize = 7;
+constexpr size_t kSecondEventListSize = 11;
 
 SecondKMCSimulation::SecondKMCSimulation(cfg::Config config,
                                          unsigned long long int log_dump_steps,
@@ -74,6 +74,9 @@ SecondKMCSimulation::~SecondKMCSimulation() {
   if (MPI_COMM_NULL != second_comm_) MPI_Comm_free(&second_comm_);
   MPI_Finalize();
 }
+
+// get the energy change and the probability from j to k, pjk by the reference.
+// And return the index of j and k. Only applied to 12 sub-primary processes.
 std::pair<size_t, size_t> SecondKMCSimulation::BuildProbabilityListParallel(
     double &first_probability, double &first_energy_change) {
   if (first_comm_ == MPI_COMM_NULL)
@@ -92,6 +95,8 @@ std::pair<size_t, size_t> SecondKMCSimulation::BuildProbabilityListParallel(
   // MPI_Allgather(&first_probability_, 1, MPI_DOUBLE, probability_list_.data(), 1, MPI_DOUBLE, first_comm_);
   return jump_pair;
 }
+
+// Return the indexed of all second neighbors
 std::vector<size_t> SecondKMCSimulation::GetSecondNeighborsIndexes() {
   if (first_comm_ == MPI_COMM_NULL)
     return std::vector<size_t>(kSecondEventListSize, 0);
@@ -209,13 +214,13 @@ void SecondKMCSimulation::Simulate() {
     // world_.barrier();
     std::pair<size_t, size_t> first_jump_pair{vacancy_index_,
                                               config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[
-                                                  event_index / 12]};
+                                                  event_index / kSecondEventListSize]};
     // std::cout << first_jump_pair.first << ' ' << first_jump_pair.second << '\n';
+    // std::cout <<"First " << first_jump_pair.first << ' ' << first_jump_pair.second << '\n';
+    cfg::AtomsJump(config_, first_jump_pair);
 
     const auto &executed_invent = event_list_[event_index];
-    // std::cout << executed_invent.GetJumpPair().first << ' ' << executed_invent.GetJumpPair().second << '\n';
-
-    cfg::AtomsJump(config_, first_jump_pair);
+    // std::cout <<"Second " << executed_invent.GetJumpPair().first << ' ' << executed_invent.GetJumpPair().second << '\n';
     cfg::AtomsJump(config_, executed_invent.GetJumpPair());
 
     // std::pair<size_t,size_t> CheckingPair{0,0};
@@ -223,7 +228,7 @@ void SecondKMCSimulation::Simulate() {
     if (world_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      constexpr double kPrefactor = 1e13;
+      constexpr double kPrefactor = 1e14;
       auto one_step_time = log(distribution(generator_)) / (second_total_rate_ * kPrefactor);
       time_ -= one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
