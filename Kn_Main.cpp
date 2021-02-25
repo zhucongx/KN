@@ -10,7 +10,7 @@ using namespace std;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
 #include "MpiClusters.h"
-#include "SecondKMCSimulation.h"
+#include "ChainKMCSimulation.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
@@ -34,10 +34,9 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e5, 61e5,
-  //                         "Al", 6, 3);
+  // ansys::MpiClusters test(0, 1e5, 6e5,
+  //                         "Al", 3, 4);
   // test.SerialRun();
-  auto conf = cfg::Config::ReadConfig("start.cfg");
   // size_t v_i = cfg::GetVacancyIndex(conf);
   // size_t n_i = conf.GetAtomList()[v_i].GetFirstNearestNeighborsList()[0];
   //
@@ -57,7 +56,8 @@ int main(int argc, char *argv[]) {
   // for (auto aa:a) {
   //   cout << aa << "\t";
   // }
-  kmc::SecondKMCSimulation a(conf,
+  auto conf = cfg::Config::ReadConfig("start.cfg");
+  kmc::ChainKMCSimulation a(conf,
                              1e3,
                              1e5,
                              1e10,
