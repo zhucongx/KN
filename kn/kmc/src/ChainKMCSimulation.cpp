@@ -196,9 +196,9 @@ double ChainKMCSimulation::BuildEventListParallel() {
 
     constexpr double kPrefactor = 1e14;
     double t = 1 / total_rate_k_ / kPrefactor;
+    double t_i = 1 / total_rate_i_ / kPrefactor;
     double ts_numerator = 0.0, ts_j_numerator = 0.0;
-    double
-        ts_numerator_helper = (1 / total_rate_k_ + 1 / total_rate_i_) * beta_bar_k_i / kPrefactor;
+    double ts_numerator_helper = (t + t_i) * beta_bar_k_i;
     MPI_Allreduce(&ts_numerator_helper, &ts_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
     double ts = ts_numerator / beta_bar_k;
     if (event_k_i.GetJumpPair().second == previous_j) {
@@ -207,8 +207,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     MPI_Allreduce(&ts_numerator_helper, &ts_j_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
     double ts_j = ts_j_numerator / gamma_bar_k_j;
 
-    t_2 =
-        one_over_one_minus_a_j
+    t_2 = one_over_one_minus_a_j
             * (gamma_k_j * t + gamma_bar_k_j * (ts_j + t + beta_bar_k / beta_k * ts));
   }
   // MPI_Bcast(event_list_.data(), sizeof(KMCEvent) * kFirstEventListSize, MPI_BYTE, 0, second_comm_);
@@ -260,7 +259,7 @@ void ChainKMCSimulation::Simulate() {
       auto event_index = SelectEvent();
       const auto &selected_event = event_list_[event_index];
       jump_pair = selected_event.GetJumpPair();
-#ifdef NDEBUG
+#ifndef NDEBUG
       std::cout << "event choose " << event_index << '\n';
 #endif
       // update time and energy
@@ -274,7 +273,7 @@ void ChainKMCSimulation::Simulate() {
     // boost::mpi::broadcast(world_, event_index, 0);
     // world_.barrier();
 
-    // std::cout << first_jump_pair.first << ' ' << first_jump_pair.second << '\n';
+    // std::cout << jump_pair.first << ' ' << jump_pair.second << '\n';
     cfg::AtomsJump(config_, jump_pair);
     previous_j = jump_pair.second;
     ++steps_;
