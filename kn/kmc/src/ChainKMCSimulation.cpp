@@ -193,7 +193,6 @@ double ChainKMCSimulation::BuildEventListParallel() {
       cumulative_provability += event.GetProbability();
       event.SetCumulativeProvability(cumulative_provability);
     }
-    std::cout << cumulative_provability << '\n';
 
     constexpr double kPrefactor = 1e14;
     double t = 1 / total_rate_k_ / kPrefactor;
@@ -236,7 +235,7 @@ size_t ChainKMCSimulation::SelectEvent() const {
 void ChainKMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
   if (world_rank_ == 0) {
-    ofs << "steps\ttime\tenergy\tEa\tdE\n";
+    ofs << "steps\ttime\tenergy\tEa\tdE\tposition\n";
     ofs.precision(8);
   }
 
@@ -245,7 +244,8 @@ void ChainKMCSimulation::Simulate() {
     if (world_rank_ == 0) {
       if (steps_ % log_dump_steps_ == 0) {
         ofs << steps_ << '\t' << time_ << '\t' << energy_
-            << '\t' << one_step_barrier_ << '\t' << one_step_energy_change_ << std::endl;
+            << '\t' << one_step_barrier_ << '\t' << one_step_energy_change_ << previous_j
+            << std::endl;
       }
       if (steps_ % config_dump_steps_ == 0) {
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
@@ -258,11 +258,12 @@ void ChainKMCSimulation::Simulate() {
 
     std::pair<size_t, size_t> jump_pair;
     if (world_rank_ == 0) {
-      const auto &selected_event = event_list_[SelectEvent()];
+      auto event_index = SelectEvent();
+      const auto &selected_event = event_list_[event_index];
       jump_pair = selected_event.GetJumpPair();
-// #ifdef NDEBUG
-//       std::cout << "event choose " << event_index << '\n';
-// #endif
+#ifdef NDEBUG
+      std::cout << "event choose " << event_index << '\n';
+#endif
       // update time and energy
       time_ += one_step_time;
       one_step_energy_change_ = selected_event.GetEnergyChange();
