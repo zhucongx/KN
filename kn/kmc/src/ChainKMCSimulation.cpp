@@ -26,7 +26,7 @@ ChainKMCSimulation::ChainKMCSimulation(cfg::Config config,
       energy_(energy),
       time_(time),
       vacancy_index_(cfg::GetVacancyIndex(config_)),
-      previous_j(config.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[0]),
+      previous_j(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[0]),
       lru_cache_barrier_predictor_(json_parameters_filename,
                                    config_, type_set, lru_size),
       generator_(static_cast<unsigned long long int>(
@@ -276,7 +276,7 @@ void ChainKMCSimulation::Simulate() {
 
     // std::cout << first_jump_pair.first << ' ' << first_jump_pair.second << '\n';
     cfg::AtomsJump(config_, jump_pair);
-
+    previous_j = jump_pair.second;
     ++steps_;
     // world_.barrier();
   }

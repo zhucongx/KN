@@ -58,11 +58,11 @@ void KMCSimulation::BuildEventListSerial() {
   }
 #ifndef NDEBUG
   for (const auto &event : event_list_) {
-    std::cerr << event.GetBarrier() << '\t';
+    std::cerr << event.GetForwardBarrier() << '\t';
   }
   std::cerr << '\n';
   for (const auto &event : event_list_) {
-    std::cerr << event.GetRate() << '\t';
+    std::cerr << event.GetForwardRate() << '\t';
   }
   std::cerr << '\n';
 #endif
@@ -152,11 +152,11 @@ void KMCSimulation::BuildEventListParallel() {
 #ifndef NDEBUG
   if (mpi_rank_ == 0) {
     for (const auto &event : event_list_) {
-      std::cerr << event.GetBarrier() << '\t';
+      std::cerr << event.GetForwardBarrier() << '\t';
     }
     std::cerr << '\n';
     for (const auto &event : event_list_) {
-      std::cerr << event.GetRate() << '\t';
+      std::cerr << event.GetForwardRate() << '\t';
     }
     std::cerr << '\n';
   }
