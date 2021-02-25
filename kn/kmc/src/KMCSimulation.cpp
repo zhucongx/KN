@@ -53,7 +53,7 @@ void KMCSimulation::BuildEventListSerial() {
     std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
     KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
-    total_rate_ += event.GetRate();
+    total_rate_ += event.GetForwardRate();
     event_list_.push_back(std::move(event));
   }
 #ifndef NDEBUG
@@ -81,7 +81,7 @@ void KMCSimulation::BuildEventListParallel() {
     std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
     KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
-    const double this_rate = event.GetRate();
+    const double this_rate = event.GetForwardRate();
     double sum_rates = 0;
     MPI_Reduce(&this_rate, &sum_rates, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
@@ -121,12 +121,12 @@ void KMCSimulation::BuildEventListParallel() {
     KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
 
     if (mpi_rank_ == 0) {
-      total_rate_ += event.GetRate();
+      total_rate_ += event.GetForwardRate();
       event_list_.push_back(event);
       for (size_t j = 1; j < remainder; ++j) {
         MPI_Recv(&event, sizeof(KMCEvent), MPI_BYTE,
                  static_cast<int>(j), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        total_rate_ += event.GetRate();
+        total_rate_ += event.GetForwardRate();
         event_list_.push_back(event);
       }
     } else {
@@ -143,11 +143,11 @@ void KMCSimulation::BuildEventListParallel() {
   // boost::mpi::broadcast(world_, total_rate_, 0);
 
   /* calculate relative and cumulative probability */
-  double cumulative_provability = 0.0;
+  double cumulative_probability = 0.0;
   for (auto &event : event_list_) {
     event.CalculateProbability(total_rate_);
-    cumulative_provability += event.GetProbability();
-    event.SetCumulativeProvability(cumulative_provability);
+    cumulative_probability += event.GetProbability();
+    event.SetCumulativeProvability(cumulative_probability);
   }
 #ifndef NDEBUG
   if (mpi_rank_ == 0) {
@@ -234,7 +234,7 @@ void KMCSimulation::Simulate() {
       time_ -= one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
-      one_step_barrier_ = executed_invent.GetBarrier();
+      one_step_barrier_ = executed_invent.GetForwardBarrier();
       // CheckTimeAndFix(-one_step_time);
     }
     ++steps_;

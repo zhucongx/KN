@@ -6,9 +6,7 @@
 // #include <boost/serialization/utility.hpp>
 
 namespace kmc {
-constexpr double kBoltzmannConstant = 8.617333262145e-5;
-constexpr double kTemperature = 300;
-constexpr double kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBoltzmannConstant;
+
 class KMCEvent {
     // Todo reduce KMCEvent
   public:
@@ -21,8 +19,9 @@ class KMCEvent {
     /// Getter
     // [[nodiscard]] Event_Ctor_Pair_t GetEventCtorPair() const;
     [[nodiscard]] const std::pair<size_t, size_t> &GetJumpPair() const;
-    [[nodiscard]] double GetBarrier() const;
-    [[nodiscard]] double GetRate() const;
+    [[nodiscard]] double GetForwardBarrier() const;
+    [[nodiscard]] double GetForwardRate() const;
+    [[nodiscard]] double GetBackwardRate() const;
     [[nodiscard]] double GetEnergyChange() const;
     [[nodiscard]] double GetProbability() const;
     [[nodiscard]] double GetCumulativeProvability() const;

@@ -89,7 +89,7 @@ std::pair<size_t, size_t> SecondKMCSimulation::BuildProbabilityListParallel(
     first_jump_pair = {vacancy_index_, first_neighbor_index};
     KMCEvent event(first_jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, first_jump_pair));
 
-    const double this_rate = event.GetRate();
+    const double this_rate = event.GetForwardRate();
     MPI_Allreduce(&this_rate, &first_total_rate_, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
     first_probability = this_rate / first_total_rate_;
     first_energy_change = event.GetEnergyChange();
@@ -146,9 +146,9 @@ void SecondKMCSimulation::BuildEventListParallel() {
       (second_jump_pair,
        lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, second_jump_pair));
 
-  second_event.SetRate(second_event.GetRate() * first_probability);
+  second_event.SetRate(second_event.GetForwardRate() * first_probability);
   second_event.SetEnergyChange(second_event.GetEnergyChange() + first_energy_change);
-  const double this_rate = second_event.GetRate();
+  const double this_rate = second_event.GetForwardRate();
   MPI_Allreduce(&this_rate, &second_total_rate_, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   MPI_Allgather(&second_event,
                 sizeof(KMCEvent),
@@ -238,7 +238,7 @@ void SecondKMCSimulation::Simulate() {
       time_ -= one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
-      one_step_barrier_ = executed_invent.GetBarrier();
+      one_step_barrier_ = executed_invent.GetForwardBarrier();
     }
     ++steps_;
     // world_.barrier();
