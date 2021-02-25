@@ -243,9 +243,8 @@ void ChainKMCSimulation::Simulate() {
     // log and config file
     if (world_rank_ == 0) {
       if (steps_ % log_dump_steps_ == 0) {
-        ofs << steps_ << '\t' << time_ << '\t' << energy_
-            << '\t' << one_step_barrier_ << '\t' << one_step_energy_change_ << previous_j
-            << std::endl;
+        ofs << steps_ << '\t' << time_ << '\t' << energy_ << '\t' << one_step_barrier_ << '\t'
+            << one_step_energy_change_ << 't' << previous_j << std::endl;
       }
       if (steps_ % config_dump_steps_ == 0) {
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
