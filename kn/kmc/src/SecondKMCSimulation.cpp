@@ -198,7 +198,7 @@ void SecondKMCSimulation::Simulate() {
             << '\t' << one_step_barrier_ << '\t' << one_step_change_ << std::endl;
       }
       if (steps_ % config_dump_steps_ == 0) {
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
       }
     }
     // world_.barrier();

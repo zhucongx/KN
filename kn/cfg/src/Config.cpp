@@ -294,7 +294,7 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
     config.UpdateNeighbors();
   return config;
 }
-Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
+Config Config::ReadConfig(const std::string &filename, size_t update_neighbors) {
   std::ifstream ifs(filename, std::ifstream::in);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "Number of particles = %i"
@@ -348,40 +348,68 @@ Config Config::ReadConfig(const std::string &filename, bool update_neighbors) {
               relative_position_Z * scale);
     if (ifs.peek() != '\n') {
       ifs.ignore(std::numeric_limits<std::streamsize>::max(), '#');
-      for (size_t i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendFirstNearestNeighborsList(index);
-      }
-      for (size_t i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendSecondNearestNeighborsList(index);
-      }
-      for (size_t i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendThirdNearestNeighborsList(index);
-      }
-      for (size_t i = 0; i < Al_const::kNumFourthNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendFourthNearestNeighborsList(index);
-      }
-      for (size_t i = 0; i < Al_const::kNumFifthNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendFifthNearestNeighborsList(index);
-      }
-      for (size_t i = 0; i < Al_const::kNumSixthNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendSixthNearestNeighborsList(index);
-      }
-      for (size_t i = 0; i < Al_const::kNumSeventhNearestNeighbors; ++i) {
-        ifs >> index;
-        atom.AppendSeventhNearestNeighborsList(index);
-      }
+      if (update_neighbors >= 1)
+        for (size_t i = 0; i < Al_const::kNumFirstNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendFirstNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      if (update_neighbors >= 2)
+        for (size_t i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendSecondNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      if (update_neighbors >= 3)
+        for (size_t i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendThirdNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      if (update_neighbors >= 4)
+        for (size_t i = 0; i < Al_const::kNumFourthNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendFourthNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      if (update_neighbors >= 5)
+        for (size_t i = 0; i < Al_const::kNumFifthNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendFifthNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      if (update_neighbors >= 6)
+        for (size_t i = 0; i < Al_const::kNumSixthNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendSixthNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      if (update_neighbors >= 7)
+        for (size_t i = 0; i < Al_const::kNumSeventhNearestNeighbors; ++i) {
+          ifs >> index;
+          atom.AppendSeventhNearestNeighborsList(index);
+        }
+      else
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
       neighbor_found = true;
     }
     config.AppendAtomWithoutChangingAtomID(atom);
   }
   config.ConvertRelativeToCartesian();
-  if (!neighbor_found && update_neighbors)
+  if (!neighbor_found)
     config.UpdateNeighbors();
   return config;
 }
@@ -416,7 +444,7 @@ void Config::WritePOSCAR(const Config &config,
 }
 void Config::WriteConfig(const Config &config,
                          const std::string &filename,
-                         bool neighbors_info) {
+                         size_t neighbors_info) {
   std::ofstream ofs(filename, std::ofstream::out);
   ofs.precision(16);
   ofs << "Number of particles = " << config.GetNumAtoms() << '\n';
@@ -437,29 +465,36 @@ void Config::WriteConfig(const Config &config,
     ofs << atom.GetMass() << '\n'
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
-    if (neighbors_info) {
+    if (neighbors_info > 0) {
       ofs << " # ";
-      for (auto neighbor_index : atom.GetFirstNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
-      for (auto neighbor_index : atom.GetSecondNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
-      for (auto neighbor_index : atom.GetThirdNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
-      for (auto neighbor_index : atom.GetFourthNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
-      for (auto neighbor_index : atom.GetFifthNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
-      for (auto neighbor_index : atom.GetSixthNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
-      for (auto neighbor_index : atom.GetSeventhNearestNeighborsList()) {
-        ofs << neighbor_index << ' ';
-      }
+      if (neighbors_info >= 1)
+        for (auto neighbor_index : atom.GetFirstNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
+      if (neighbors_info >= 2)
+        for (auto neighbor_index : atom.GetSecondNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
+      if (neighbors_info >= 3)
+        for (auto neighbor_index : atom.GetThirdNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
+      if (neighbors_info >= 4)
+        for (auto neighbor_index : atom.GetFourthNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
+      if (neighbors_info >= 5)
+        for (auto neighbor_index : atom.GetFifthNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
+      if (neighbors_info >= 6)
+        for (auto neighbor_index : atom.GetSixthNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
+      if (neighbors_info >= 7)
+        for (auto neighbor_index : atom.GetSeventhNearestNeighborsList()) {
+          ofs << neighbor_index << ' ';
+        }
     }
     ofs << '\n';
     ofs << std::flush;

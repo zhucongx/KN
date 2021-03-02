@@ -11,7 +11,7 @@ ClustersFinder::ClustersFinder(std::string cfg_filename,
                                size_t smallest_cluster_criteria,
                                size_t solvent_bond_criteria)
     : cfg_filename_(std::move(cfg_filename)),
-      config_(cfg::Config::ReadConfig(cfg_filename_, true)),
+      config_(cfg::Config::ReadConfig(cfg_filename_, 2)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
       solvent_bond_criteria_(solvent_bond_criteria) {
@@ -41,7 +41,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto output_name("cluster/" + cfg_filename_);
   auto const pos = output_name.find_last_of('.');
   output_name.insert(pos, "_cluster");
-  cfg::Config::WriteConfig(config_out, output_name, false);
+  cfg::Config::WriteConfig(config_out, output_name, 0);
   return num_atom_in_clusters_set;
 }
 

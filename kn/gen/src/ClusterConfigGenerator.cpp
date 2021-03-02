@@ -89,7 +89,7 @@ void ClusterConfigGenerator::CreateSingletsConfigs() const {
         auto config_end = config_start;
         cfg::AtomsJump(config_end, jump_pair);
 
-        cfg::Config::WriteConfig(config_start, std::to_string(count) + ".cfg", false);
+        cfg::Config::WriteConfig(config_start, std::to_string(count) + ".cfg", 0);
 
         ofs << "config " << count << " end 0 pair: "
             << jump_pair.first << ' ' << jump_pair.second << '\n';
@@ -97,14 +97,14 @@ void ClusterConfigGenerator::CreateSingletsConfigs() const {
         // Generate start files
         std::filesystem::path start_path(config_path / "s");
         std::filesystem::create_directories(start_path);
-        cfg::Config::WriteConfig(config_start, start_path / "start.cfg", false);
+        cfg::Config::WriteConfig(config_start, start_path / "start.cfg", 0);
         config_start.Perturb(generator_);
         cfg::Config::WritePOSCAR(config_start, start_path / "POSCAR", false);
         PrepareVASPFiles(config_start, start_path);
         // Generate end files
         std::filesystem::path end_path(config_path / "e_0");
         std::filesystem::create_directories(end_path);
-        cfg::Config::WriteConfig(config_end, end_path / "end.cfg", false);
+        cfg::Config::WriteConfig(config_end, end_path / "end.cfg", 0);
         config_end.Perturb(generator_);
         cfg::Config::WritePOSCAR(config_end, end_path / "POSCAR", false);
         PrepareVASPFiles(config_end, end_path);

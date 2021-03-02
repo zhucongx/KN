@@ -58,7 +58,7 @@ class Config {
     void ChangeAtomTypeAt(size_t id, const std::string &type);
     /// IO Todo: rewrite as friend function
     static Config ReadPOSCAR(const std::string &filename, bool update_neighbors = true);
-    static Config ReadConfig(const std::string &filename, bool update_neighbors = true);
+    static Config ReadConfig(const std::string &filename, size_t update_neighbors);
     // Write Configuration out as POSCAR file. If the show_vacancy_option is
     // true, output will have "X" for visualization. If false, vacancies will be
     // ignored for VASP calculation.
@@ -67,7 +67,7 @@ class Config {
                             bool show_vacancy_option = false);
     static void WriteConfig(const Config &config,
                             const std::string &filename,
-                            bool neighbors_info = true);
+                            size_t neighbors_info);
 
   private:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;

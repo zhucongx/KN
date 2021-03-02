@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
   // for (auto aa:a) {
   //   cout << aa << "\t";
   // }
-  auto conf = cfg::Config::ReadConfig("start.cfg");
+  auto conf = cfg::Config::ReadConfig("start.cfg", 7);
   kmc::KMCSimulation a(conf,
                        1e3,
                        1e5,

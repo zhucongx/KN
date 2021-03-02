@@ -246,7 +246,7 @@ void ChainKMCSimulation::Simulate() {
             << one_step_energy_change_ << '\t' << previous_j << std::endl;
       }
       if (steps_ % config_dump_steps_ == 0) {
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
       }
     }
     // world_.barrier();
