@@ -26,7 +26,7 @@ KMCSimulation::KMCSimulation(cfg::Config config,
       time_(time),
       vacancy_index_(cfg::GetVacancyIndex(config_)),
       lru_cache_barrier_predictor_(json_parameters_filename,
-                                   config_, type_set, lru_size),
+                                   config_, type_set),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
   MPI_Init(nullptr, nullptr);
