@@ -54,7 +54,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
 
 void ClustersFinder::UpdateElementSet() {
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
-    if (element_type == "X")
+    if (element_type == "XX")
       continue;
     element_set_.insert(element_type);
   }
@@ -63,7 +63,7 @@ void ClustersFinder::UpdateElementSet() {
 std::unordered_set<size_t> ClustersFinder::FindSoluteAtomsHelper() const {
   std::unordered_set<size_t> solute_atoms_hashset;
   for (const auto &[element_type, index_vector] : config_.GetElementListMap()) {
-    if (element_type == solvent_element_ || element_type == "X")
+    if (element_type == solvent_element_ || element_type == "XX")
       continue;
     std::copy(index_vector.begin(),
               index_vector.end(),
@@ -137,7 +137,7 @@ std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClusters() const 
     for (auto neighbors_list : {&atom.GetFirstNearestNeighborsList()}) {
       for (auto neighbor_id : *neighbors_list) {
         const auto &neighbor_type = config_.GetAtomList()[neighbor_id].GetType();
-        if (neighbor_type != solvent_element_ && neighbor_type != "X"
+        if (neighbor_type != solvent_element_ && neighbor_type != "XX"
             && all_found_solute_set.find(config_.GetAtomList()[neighbor_id].GetId())
                 != all_found_solute_set.end())
           neighbor_bond_count++;

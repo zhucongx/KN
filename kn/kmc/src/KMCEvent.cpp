@@ -24,14 +24,16 @@ const std::pair<size_t, size_t> &KMCEvent::GetJumpPair() const {
   return jump_pair_;
 }
 
-double KMCEvent::GetBarrier() const {
+double KMCEvent::GetForwardBarrier() const {
   return barrier_;
 }
 
-double KMCEvent::GetRate() const {
+double KMCEvent::GetForwardRate() const {
   return rate_;
 }
-
+double KMCEvent::GetBackwardRate() const {
+  return std::exp(energy_change_ - barrier_ * kBoltzmannConstantTimesTemperatureInv);
+}
 double KMCEvent::GetEnergyChange() const {
   return energy_change_;
 }

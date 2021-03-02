@@ -19,8 +19,9 @@ class KMCEvent {
     /// Getter
     // [[nodiscard]] Event_Ctor_Pair_t GetEventCtorPair() const;
     [[nodiscard]] const std::pair<size_t, size_t> &GetJumpPair() const;
-    [[nodiscard]] double GetBarrier() const;
-    [[nodiscard]] double GetRate() const;
+    [[nodiscard]] double GetForwardBarrier() const;
+    [[nodiscard]] double GetForwardRate() const;
+    [[nodiscard]] double GetBackwardRate() const;
     [[nodiscard]] double GetEnergyChange() const;
     [[nodiscard]] double GetProbability() const;
     [[nodiscard]] double GetCumulativeProvability() const;
