@@ -13,7 +13,7 @@ std::pair<double, double> BEPBarrierPredictor::GetBarrierAndDiff(const cfg::Conf
                                                                  const std::pair<size_t,
                                                                                  size_t> &jump_pair) const {
   const auto &element_type = config.GetAtomList().at(jump_pair.second).GetType();
-  auto e0 = standard_e0_[element_type];
+  auto e0 = standard_e0_.at(element_type);
 
   auto dE = GetDEFromConfig(config, jump_pair);
 #ifndef NDEBUG
