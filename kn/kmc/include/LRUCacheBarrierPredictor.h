@@ -22,10 +22,10 @@ class LRUCacheBarrierPredictor : BarrierPredictor {
     mutable std::unordered_map<std::vector<std::string>,
                                std::list<std::pair<std::vector<std::string>, double>>::iterator,
                                boost::hash<std::vector<std::string>>> hashmap_{};
-#ifndef NDEBUG
-  public:
-    mutable size_t count_{0};
-#endif
+// #ifndef NDEBUG
+//   public:
+//     mutable size_t count_{0};
+// #endif
 };
 } // namespace kmc
 

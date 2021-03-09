@@ -36,19 +36,19 @@ std::pair<double, double> LRUCacheBarrierPredictor::GetBarrierAndDiff(
     backward_e0 = GetE0FromEncode(element_type, backward_encode_list);
     Add(backward_encode_list, backward_e0);
   } else {
-#ifndef NDEBUG
-    ++count_;
-#endif
+// #ifndef NDEBUG
+//     ++count_;
+// #endif
     cache_list_.splice(cache_list_.begin(), cache_list_, it2->second);
     backward_e0 = it2->second->second;
   }
 
   auto e0 = 0.5 * (forward_e0 + backward_e0);
   auto dE = GetDEFromConfig(config, jump_pair);
-#ifndef NDEBUG
-  std::cout << forward_e0 << '\t' << backward_e0 << '\n';
-  std::cout << dE << '\n';
-#endif
+// #ifndef NDEBUG
+//   std::cout << forward_e0 << '\t' << backward_e0 << '\n';
+//   std::cout << dE << '\n';
+// #endif
   // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";

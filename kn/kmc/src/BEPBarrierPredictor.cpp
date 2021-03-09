@@ -16,9 +16,6 @@ std::pair<double, double> BEPBarrierPredictor::GetBarrierAndDiff(const cfg::Conf
   auto e0 = standard_e0_.at(element_type);
 
   auto dE = GetDEFromConfig(config, jump_pair);
-#ifndef NDEBUG
-  std::cout << dE << '\n';
-#endif
   // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";

@@ -353,56 +353,44 @@ Config Config::ReadConfig(const std::string &filename, size_t update_neighbors) 
           ifs >> index;
           atom.AppendFirstNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       if (update_neighbors >= 2)
         for (size_t i = 0; i < Al_const::kNumSecondNearestNeighbors; ++i) {
           ifs >> index;
           atom.AppendSecondNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       if (update_neighbors >= 3)
         for (size_t i = 0; i < Al_const::kNumThirdNearestNeighbors; ++i) {
           ifs >> index;
           atom.AppendThirdNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       if (update_neighbors >= 4)
         for (size_t i = 0; i < Al_const::kNumFourthNearestNeighbors; ++i) {
           ifs >> index;
           atom.AppendFourthNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       if (update_neighbors >= 5)
         for (size_t i = 0; i < Al_const::kNumFifthNearestNeighbors; ++i) {
           ifs >> index;
           atom.AppendFifthNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       if (update_neighbors >= 6)
         for (size_t i = 0; i < Al_const::kNumSixthNearestNeighbors; ++i) {
           ifs >> index;
           atom.AppendSixthNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       if (update_neighbors >= 7)
         for (size_t i = 0; i < Al_const::kNumSeventhNearestNeighbors; ++i) {
           ifs >> index;
           atom.AppendSeventhNearestNeighborsList(index);
         }
-      else
-        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
       neighbor_found = true;
     }

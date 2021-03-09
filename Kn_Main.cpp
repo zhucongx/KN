@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e5, 278e5,
+  // ansys::MpiClusters test(0, 1e6, 73e6,
   //                         "Al", 10, 3);
   // test.SerialRun();
   // size_t v_i = cfg::GetVacancyIndex(conf);
