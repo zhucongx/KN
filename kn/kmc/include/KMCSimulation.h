@@ -44,7 +44,7 @@ class KMCSimulation {
     size_t mpi_size_;
 
     std::vector<KMCEvent> event_list_{};
-    const LRUCacheBarrierPredictor lru_cache_barrier_predictor_;
+    const BEPBarrierPredictor lru_cache_barrier_predictor_;
     mutable std::mt19937_64 generator_;
 };
 } // namespace kmc

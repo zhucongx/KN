@@ -26,7 +26,7 @@ KMCSimulation::KMCSimulation(cfg::Config config,
       time_(time),
       vacancy_index_(cfg::GetVacancyIndex(config_)),
       lru_cache_barrier_predictor_(json_parameters_filename,
-                                   config_, type_set, lru_size),
+                                   config_, type_set),
       generator_(static_cast<unsigned long long int>(
                      std::chrono::system_clock::now().time_since_epoch().count())) {
   MPI_Init(nullptr, nullptr);
@@ -149,18 +149,18 @@ void KMCSimulation::BuildEventListParallel() {
     cumulative_probability += event.GetProbability();
     event.SetCumulativeProvability(cumulative_probability);
   }
-#ifndef NDEBUG
-  if (mpi_rank_ == 0) {
-    for (const auto &event : event_list_) {
-      std::cerr << event.GetForwardBarrier() << '\t';
-    }
-    std::cerr << '\n';
-    for (const auto &event : event_list_) {
-      std::cerr << event.GetForwardRate() << '\t';
-    }
-    std::cerr << '\n';
-  }
-#endif
+// #ifndef NDEBUG
+//   if (mpi_rank_ == 0) {
+//     for (const auto &event : event_list_) {
+//       std::cerr << event.GetForwardBarrier() << '\t';
+//     }
+//     std::cerr << '\n';
+//     for (const auto &event : event_list_) {
+//       std::cerr << event.GetForwardRate() << '\t';
+//     }
+//     std::cerr << '\n';
+//   }
+// #endif
 }
 
 size_t KMCSimulation::SelectEvent() const {
@@ -190,14 +190,8 @@ void KMCSimulation::Simulate() {
     // log and config file
     if (mpi_rank_ == 0) {
       if (steps_ % log_dump_steps_ == 0) {
-#ifndef NDEBUG
-        ofs << steps_ << '\t' << time_ << '\t' << energy_
-            << '\t' << one_step_barrier_ << '\t' << one_step_change_ << '\t'
-            << lru_cache_barrier_predictor_.count_ << std::endl;
-#else
         ofs << steps_ << '\t' << time_ << '\t' << energy_
             << '\t' << one_step_barrier_ << '\t' << one_step_change_ << std::endl;
-#endif
       }
       if (steps_ % config_dump_steps_ == 0) {
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
@@ -213,9 +207,6 @@ void KMCSimulation::Simulate() {
     size_t event_index;
     if (mpi_rank_ == 0) {
       event_index = SelectEvent();
-#ifndef NDEBUG
-      std::cerr << "event choose " << event_index << '\n';
-#endif
     }
     // world_.barrier();
     MPI_Bcast(&event_index, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
