@@ -82,17 +82,22 @@ class Config {
     // Matrix_t reciprocal_matrix_{},
     // The index of atom in the vector is not always same as of the id of the atom
     std::vector<Atom> atom_list_{};
+    std::unordered_map<size_t, size_t> site_id_to_atom_id_hashmap_{};
   public:
     /// Friend function
     friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair);
     // friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
 std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &jump_pair);
+// The first indicate to atom
+std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
+    const Config &config, const std::pair<size_t, size_t> &jump_pair);
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair);
 std::map<std::string, size_t> CountAllType(const Config &config);
 // std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label

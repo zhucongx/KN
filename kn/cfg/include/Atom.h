@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "VectorMatrix.hpp"
+#include "Lattice.hpp"
 #include "Config.h"
 namespace cfg {
 class Config;
@@ -17,6 +18,7 @@ class Atom {
     Atom(size_t id, double mass, std::string type, double x, double y, double z);
     Atom(size_t id, double mass, std::string type, Vector_t position);
     /// Getter
+    [[nodiscard]] size_t GetSiteId() const;
     [[nodiscard]] const Vector_t &GetCartesianPosition() const;
     [[nodiscard]] const Vector_t &GetRelativePosition() const;
     [[nodiscard]] size_t GetId() const;
@@ -50,10 +52,7 @@ class Atom {
     size_t id_{};
     double mass_{};
     std::string type_{};
-    // absolute position
-    Vector_t cartesian_position_{};
-    // relative position in the box
-    Vector_t relative_position_{};
+    Lattice lattice_{};
     // // near neighbor hashset
     // std::unordered_set<size_t> near_neighbor_hashset_;
     std::vector<size_t> first_nearest_neighbors_list_{};
@@ -68,7 +67,7 @@ class Atom {
   public:
     /// Friend function
     friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-    // friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair);
 };
 Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second);
 double FindMass(const std::string &elem);
