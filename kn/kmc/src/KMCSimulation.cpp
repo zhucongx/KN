@@ -40,7 +40,11 @@ KMCSimulation::KMCSimulation(cfg::Config config,
   if (mpi_rank_ == 0) {
     std::cout << "Using " << mpi_size_ << " processes." << std::endl;
   }
-
+  if (mpi_size_ > 12) {
+    std::cout << "Cannot use more than 12 precesses. Terminating.\n";
+    MPI_Finalize();
+    exit(0);
+  }
 }
 KMCSimulation::~KMCSimulation() {
   MPI_Finalize();
