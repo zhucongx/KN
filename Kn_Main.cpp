@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
   auto conf = cfg::Config::ReadConfig("start.cfg", 7);
   kmc::ChainKMCSimulation a(conf,
                        1e0,
-                       1e7,
+                       1e5,
                        1e10,
                        {"Al", "Mg", "Zn"},
                        0, 0, 0, "kmc_parameters.json", 100);
