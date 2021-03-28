@@ -33,7 +33,7 @@ const Vector_t &Atom::GetCartesianPosition() const {
   return lattice_.cartesian_position_;
 }
 const Vector_t &Atom::GetRelativePosition() const {
-  return lattice_.cartesian_position_;
+  return lattice_.relative_position_;
 }
 size_t Atom::GetId() const {
   return id_;
