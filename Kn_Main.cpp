@@ -34,9 +34,9 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  ansys::MpiClusters test(0, 1e7, 218e7,
-                          "Al", 10, 3);
-  test.SerialRun();
+  // ansys::MpiClusters test(0, 1e7, 218e7,
+  //                         "Al", 10, 3);
+  // test.SerialRun();
   // size_t v_i = cfg::GetVacancyIndex(conf);
   // size_t n_i = conf.GetAtomList()[v_i].GetFirstNearestNeighborsList()[0];
   //
@@ -56,14 +56,14 @@ int main(int argc, char *argv[]) {
   // for (auto aa:a) {
   //   cout << aa << "\t";
   // }
-  // auto conf = cfg::Config::ReadConfig("start.cfg", 7);
-  // kmc::KMCSimulation a(conf,
-  //                      1e3,
-  //                      1e7,
-  //                      1e10,
-  //                      {"Al", "Mg", "Zn"},
-  //                      0, 0, 0, "kmc_parameters.json", 100);
-  // a.Simulate();
+  auto conf = cfg::Config::ReadConfig("start.cfg", 7);
+  kmc::ChainKMCSimulation a(conf,
+                       1e0,
+                       1e7,
+                       1e10,
+                       {"Al", "Mg", "Zn"},
+                       0, 0, 0, "kmc_parameters.json", 100);
+  a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
   // auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
