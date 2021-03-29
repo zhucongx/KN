@@ -219,7 +219,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     t_2 = one_over_one_minus_a_j
         * (gamma_k_j * t + gamma_bar_k_j * (ts_j + t + beta_bar_k / beta_k * ts));
   }
-  // MPI_Bcast(event_list_.data(), sizeof(KMCEvent) * kFirstEventListSize, MPI_BYTE, 0, second_comm_);
+  MPI_Bcast(&t_2, 1, MPI_DOUBLE, 0, second_comm_);
   return t_2;
 }
 // run this on this first process
@@ -253,23 +253,22 @@ void ChainKMCSimulation::Simulate() {
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
-    auto one_step_time = BuildEventListParallel();
+    one_step_time_change_ = BuildEventListParallel();
     KMCEvent selected_event;
-    double random_variable;
     if (world_rank_ == 0) {
       selected_event = event_list_[SelectEvent()];
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      random_variable = distribution(generator_);
+      one_step_energy_change_ *= distribution(generator_);
     }
     MPI_Bcast(&selected_event, sizeof(KMCEvent), MPI_BYTE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&random_variable, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&one_step_energy_change_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 #ifndef NDEBUG
     std::cout << "event choose " << event_index << '\n';
 #endif
     const std::pair<size_t, size_t> &jump_pair = selected_event.GetAtomIDJumpPair();
 
     // update time and energy
-    time_ += random_variable*one_step_time;
+    time_ += one_step_time_change_;
     one_step_energy_change_ = selected_event.GetEnergyChange();
     energy_ += one_step_energy_change_;
     one_step_barrier_ = selected_event.GetForwardBarrier();

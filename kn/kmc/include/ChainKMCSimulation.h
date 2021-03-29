@@ -44,6 +44,7 @@ class ChainKMCSimulation {
     const size_t vacancy_index_;
     double one_step_barrier_{0.0};
     double one_step_energy_change_{0.0};
+    double one_step_time_change_{0.0};
 
     // helpful properties
     double total_rate_k_{0.0}, total_rate_i_{0.0};
