@@ -11,6 +11,12 @@ class KMCEvent {
     // Todo reduce KMCEvent
   public:
     // using Event_Ctor_Pair_t = std::pair<std::pair<size_t, size_t>, std::pair<double, double>>;
+
+    static constexpr double kBoltzmannConstant = 8.617333262145e-5;
+    static constexpr double kTemperature = 300;
+    static constexpr double
+        kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBoltzmannConstant;
+
     /// Constructor
     KMCEvent();
     KMCEvent(std::pair<size_t, size_t> atom_id_jump_pair,
