@@ -95,6 +95,7 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
 // The first indicate to atom
 std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+size_t GetHashOfAState(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
 void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 std::map<std::string, size_t> CountAllType(const Config &config);
@@ -104,7 +105,8 @@ std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &con
 // std::set<std::string> GetTypeSet(const Config &config);
 // atom_id_jump_pair in a pair of two indexes, this function return the center of these two atoms
 Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
-Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+Matrix_t GetPairRotationMatrix(const Config &config,
+                               const std::pair<size_t, size_t> &atom_id_jump_pair);
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
 
 size_t GetVacancyIndex(const Config &config);
