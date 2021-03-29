@@ -21,7 +21,7 @@ class ChainKMCSimulation {
                         const std::string &json_parameters_filename,
                         size_t lru_size);
     virtual ~ChainKMCSimulation();
-    void Simulate();
+    virtual void Simulate();
 
   protected:
     inline void Dump(std::ofstream &ofs);

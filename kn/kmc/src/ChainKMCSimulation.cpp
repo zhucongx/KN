@@ -248,32 +248,34 @@ void ChainKMCSimulation::Simulate() {
   }
 
   while (steps_ < maximum_number_) {
-    // log and config file
     if (world_rank_ == 0) {
       Dump(ofs);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     auto one_step_time = BuildEventListParallel();
-
-    std::pair<size_t, size_t> atom_id_jump_pair;
+    size_t event_index;
     if (world_rank_ == 0) {
-      auto event_index = SelectEvent();
-      const auto &selected_event = event_list_[event_index];
-      atom_id_jump_pair = selected_event.GetJumpPair();
-#ifndef NDEBUG
-      std::cout << "event choose " << event_index << '\n';
-#endif
-      // update time and energy
-      time_ += one_step_time;
-      one_step_energy_change_ = selected_event.GetEnergyChange();
-      energy_ += one_step_energy_change_;
-      one_step_barrier_ = selected_event.GetForwardBarrier();
+      event_index = SelectEvent();
     }
-    MPI_Bcast(&atom_id_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&event_index, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
 
-    cfg::AtomsJump(config_, atom_id_jump_pair);
-    previous_j = atom_id_jump_pair.second;
+    const auto &selected_event = event_list_[event_index];
+#ifndef NDEBUG
+    std::cout << "event choose " << event_index << '\n';
+#endif
+    const std::pair<size_t, size_t> &jump_pair = selected_event.GetJumpPair();
+
+    // update time and energy
+    time_ += one_step_time;
+    one_step_energy_change_ = selected_event.GetEnergyChange();
+    energy_ += one_step_energy_change_;
+    one_step_barrier_ = selected_event.GetForwardBarrier();
+#ifdef NDEBUG
+    std::cout << "energy " << energy_ << '\n';
+#endif
+    cfg::AtomsJump(config_, jump_pair);
+    previous_j = jump_pair.second;
     ++steps_;
   }
 }
