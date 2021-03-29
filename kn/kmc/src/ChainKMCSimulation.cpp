@@ -272,7 +272,7 @@ void ChainKMCSimulation::Simulate() {
     one_step_energy_change_ = selected_event.GetEnergyChange();
     energy_ += one_step_energy_change_;
     one_step_barrier_ = selected_event.GetForwardBarrier();
-#ifdef NDEBUG
+#ifndef NDEBUG
     std::cout << "time " << time_ << '\n';
 #endif
     cfg::AtomsJump(config_, jump_pair);
@@ -280,7 +280,4 @@ void ChainKMCSimulation::Simulate() {
     ++steps_;
   }
 }
-}
-
-
-// namespace kmc
+} // namespace kmc
