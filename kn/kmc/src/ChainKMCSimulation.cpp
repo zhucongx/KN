@@ -275,8 +275,9 @@ void ChainKMCSimulation::Simulate() {
 #ifndef NDEBUG
     std::cout << "time " << time_ << '\n';
 #endif
-    auto state_hash = cfg::GetHashOfAState(config_,jump_pair);
-    std::cout << state_hash << '\n';
+    auto state_hash = cfg::GetHashOfAState(config_, jump_pair);
+    if (world_rank_ == 0)
+      std::cout << state_hash << '\n';
     cfg::AtomsJump(config_, jump_pair);
     previous_j = jump_pair.second;
     ++steps_;
