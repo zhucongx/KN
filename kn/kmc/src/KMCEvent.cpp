@@ -20,7 +20,7 @@ KMCEvent::KMCEvent(std::pair<size_t, size_t> atom_id_jump_pair,
 // KMCEvent::Event_Ctor_Pair_t KMCEvent::GetEventCtorPair() const {
 //   return {atom_id_jump_pair_, {barrier_, energy_change_}};
 // }
-const std::pair<size_t, size_t> &KMCEvent::GetJumpPair() const {
+const std::pair<size_t, size_t> &KMCEvent::GetAtomIDJumpPair() const {
   return atom_id_jump_pair_;
 }
 

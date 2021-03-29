@@ -18,7 +18,7 @@ class KMCEvent {
     // explicit KMCEvent(const Event_Ctor_Pair_t &event_ctor_pair);
     /// Getter
     // [[nodiscard]] Event_Ctor_Pair_t GetEventCtorPair() const;
-    [[nodiscard]] const std::pair<size_t, size_t> &GetJumpPair() const;
+    [[nodiscard]] const std::pair<size_t, size_t> &GetAtomIDJumpPair() const;
     [[nodiscard]] double GetForwardBarrier() const;
     [[nodiscard]] double GetForwardRate() const;
     [[nodiscard]] double GetBackwardRate() const;

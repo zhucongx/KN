@@ -226,7 +226,7 @@ void SecondKMCSimulation::Simulate() {
 
     const auto &executed_invent = event_list_[event_index];
     // std::cout <<"Second " << executed_invent.GetJumpPair().first << ' ' << executed_invent.GetJumpPair().second << '\n';
-    cfg::AtomsJump(config_, executed_invent.GetJumpPair());
+    cfg::AtomsJump(config_, executed_invent.GetAtomIDJumpPair());
 
     // std::pair<size_t,size_t> CheckingPair{0,0};
 

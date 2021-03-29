@@ -217,7 +217,7 @@ void KMCSimulation::Simulate() {
     // boost::mpi::broadcast(world_, event_index, 0);
     // world_.barrier();
     const auto &executed_invent = event_list_[event_index];
-    cfg::AtomsJump(config_, executed_invent.GetJumpPair());
+    cfg::AtomsJump(config_, executed_invent.GetAtomIDJumpPair());
 
     // std::pair<size_t,size_t> CheckingPair{0,0};
 
