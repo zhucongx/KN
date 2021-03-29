@@ -75,6 +75,15 @@ ChainKMCSimulation::~ChainKMCSimulation() {
   if (MPI_COMM_NULL != second_comm_) MPI_Comm_free(&second_comm_);
   MPI_Finalize();
 }
+void ChainKMCSimulation::Dump(std::ofstream &ofs) {
+  if (steps_ % log_dump_steps_ == 0) {
+    ofs << steps_ << '\t' << time_ << '\t' << energy_ << '\t' << one_step_barrier_ << '\t'
+        << one_step_energy_change_ << '\t' << previous_j << std::endl;
+  }
+  if (steps_ % config_dump_steps_ == 0) {
+    cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
+  }
+}
 
 // get the energy change and the probability from j to k, pjk by the reference.
 // And return the index of j and k. Only applied to 12 sub-primary processes.
@@ -208,7 +217,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     double ts_j = ts_j_numerator / gamma_bar_k_j;
 
     t_2 = one_over_one_minus_a_j
-            * (gamma_k_j * t + gamma_bar_k_j * (ts_j + t + beta_bar_k / beta_k * ts));
+        * (gamma_k_j * t + gamma_bar_k_j * (ts_j + t + beta_bar_k / beta_k * ts));
   }
   // MPI_Bcast(event_list_.data(), sizeof(KMCEvent) * kFirstEventListSize, MPI_BYTE, 0, second_comm_);
   return t_2;
@@ -241,15 +250,8 @@ void ChainKMCSimulation::Simulate() {
   while (steps_ < maximum_number_) {
     // log and config file
     if (world_rank_ == 0) {
-      if (steps_ % log_dump_steps_ == 0) {
-        ofs << steps_ << '\t' << time_ << '\t' << energy_ << '\t' << one_step_barrier_ << '\t'
-            << one_step_energy_change_ << '\t' << previous_j << std::endl;
-      }
-      if (steps_ % config_dump_steps_ == 0) {
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
-      }
+      Dump(ofs);
     }
-    // world_.barrier();
     MPI_Barrier(MPI_COMM_WORLD);
 
     auto one_step_time = BuildEventListParallel();
@@ -268,20 +270,13 @@ void ChainKMCSimulation::Simulate() {
       energy_ += one_step_energy_change_;
       one_step_barrier_ = selected_event.GetForwardBarrier();
     }
-    // world_.barrier();
     MPI_Bcast(&atom_id_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, MPI_COMM_WORLD);
-    // boost::mpi::broadcast(world_, event_index, 0);
-    // world_.barrier();
 
-    // std::cout << atom_id_jump_pair.first << ' ' << atom_id_jump_pair.second << '\n';
     cfg::AtomsJump(config_, atom_id_jump_pair);
     previous_j = atom_id_jump_pair.second;
     ++steps_;
-    // world_.barrier();
   }
-
 }
-
 }
 
 

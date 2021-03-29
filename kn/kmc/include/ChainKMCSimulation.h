@@ -24,7 +24,7 @@ class ChainKMCSimulation {
     void Simulate();
 
   protected:
-
+    inline void Dump(std::ofstream &ofs);
     KMCEvent GetEventI();
     [[nodiscard]] double BuildEventListParallel();
 
