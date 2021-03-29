@@ -14,7 +14,7 @@ class LRUCacheBarrierPredictor : BarrierPredictor {
 
     [[nodiscard]] std::pair<double, double> GetBarrierAndDiff(
         const cfg::Config &config,
-        const std::pair<size_t, size_t> &jump_pair) const override;
+        const std::pair<size_t, size_t> &atom_id_jump_pair) const override;
   private:
     void Add(const std::vector<std::string> &key, double value) const;
     size_t cache_size_;

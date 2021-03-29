@@ -13,7 +13,7 @@ class KMCEvent {
     // using Event_Ctor_Pair_t = std::pair<std::pair<size_t, size_t>, std::pair<double, double>>;
     /// Constructor
     KMCEvent();
-    KMCEvent(std::pair<size_t, size_t> jump_pair,
+    KMCEvent(std::pair<size_t, size_t> atom_id_jump_pair,
              std::pair<double, double> barrier_and_diff);
     // explicit KMCEvent(const Event_Ctor_Pair_t &event_ctor_pair);
     /// Getter
@@ -26,7 +26,7 @@ class KMCEvent {
     [[nodiscard]] double GetProbability() const;
     [[nodiscard]] double GetCumulativeProvability() const;
     /// Setter
-    void SetJumpPair(const std::pair<size_t, size_t> &jump_pair);
+    void SetJumpPair(const std::pair<size_t, size_t> &atom_id_jump_pair);
     void SetBarrier(double barrier);
     void SetRate(double rate);
     void SetEnergyChange(double energy_change);

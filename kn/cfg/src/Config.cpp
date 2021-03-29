@@ -484,10 +484,10 @@ void Config::WriteConfig(const Config &config,
   }
 }
 std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
-    const Config &config, const std::pair<size_t, size_t> &jump_pair) {
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
 
   std::unordered_set<size_t> near_neighbors_hashset;
-  for (const auto i : {jump_pair.first, jump_pair.second}) {
+  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
     const auto &atom = config.GetAtomList()[i];
     std::copy(atom.GetFirstNearestNeighborsList().begin(),
               atom.GetFirstNearestNeighborsList().end(),
@@ -502,9 +502,9 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
   return near_neighbors_hashset;
 }
 std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
-    const Config &config, const std::pair<size_t, size_t> &jump_pair) {
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
   std::map<size_t, size_t> atom_id_to_site_id_map;
-  for (const auto i : {jump_pair.first, jump_pair.second}) {
+  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
     const auto &atom = config.GetAtomList()[i];
     std::transform(atom.GetFirstNearestNeighborsList().begin(),
                    atom.GetFirstNearestNeighborsList().end(),
@@ -528,10 +528,10 @@ std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
   return atom_id_to_site_id_map;
 }
 static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
-    const Config &config, const std::pair<size_t, size_t> &jump_pair) {
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
 
   std::unordered_set<size_t> near_neighbors_hashset;
-  for (const auto i : {jump_pair.first, jump_pair.second}) {
+  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
     const auto &atom = config.GetAtomList()[i];
     std::copy(atom.GetFirstNearestNeighborsList().begin(),
               atom.GetFirstNearestNeighborsList().end(),
@@ -558,18 +558,18 @@ static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
   return near_neighbors_hashset;
 }
 // lhs : vacancy_index; rhs : neighbor_index
-void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
-  const auto[lhs, rhs] = jump_pair;
+void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
+  const auto[lhs, rhs] = atom_id_jump_pair;
   auto &atom_list = config.atom_list_;
   //   auto it_lhs = std::find_if(config.atom_list_.begin(),
   //                              config.atom_list_.end(),
-  //                              [jump_pair](const auto &atom) {
-  //                                return atom.GetId() == jump_pair.first;
+  //                              [atom_id_jump_pair](const auto &atom) {
+  //                                return atom.GetId() == atom_id_jump_pair.first;
   //                              });
   //   auto it_rhs = std::find_if(config.atom_list_.begin(),
   //                              config.atom_list_.end(),
-  //                              [jump_pair](const auto &atom) {
-  //                                return atom.GetId() == jump_pair.second;
+  //                              [atom_id_jump_pair](const auto &atom) {
+  //                                return atom.GetId() == atom_id_jump_pair.second;
   //                              });
   //   const auto lhs = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_lhs));
   //   const auto rhs = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_rhs));
@@ -605,7 +605,7 @@ void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
             atom_list[rhs].seventh_nearest_neighbors_list_);
   // 3) jump atoms' and neighbor atom's neighbor list
   std::unordered_set<size_t>
-      atom_id_hashset = GetAllNeighborsSetOfJumpPair(config, jump_pair);
+      atom_id_hashset = GetAllNeighborsSetOfJumpPair(config, atom_id_jump_pair);
 
   for (auto i : atom_id_hashset) {
     // auto it_id = std::find_if(config.atom_list_.begin(),
@@ -630,8 +630,8 @@ void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair) {
   }
 }
 
-void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair) {
-  const auto[lhs, rhs] = site_jump_pair;
+void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair) {
+  const auto[lhs, rhs] = site_id_jump_pair;
   AtomsJump(config,
             {config.site_id_to_atom_id_hashmap_.at(lhs), config.site_id_to_atom_id_hashmap_[lhs]});
 }
@@ -668,14 +668,14 @@ std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &con
   return type_category_hashmap;
 }
 
-Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair) {
+Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
   Vector_t center_position;
   for (const auto kDim : All_Dimensions) {
     double
-        first_relative = config.GetAtomList()[jump_pair.first].GetRelativePosition()[kDim];
+        first_relative = config.GetAtomList()[atom_id_jump_pair.first].GetRelativePosition()[kDim];
     const double
         second_relative =
-        config.GetAtomList()[jump_pair.second].GetRelativePosition()[kDim];
+        config.GetAtomList()[atom_id_jump_pair.second].GetRelativePosition()[kDim];
 
     double distance = first_relative - second_relative;
     int period = static_cast<int>(distance / 0.5);
@@ -690,11 +690,11 @@ Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &ju
   return center_position;
 }
 Matrix_t GetPairRotationMatrix(const Config &config,
-                               const std::pair<size_t, size_t> &jump_pair) {
+                               const std::pair<size_t, size_t> &atom_id_jump_pair) {
   const Vector_t pair_direction = Normalize(GetRelativeDistanceVector(
-      config.GetAtomList()[jump_pair.first],
-      config.GetAtomList()[jump_pair.second]));
-  const auto &first_atom = config.GetAtomList()[jump_pair.first];
+      config.GetAtomList()[atom_id_jump_pair.first],
+      config.GetAtomList()[atom_id_jump_pair.second]));
+  const auto &first_atom = config.GetAtomList()[atom_id_jump_pair.first];
   Vector_t vertical_vector{};
   for (const auto index : first_atom.GetFirstNearestNeighborsList()) {
     const Vector_t jump_vector = GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);

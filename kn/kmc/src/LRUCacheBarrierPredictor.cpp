@@ -16,11 +16,11 @@ LRUCacheBarrierPredictor::~LRUCacheBarrierPredictor() = default;
 
 std::pair<double, double> LRUCacheBarrierPredictor::GetBarrierAndDiff(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) const {
+    const std::pair<size_t, size_t> &atom_id_jump_pair) const {
 
-  const auto &element_type = config.GetAtomList().at(jump_pair.second).GetType();
+  const auto &element_type = config.GetAtomList().at(atom_id_jump_pair.second).GetType();
   const auto[forward_encode_list, backward_encode_list] =
-  ansys::ClusterExpansion::GetForwardAndBackwardEncode(config, jump_pair);
+  ansys::ClusterExpansion::GetForwardAndBackwardEncode(config, atom_id_jump_pair);
   double forward_e0, backward_e0;
   auto it1 = hashmap_.find(forward_encode_list);
   if (it1 == hashmap_.end()) {
@@ -44,12 +44,12 @@ std::pair<double, double> LRUCacheBarrierPredictor::GetBarrierAndDiff(
   }
 
   auto e0 = 0.5 * (forward_e0 + backward_e0);
-  auto dE = GetDEFromConfig(config, jump_pair);
+  auto dE = GetDEFromConfig(config, atom_id_jump_pair);
 // #ifndef NDEBUG
 //   std::cout << forward_e0 << '\t' << backward_e0 << '\n';
 //   std::cout << dE << '\n';
 // #endif
-  // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
+  // std::cerr << config.GetAtomList().at(atom_id_jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";
   // static std::mt19937_64 generator(static_cast<unsigned long long int>(

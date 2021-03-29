@@ -254,11 +254,11 @@ void ChainKMCSimulation::Simulate() {
 
     auto one_step_time = BuildEventListParallel();
 
-    std::pair<size_t, size_t> jump_pair;
+    std::pair<size_t, size_t> atom_id_jump_pair;
     if (world_rank_ == 0) {
       auto event_index = SelectEvent();
       const auto &selected_event = event_list_[event_index];
-      jump_pair = selected_event.GetJumpPair();
+      atom_id_jump_pair = selected_event.GetJumpPair();
 #ifndef NDEBUG
       std::cout << "event choose " << event_index << '\n';
 #endif
@@ -269,13 +269,13 @@ void ChainKMCSimulation::Simulate() {
       one_step_barrier_ = selected_event.GetForwardBarrier();
     }
     // world_.barrier();
-    MPI_Bcast(&jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&atom_id_jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, MPI_COMM_WORLD);
     // boost::mpi::broadcast(world_, event_index, 0);
     // world_.barrier();
 
-    // std::cout << jump_pair.first << ' ' << jump_pair.second << '\n';
-    cfg::AtomsJump(config_, jump_pair);
-    previous_j = jump_pair.second;
+    // std::cout << atom_id_jump_pair.first << ' ' << atom_id_jump_pair.second << '\n';
+    cfg::AtomsJump(config_, atom_id_jump_pair);
+    previous_j = atom_id_jump_pair.second;
     ++steps_;
     // world_.barrier();
   }

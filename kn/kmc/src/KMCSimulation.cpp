@@ -54,8 +54,8 @@ void KMCSimulation::BuildEventListSerial() {
   total_rate_ = 0;
   for (const auto neighbor_index :
       config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()) {
-    std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
-    KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
+    std::pair<size_t, size_t> atom_id_jump_pair(vacancy_index_, neighbor_index);
+    KMCEvent event(atom_id_jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, atom_id_jump_pair));
 
     total_rate_ += event.GetForwardRate();
     event_list_.push_back(std::move(event));
@@ -82,8 +82,8 @@ void KMCSimulation::BuildEventListParallel() {
     const auto i = j * mpi_size_ + mpi_rank_;
     const auto
         neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
-    std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
-    KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
+    std::pair<size_t, size_t> atom_id_jump_pair(vacancy_index_, neighbor_index);
+    KMCEvent event(atom_id_jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, atom_id_jump_pair));
 
     const double this_rate = event.GetForwardRate();
     double sum_rates = 0;
@@ -121,8 +121,8 @@ void KMCSimulation::BuildEventListParallel() {
   if (remainder) {
     auto i = quotient * mpi_size_ + mpi_rank_;
     auto neighbor_index = config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[i];
-    const std::pair<size_t, size_t> jump_pair(vacancy_index_, neighbor_index);
-    KMCEvent event(jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, jump_pair));
+    const std::pair<size_t, size_t> atom_id_jump_pair(vacancy_index_, neighbor_index);
+    KMCEvent event(atom_id_jump_pair, lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, atom_id_jump_pair));
 
     if (mpi_rank_ == 0) {
       total_rate_ += event.GetForwardRate();

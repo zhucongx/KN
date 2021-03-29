@@ -66,8 +66,8 @@ class Atom {
     // atom id which is an unique Rank for every atom indexed form 0
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair);
+    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 };
 Vector_t GetRelativeDistanceVector(const Atom &first, const Atom &second);
 double FindMass(const std::string &elem);

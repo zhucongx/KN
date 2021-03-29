@@ -85,27 +85,26 @@ class Config {
     std::unordered_map<size_t, size_t> site_id_to_atom_id_hashmap_{};
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair);
-    // friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
 std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
-    const Config &config, const std::pair<size_t, size_t> &jump_pair);
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
 // The first indicate to atom
 std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
-    const Config &config, const std::pair<size_t, size_t> &jump_pair);
-void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-void SitesJump(Config &config, const std::pair<size_t, size_t> &site_jump_pair);
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 std::map<std::string, size_t> CountAllType(const Config &config);
 // std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config);
 // std::set<std::string> GetTypeSet(const Config &config);
-// jump_pair in a pair of two indexes, this function return the center of these two atoms
-Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair);
-Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &jump_pair);
+// atom_id_jump_pair in a pair of two indexes, this function return the center of these two atoms
+Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
 
 size_t GetVacancyIndex(const Config &config);

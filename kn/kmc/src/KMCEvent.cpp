@@ -9,9 +9,9 @@ constexpr double kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBol
 
 KMCEvent::KMCEvent() = default;
 
-KMCEvent::KMCEvent(std::pair<size_t, size_t> jump_pair,
+KMCEvent::KMCEvent(std::pair<size_t, size_t> atom_id_jump_pair,
                    std::pair<double, double> barrier_and_diff)
-    : jump_pair_(std::move(jump_pair)),
+    : jump_pair_(std::move(atom_id_jump_pair)),
       barrier_(barrier_and_diff.first),
       rate_(std::exp(-barrier_and_diff.first * kBoltzmannConstantTimesTemperatureInv)),
       energy_change_(barrier_and_diff.second) {}
@@ -46,8 +46,8 @@ double KMCEvent::GetCumulativeProvability() const {
   return cumulative_probability_;
 }
 
-void KMCEvent::SetJumpPair(const std::pair<size_t, size_t> &jump_pair) {
-  jump_pair_ = jump_pair;
+void KMCEvent::SetJumpPair(const std::pair<size_t, size_t> &atom_id_jump_pair) {
+  jump_pair_ = atom_id_jump_pair;
 }
 
 void KMCEvent::SetBarrier(double barrier) {

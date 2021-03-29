@@ -6,7 +6,7 @@ namespace ansys::BondCounting {
 std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond>> InitializeHashMap(
     const std::set<std::string> &type_set);
 std::vector<double> GetBondChange(const cfg::Config &config,
-                                  const std::pair<size_t, size_t> &jump_pair,
+                                  const std::pair<size_t, size_t> &atom_id_jump_pair,
                                   std::unordered_map<cfg::Bond, int,
                                                      boost::hash<cfg::Bond>> initialized_hashmap);
 } // namespace ansys::BondCounting

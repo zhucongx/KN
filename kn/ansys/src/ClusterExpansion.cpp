@@ -126,8 +126,8 @@ static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
 static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     std::vector<cfg::Atom> &&atom_list,
     const cfg::Config &reference_config,
-    const std::pair<size_t, size_t> &jump_pair) {
-  RotateAtomVector(atom_list, GetPairRotationMatrix(reference_config, jump_pair));
+    const std::pair<size_t, size_t> &atom_id_jump_pair) {
+  RotateAtomVector(atom_list, GetPairRotationMatrix(reference_config, atom_id_jump_pair));
   //sort using mm2 group point
   std::sort(atom_list.begin(), atom_list.end(),
             [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
@@ -146,14 +146,14 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
 // Returns forward and backward sorted atom lists
 static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) {
+    const std::pair<size_t, size_t> &atom_id_jump_pair) {
   // First, second, third nearest neighbors of the jump pairs
   constexpr size_t kNumOfAtoms = 60;
 
   std::unordered_set<size_t>
-      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
+      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, atom_id_jump_pair);
 
-  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
+  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, atom_id_jump_pair);
 
   std::vector<cfg::Atom> atom_list_forward;
   atom_list_forward.reserve(kNumOfAtoms);
@@ -169,7 +169,7 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
 
     atom.SetRelativePosition(relative_position);
 
-    if (atom.GetId() == jump_pair.first) {
+    if (atom.GetId() == atom_id_jump_pair.first) {
       vacancy_relative_position = atom.GetRelativePosition();
       vacancy_cartesian_position = atom.GetCartesianPosition();
       continue;
@@ -180,24 +180,24 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
 
   auto atom_list_backward(atom_list_forward);
   auto jump_atom_it_backward = std::find_if(atom_list_backward.begin(), atom_list_backward.end(),
-                                            [&jump_pair](const auto &atom) {
-                                              return atom.GetId() == jump_pair.second;
+                                            [&atom_id_jump_pair](const auto &atom) {
+                                              return atom.GetId() == atom_id_jump_pair.second;
                                             });
   jump_atom_it_backward->SetRelativePosition(vacancy_relative_position);
   jump_atom_it_backward->SetCartesianPosition(vacancy_cartesian_position);
 
   return {RotateAtomVectorAndSortHelper(std::move(atom_list_forward),
                                         config,
-                                        jump_pair),
+                                        atom_id_jump_pair),
           RotateAtomVectorAndSortHelper(std::move(atom_list_backward),
                                         config,
-                                        {jump_pair.second, jump_pair.first})};
+                                        {atom_id_jump_pair.second, atom_id_jump_pair.first})};
 }
 
 std::array<std::vector<std::string>, 2> GetForwardAndBackwardEncode(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) {
-  const auto atom_vectors = GetSymmetricallySortedAtomVectors(config, jump_pair);
+    const std::pair<size_t, size_t> &atom_id_jump_pair) {
+  const auto atom_vectors = GetSymmetricallySortedAtomVectors(config, atom_id_jump_pair);
 
   // First, second, third nearest neighbors of the jump pairs
   constexpr size_t kNumOfAtoms = 60;

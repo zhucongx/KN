@@ -20,13 +20,13 @@ class BarrierPredictor {
 
     [[nodiscard]] virtual std::pair<double, double> GetBarrierAndDiff(
         const cfg::Config &config,
-        const std::pair<size_t, size_t> &jump_pair) const;
+        const std::pair<size_t, size_t> &atom_id_jump_pair) const;
   protected:
     [[nodiscard]] double GetE0FromEncode(
         const std::string &element_type,
         const std::vector<std::string> &encode_list) const;
     [[nodiscard]] double GetDEFromConfig(const cfg::Config &config,
-                                         const std::pair<size_t, size_t> &jump_pair) const;
+                                         const std::pair<size_t, size_t> &atom_id_jump_pair) const;
   private:
     std::vector<double> theta_{};
     std::unordered_map<std::string, Element_Parameters> element_parameters_hashmap_{};

@@ -18,7 +18,7 @@ std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping
 
 std::array<std::vector<std::string>, 2> GetForwardAndBackwardEncode(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair);
+    const std::pair<size_t, size_t> &atom_id_jump_pair);
 
 std::vector<double> GetOneHotParametersFromMap(
     const std::vector<std::string> &encode,
