@@ -38,7 +38,7 @@ class KMCEvent {
     // template<class Archive>
     // // use boost serialization templates
     // void serialize(Archive &ar, [[maybe_unused]] const size_t version) {
-    //   ar & jump_pair_;
+    //   ar & atom_id_jump_pair_;
     //   ar & barrier_;
     //   ar & rate_;
     //   ar & energy_change_;
@@ -46,7 +46,7 @@ class KMCEvent {
     //   ar & cumulative_probability_;
     // }
   protected:
-    std::pair<size_t, size_t> jump_pair_{};
+    std::pair<size_t, size_t> atom_id_jump_pair_{};
     double barrier_{};
     double rate_{};
     double energy_change_{};
