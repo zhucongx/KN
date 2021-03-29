@@ -259,7 +259,7 @@ void ChainKMCSimulation::Simulate() {
     if (world_rank_ == 0) {
       selected_event = event_list_[SelectEvent()];
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      auto random_variable = distribution(generator_);
+      random_variable = distribution(generator_);
     }
     MPI_Bcast(&selected_event, sizeof(KMCEvent), MPI_BYTE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&random_variable, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
