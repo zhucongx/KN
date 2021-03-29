@@ -278,6 +278,7 @@ void ChainKMCSimulation::Simulate() {
     cfg::AtomsJump(config_, jump_pair);
     previous_j = jump_pair.second;
     ++steps_;
+    CheckAndSolveEquilibrium(ofs);
   }
 }
 } // namespace kmc

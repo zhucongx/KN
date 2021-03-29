@@ -11,19 +11,20 @@ namespace kmc {
 class ChainKMCSimulation {
   public:
     ChainKMCSimulation(cfg::Config config,
-                        unsigned long long int log_dump_steps,
-                        unsigned long long int config_dump_steps,
-                        unsigned long long int maximum_number,
-                        const std::set<std::string> &type_set,
-                        unsigned long long int steps,
-                        double energy,
-                        double time,
-                        const std::string &json_parameters_filename,
-                        size_t lru_size);
+                       unsigned long long int log_dump_steps,
+                       unsigned long long int config_dump_steps,
+                       unsigned long long int maximum_number,
+                       const std::set<std::string> &type_set,
+                       unsigned long long int steps,
+                       double energy,
+                       double time,
+                       const std::string &json_parameters_filename,
+                       size_t lru_size);
     virtual ~ChainKMCSimulation();
     virtual void Simulate();
 
   protected:
+    virtual void CheckAndSolveEquilibrium(std::ofstream &ofs){};
     inline void Dump(std::ofstream &ofs);
     KMCEvent GetEventI();
     [[nodiscard]] double BuildEventListParallel();
