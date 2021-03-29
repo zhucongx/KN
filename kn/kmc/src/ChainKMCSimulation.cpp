@@ -255,24 +255,26 @@ void ChainKMCSimulation::Simulate() {
 
     auto one_step_time = BuildEventListParallel();
     KMCEvent selected_event;
+    double random_variable;
     if (world_rank_ == 0) {
       selected_event = event_list_[SelectEvent()];
-
+      static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+      auto random_variable = distribution(generator_);
     }
     MPI_Bcast(&selected_event, sizeof(KMCEvent), MPI_BYTE, 0, MPI_COMM_WORLD);
-
+    MPI_Bcast(&random_variable, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 #ifndef NDEBUG
     std::cout << "event choose " << event_index << '\n';
 #endif
     const std::pair<size_t, size_t> &jump_pair = selected_event.GetAtomIDJumpPair();
 
     // update time and energy
-    time_ += one_step_time;
+    time_ += random_variable*one_step_time;
     one_step_energy_change_ = selected_event.GetEnergyChange();
     energy_ += one_step_energy_change_;
     one_step_barrier_ = selected_event.GetForwardBarrier();
 #ifdef NDEBUG
-    std::cout << "energy " << energy_ << '\n';
+    std::cout << "time " << time_ << '\n';
 #endif
     cfg::AtomsJump(config_, jump_pair);
     previous_j = jump_pair.second;
