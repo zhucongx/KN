@@ -140,7 +140,8 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
         {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
          state_info.cumulated_absorbing_rate_};
     if (state_hashmap_.size() > 1000) {
-      ofs << "# Stored hashmap is too large. Clear. Continuing ChainKMC" << std::endl;
+      ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
+          << std::endl;
       Clear();
       return_value = false;
       // Todo check if the same state hashes have the same state rate
