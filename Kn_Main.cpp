@@ -58,8 +58,8 @@ int main(int argc, char *argv[]) {
   // }
   auto conf = cfg::Config::ReadConfig("start.cfg", 7);
   kmc::NovelKMCSimulation a(conf,
-                            1e0,
-                            1e7,
+                            1e3,
+                            1e5,
                             1e10,
                             {"Al", "Mg", "Zn"},
                             0, 0, 0,
