@@ -47,14 +47,12 @@ void NovelKMCSimulation::Clear() {
 }
 size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
   double cumulated_state_rate_ = 0;
-  std::cerr << "Here01"<< std::endl;
 
   state_vector_.clear();
   for (const auto &state:state_hashmap_) {
     cumulated_state_rate_ += state.second.state_rate_;
     state_vector_.emplace_back(state);
   }
-  std::cerr << "Here02"<< std::endl;
 
   double cumulative_probability = 0.0;
   double total_weighted_rate = 0.0;
@@ -66,7 +64,6 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
     total_weighted_rate +=
         state_info.second.state_probability_ * state_info.second.total_absorbing_rate_;
   }
-  std::cerr << "Here03"<< std::endl;
 
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
@@ -89,7 +86,6 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
-  std::cerr << "Here1";
   const auto it_state = std::find_if(state_chain_.rbegin(),
                                      state_chain_.rend(),
                                      [state_hash](const StateInfo &state_info) {
@@ -121,7 +117,6 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   }
   jump_list_.push_back(it->next_i);
   solved_energy_ += it->energy_change_;
-  std::cerr << "Here2";
 }
 
 bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
@@ -167,7 +162,6 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
               MPI_UNSIGNED_LONG,
               0,
               MPI_COMM_WORLD);
-    std::cerr << "Here3";
 
     for (auto position : jump_list_) {
       cfg::AtomsJump(config_, {vacancy_index_, position});
