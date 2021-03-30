@@ -95,7 +95,7 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
 // The first indicate to atom
 std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
-size_t GetHashOfAState(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+size_t GetHashOfAState(const Config &config, size_t vacancy_index);
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
 void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 std::map<std::string, size_t> CountAllType(const Config &config);

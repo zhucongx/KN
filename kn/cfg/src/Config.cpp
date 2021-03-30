@@ -527,21 +527,15 @@ std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
   }
   return atom_id_to_site_id_map;
 }
-size_t GetHashOfAState(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair){
-  std::set<size_t> near_neighbors_set;
-  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
-    const auto &atom = config.GetAtomList()[i];
-    std::copy(atom.GetFirstNearestNeighborsList().begin(),
-              atom.GetFirstNearestNeighborsList().end(),
-              std::inserter(near_neighbors_set, near_neighbors_set.begin()));
-  }
-
+size_t GetHashOfAState(const Config &config, size_t vacancy_index) {
+  auto atom_id_list = config.GetAtomList()[vacancy_index].GetFirstNearestNeighborsList();
+  std::sort(atom_id_list.begin(), atom_id_list.end());
   size_t seed = 0;
-    for (auto atom_id : near_neighbors_set) {
-      boost::hash_combine(seed, atom_id);
-      boost::hash_combine(seed,config.GetAtomList()[atom_id].GetSiteId());
-    }
-    return seed;
+  for (auto atom_id : atom_id_list) {
+    boost::hash_combine(seed, atom_id);
+    boost::hash_combine(seed, config.GetAtomList()[atom_id].GetSiteId());
+  }
+  return seed;
 }
 static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
