@@ -33,6 +33,7 @@ bool NovelKMCSimulation::GTest() const {
       return false;
     }
   }
+  return true;
 }
 void NovelKMCSimulation::Clear() {
   state_count_hashmap_.clear();
@@ -46,14 +47,14 @@ void NovelKMCSimulation::Clear() {
 }
 size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
   double cumulated_state_rate_ = 0;
-  std::cerr << "Here01";
+  std::cerr << "Here01"<< std::endl;
 
   state_vector_.clear();
   for (const auto &state:state_hashmap_) {
     cumulated_state_rate_ += state.second.state_rate_;
     state_vector_.emplace_back(state);
   }
-  std::cerr << "Here02";
+  std::cerr << "Here02"<< std::endl;
 
   double cumulative_probability = 0.0;
   double total_weighted_rate = 0.0;
@@ -65,7 +66,7 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
     total_weighted_rate +=
         state_info.second.state_probability_ * state_info.second.total_absorbing_rate_;
   }
-  std::cerr << "Here03";
+  std::cerr << "Here03"<< std::endl;
 
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
