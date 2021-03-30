@@ -10,7 +10,7 @@ using namespace std;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
 #include "MpiClusters.h"
-#include "ChainKMCSimulation.h"
+#include "NovelKMCSimulation.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
   // gen::SizeMisfitGenerator a(4.0404778433873281,
@@ -57,12 +57,15 @@ int main(int argc, char *argv[]) {
   //   cout << aa << "\t";
   // }
   auto conf = cfg::Config::ReadConfig("start.cfg", 7);
-  kmc::ChainKMCSimulation a(conf,
+  kmc::NovelKMCSimulation a(conf,
                             1e0,
                             1e7,
                             1e10,
                             {"Al", "Mg", "Zn"},
-                            0, 0, 0, "kmc_parameters.json", 100);
+                            0, 0, 0,
+                            "kmc_parameters.json",
+                            100,
+                            100);
   a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());

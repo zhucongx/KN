@@ -16,6 +16,7 @@ class KMCEvent {
     static constexpr double kTemperature = 300;
     static constexpr double
         kBoltzmannConstantTimesTemperatureInv = 1 / kTemperature / kBoltzmannConstant;
+    static constexpr double kPrefactor = 1e14;
 
     /// Constructor
     KMCEvent();

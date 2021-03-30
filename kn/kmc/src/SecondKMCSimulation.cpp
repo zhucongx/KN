@@ -158,11 +158,11 @@ void SecondKMCSimulation::BuildEventListParallel() {
                 MPI_BYTE,
                 MPI_COMM_WORLD);
   /* calculate relative and cumulative probability */
-  double cumulative_provability = 0.0;
+  double cumulative_probability = 0.0;
   for (auto &event : event_list_) {
     event.CalculateProbability(second_total_rate_);
-    cumulative_provability += event.GetProbability();
-    event.SetCumulativeProvability(cumulative_provability);
+    cumulative_probability += event.GetProbability();
+    event.SetCumulativeProvability(cumulative_probability);
   }
   cfg::AtomsJump(config_, first_jump_pair);
 }
@@ -233,9 +233,8 @@ void SecondKMCSimulation::Simulate() {
     if (world_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      constexpr double kPrefactor = 1e14;
-      auto one_step_time = log(distribution(generator_)) / (second_total_rate_ * kPrefactor);
-      time_ -= one_step_time;
+      auto one_step_time = -std::log(distribution(generator_)) / (second_total_rate_ * KMCEvent::kPrefactor);
+      time_ += one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
       one_step_barrier_ = executed_invent.GetForwardBarrier();

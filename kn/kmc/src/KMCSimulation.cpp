@@ -224,9 +224,8 @@ void KMCSimulation::Simulate() {
     if (mpi_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      constexpr double kPrefactor = 1e14;
-      auto one_step_time = log(distribution(generator_)) / (total_rate_ * kPrefactor);
-      time_ -= one_step_time;
+      auto one_step_time = -log(distribution(generator_)) / (total_rate_ * KMCEvent::kPrefactor);
+      time_ += one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
       one_step_barrier_ = executed_invent.GetForwardBarrier();

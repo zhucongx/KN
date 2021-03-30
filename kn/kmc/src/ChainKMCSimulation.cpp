@@ -5,9 +5,6 @@
 #include <utility>
 namespace kmc {
 
-constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
-constexpr size_t kSecondEventListSize = 11;
-
 ChainKMCSimulation::ChainKMCSimulation(cfg::Config config,
                                        unsigned long long int log_dump_steps,
                                        unsigned long long int config_dump_steps,
@@ -203,9 +200,8 @@ double ChainKMCSimulation::BuildEventListParallel() {
       event.SetCumulativeProvability(cumulative_provability);
     }
 
-    constexpr double kPrefactor = 1e14;
-    double t = 1 / total_rate_k_ / kPrefactor;
-    double t_i = 1 / total_rate_i_ / kPrefactor;
+    double t = 1 / total_rate_k_ / KMCEvent::kPrefactor;
+    double t_i = 1 / total_rate_i_ / KMCEvent::kPrefactor;
     double ts_numerator = 0.0, ts_j_numerator = 0.0;
     double ts_numerator_helper = (t + t_i) * beta_bar_k_i;
     MPI_Allreduce(&ts_numerator_helper, &ts_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
@@ -265,7 +261,7 @@ void ChainKMCSimulation::Simulate() {
 #ifndef NDEBUG
     std::cout << "event choose " << event_index << '\n';
 #endif
-    const std::pair<size_t, size_t> &jump_pair = selected_event.GetAtomIDJumpPair();
+    atom_id_jump_pair_ = selected_event.GetAtomIDJumpPair();
 
     // update time and energy
     time_ += one_step_time_change_;
@@ -275,10 +271,11 @@ void ChainKMCSimulation::Simulate() {
 #ifndef NDEBUG
     std::cout << "time " << time_ << '\n';
 #endif
-    cfg::AtomsJump(config_, jump_pair);
-    previous_j = jump_pair.second;
-    ++steps_;
     CheckAndSolveEquilibrium(ofs);
+
+    cfg::AtomsJump(config_, atom_id_jump_pair_);
+    previous_j = atom_id_jump_pair_.second;
+    ++steps_;
   }
 }
 } // namespace kmc

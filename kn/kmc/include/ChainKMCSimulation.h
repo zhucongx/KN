@@ -24,13 +24,17 @@ class ChainKMCSimulation {
     virtual void Simulate();
 
   protected:
-    virtual void CheckAndSolveEquilibrium(std::ofstream &ofs){};
+    virtual void CheckAndSolveEquilibrium(std::ofstream &ofs) {};
     inline void Dump(std::ofstream &ofs);
     KMCEvent GetEventI();
     [[nodiscard]] double BuildEventListParallel();
 
     std::vector<size_t> GetLIndexes();
     size_t SelectEvent() const;
+
+    // constants
+    static constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
+    static constexpr size_t kSecondEventListSize = 11;
 
     // simulation parameters
     cfg::Config config_;
@@ -43,6 +47,8 @@ class ChainKMCSimulation {
     double energy_;
     double time_;
     const size_t vacancy_index_;
+
+    // simulation variables
     double one_step_barrier_{0.0};
     double one_step_energy_change_{0.0};
     double one_step_time_change_{0.0};
@@ -51,6 +57,7 @@ class ChainKMCSimulation {
     double total_rate_k_{0.0}, total_rate_i_{0.0};
     int world_rank_{-1}, first_group_rank_{-1}, second_group_rank_{-1};
     // double rij{0}, pij{0};
+    std::pair<size_t, size_t> atom_id_jump_pair_;
     size_t previous_j;
 
     MPI_Group world_group_, first_group_, second_group_;
