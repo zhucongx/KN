@@ -24,7 +24,7 @@ class ChainKMCSimulation {
     virtual void Simulate();
 
   protected:
-    virtual void CheckAndSolveEquilibrium(std::ofstream &ofs) {};
+    virtual bool CheckAndSolveEquilibrium(std::ofstream &ofs) {return false;};
     inline void Dump(std::ofstream &ofs);
     KMCEvent GetEventI();
     [[nodiscard]] double BuildEventListParallel();

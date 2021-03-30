@@ -263,18 +263,17 @@ void ChainKMCSimulation::Simulate() {
 #endif
     atom_id_jump_pair_ = selected_event.GetAtomIDJumpPair();
 
-    // update time and energy
-    time_ += one_step_time_change_;
-    one_step_energy_change_ = selected_event.GetEnergyChange();
-    energy_ += one_step_energy_change_;
-    one_step_barrier_ = selected_event.GetForwardBarrier();
-#ifndef NDEBUG
-    std::cout << "time " << time_ << '\n';
-#endif
-    CheckAndSolveEquilibrium(ofs);
+    if (!CheckAndSolveEquilibrium(ofs)) {
+      // update time and energy
+      time_ += one_step_time_change_;
+      one_step_energy_change_ = selected_event.GetEnergyChange();
+      energy_ += one_step_energy_change_;
+      one_step_barrier_ = selected_event.GetForwardBarrier();
 
-    cfg::AtomsJump(config_, atom_id_jump_pair_);
-    previous_j = atom_id_jump_pair_.second;
+
+      cfg::AtomsJump(config_, atom_id_jump_pair_);
+      previous_j = atom_id_jump_pair_.second;
+    }
     ++steps_;
   }
 }

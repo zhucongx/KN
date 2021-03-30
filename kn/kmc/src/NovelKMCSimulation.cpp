@@ -76,6 +76,7 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
   if (it == state_vector_.cend()) {
     it--;
   }
+  solved_energy_ = it->second.state_energy_;
   return it->first;
 }
 
@@ -87,8 +88,7 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
                                        return state_info.state_hash_ == state_hash;
                                      });
   for (auto it = state_chain_.rbegin(); it != (it_state - 1); ++it) {
-    cfg::AtomsJump(config_, {vacancy_index_, previous_j});
-    std::cerr << cfg::GetHashOfAState(config_, vacancy_index_) << '\t' << state_hash << '\n';
+    jump_list_.push_back(previous_j);
     // Todo check state hash same as state_hash
   }
   equilibrating_event_vector_ = it_state->quick_event_vector_;
@@ -111,13 +111,13 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   if (it == equilibrating_event_vector_.cend()) {
     it--;
   }
-  cfg::AtomsJump(config_, {vacancy_index_, it->next_i});
-
+  jump_list_.push_back(it->next_i);
+  solved_energy_ += it->energy_change_;
 }
 
-void NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
+bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
+  bool return_value;
   if (world_rank_ == 0) {
-
     cumulated_energy_ += one_step_energy_change_;
     cumulated_time_ += one_step_time_change_;
     const auto state_hash = cfg::GetHashOfAState(config_, vacancy_index_);
@@ -129,24 +129,45 @@ void NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     state_count_hashmap_[state_hash]++;
     state_chain_.push_back(state_info);
     state_hashmap_[state_hash] =
-        {state_info.state_rate_, 0.0, 0.0, state_info.cumulated_absorbing_rate_};
+        {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
+         state_info.cumulated_absorbing_rate_};
     if (state_hashmap_.size() > 100) {
       ofs << "# Stored hashmap is too large. Clear. Continuing ChainKMC" << std::endl;
       Clear();
-      return;
-    }
-    // Todo check if the same state hashes have the same state rate
-    if (state_hashmap_.size() * checking_constant > state_chain_.size()) {
-      return;
-    }
-    if (!GTest()) {
+      return_value = false;
+      // Todo check if the same state hashes have the same state rate
+    } else if (state_hashmap_.size() * checking_constant > state_chain_.size()) {
+      return_value = false;
+    } else if (!GTest()) {
       ofs << "# G-test failed. Continuing ChainKMC" << std::endl;
-      return;
+      return_value = false;
+    } else {
+      UpdateEquilibratingEventVectorAndChoose();
+      ofs << "# G-test passed. Solved time is " << solved_time_ << std::endl;
+      return_value = true;
     }
-
   }
-  UpdateEquilibratingEventVectorAndChoose();
-  ofs << "# G-test passed. Solved time is " << solved_time_ << std::endl;
+  MPI_Bcast(&return_value, 1, MPI_CXX_BOOL, 0, MPI_COMM_WORLD);
+  if (return_value) {
+    size_t jump_list_size = jump_list_.size();
+    MPI_Bcast(&jump_list_size, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
+    jump_list_.resize(jump_list_size);
+    MPI_Bcast(static_cast<void *>(jump_list_.data()),
+              jump_list_size,
+              MPI_UNSIGNED_LONG,
+              0,
+              MPI_COMM_WORLD);
+    for (auto position : jump_list_) {
+      cfg::AtomsJump(config_, {vacancy_index_, position});
+    }
+    MPI_Bcast(&solved_time_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    time_ += solved_time_;
+    MPI_Bcast(&solved_energy_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    energy_ = solved_energy_;
+    previous_j = *(jump_list_.rbegin() + 1);
+    Clear();
+  }
+  return return_value;
 }
 
 NovelKMCSimulation::StateInfo::StateInfo(size_t state_hash,
@@ -157,6 +178,7 @@ NovelKMCSimulation::StateInfo::StateInfo(size_t state_hash,
     : state_hash_(state_hash),
       previous_j_(previous_j),
       next_i_(next_i),
+      state_energy_(state_energy),
       state_rate_(std::exp(-state_energy * KMCEvent::kBoltzmannConstantTimesTemperatureInv)) {
   quick_event_vector_.reserve(kFirstEventListSize - 1);
   for (const auto &kmc_event : event_list) {
