@@ -82,6 +82,7 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
+  std::cerr << "Here1";
   const auto it_state = std::find_if(state_chain_.rbegin(),
                                      state_chain_.rend(),
                                      [state_hash](const StateInfo &state_info) {
@@ -113,6 +114,7 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   }
   jump_list_.push_back(it->next_i);
   solved_energy_ += it->energy_change_;
+  std::cerr << "Here2";
 }
 
 bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
@@ -139,11 +141,12 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     } else if (state_hashmap_.size() * checking_constant > state_chain_.size()) {
       return_value = false;
     } else if (!GTest()) {
-      ofs << "# G-test failed. Continuing ChainKMC" << std::endl;
+      // ofs << "# G-test failed. Continuing ChainKMC" << std::endl;
       return_value = false;
     } else {
+      ofs << "# G-test passed. ";
       UpdateEquilibratingEventVectorAndChoose();
-      ofs << "# G-test passed. Solved time is " << solved_time_ << std::endl;
+      ofs << "Solved time is " << solved_time_ << std::endl;
       return_value = true;
     }
   }
@@ -157,6 +160,8 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
               MPI_UNSIGNED_LONG,
               0,
               MPI_COMM_WORLD);
+    std::cerr << "Here3";
+
     for (auto position : jump_list_) {
       cfg::AtomsJump(config_, {vacancy_index_, position});
     }
