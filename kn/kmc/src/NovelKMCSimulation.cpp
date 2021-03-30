@@ -139,7 +139,7 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     state_hashmap_[state_hash] =
         {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
          state_info.cumulated_absorbing_rate_};
-    if (state_hashmap_.size() > 1000) {
+    if (state_hashmap_.size() > 125) {
       ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
           << std::endl;
       Clear();

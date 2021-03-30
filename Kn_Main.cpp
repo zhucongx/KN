@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
                             0, 0, 0,
                             "kmc_parameters.json",
                             100,
-                            100);
+                            50);
   a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
