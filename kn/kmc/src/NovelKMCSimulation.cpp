@@ -29,7 +29,7 @@ NovelKMCSimulation::~NovelKMCSimulation() = default;
 
 bool NovelKMCSimulation::GTest() const {
   for (const auto &state_count : state_count_hashmap_) {
-    if (state_count.second < 10) {
+    if (state_count.second < 5) {
       return false;
     }
   }
