@@ -86,7 +86,6 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
-  std::cerr << "here3" << std::endl;
 
   const auto it_state = std::find_if(state_chain_.rbegin(),
                                      state_chain_.rend(),
@@ -170,14 +169,22 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       MPI_Bcast(&jump_to_position, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
       cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
     }
+
     std::cerr << "here1" << std::endl;
     MPI_Bcast(&solved_time_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     time_ += solved_time_;
     MPI_Bcast(&solved_energy_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     energy_ = solved_energy_;
-    previous_j = *(jump_list_.rbegin() + 1);
+    std::cerr << "here3" << std::endl;
+
+    if (world_rank_ == 0){
+      previous_j = *(jump_list_.rbegin() + 1);
+    }
+    MPI_Bcast(&previous_j, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
     Clear();
   }
+  std::cerr << "here4" << std::endl;
+
   return return_value;
 }
 
