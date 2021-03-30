@@ -29,7 +29,7 @@ NovelKMCSimulation::~NovelKMCSimulation() = default;
 
 bool NovelKMCSimulation::GTest() const {
   for (const auto &state_count : state_count_hashmap_) {
-    if (state_count.second < 5) {
+    if (state_count.second < 3) {
       return false;
     }
   }
@@ -133,7 +133,7 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     state_hashmap_[state_hash] =
         {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
          state_info.cumulated_absorbing_rate_};
-    if (state_hashmap_.size() > 20) {
+    if (state_hashmap_.size() > 120) {
       ofs << "# Stored hashmap is too large. Clear. Continuing ChainKMC" << std::endl;
       Clear();
       return_value = false;
