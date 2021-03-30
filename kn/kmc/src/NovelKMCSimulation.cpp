@@ -183,7 +183,6 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     MPI_Bcast(&previous_j, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
     Clear();
   }
-  std::cerr << "here4" << std::endl;
 
   return return_value;
 }
