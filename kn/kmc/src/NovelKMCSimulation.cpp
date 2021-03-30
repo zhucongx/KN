@@ -29,7 +29,7 @@ NovelKMCSimulation::~NovelKMCSimulation() = default;
 
 bool NovelKMCSimulation::GTest() const {
   for (const auto &state_count : state_count_hashmap_) {
-    if (state_count.second < 8) {
+    if (state_count.second < 5) {
       return false;
     }
   }
@@ -86,6 +86,8 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
+  std::cerr << "here3";
+
   const auto it_state = std::find_if(state_chain_.rbegin(),
                                      state_chain_.rend(),
                                      [state_hash](const StateInfo &state_info) {
@@ -117,6 +119,8 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   }
   jump_list_.push_back(it->next_i);
   solved_energy_ += it->energy_change_;
+  std::cerr << "here2";
+
 }
 
 bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
@@ -156,16 +160,16 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
   if (return_value) {
     size_t jump_list_size = jump_list_.size();
     MPI_Bcast(&jump_list_size, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
-    jump_list_.resize(jump_list_size);
-    MPI_Bcast(static_cast<void *>(jump_list_.data()),
-              jump_list_size,
-              MPI_UNSIGNED_LONG,
-              0,
-              MPI_COMM_WORLD);
 
-    for (auto position : jump_list_) {
-      cfg::AtomsJump(config_, {vacancy_index_, position});
+    size_t jump_to_position;
+    for (size_t i = 0; i < jump_list_size; ++i) {
+      if (world_rank_ == 0) {
+        jump_to_position = jump_list_[i];
+      }
+      MPI_Bcast(&jump_to_position, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
+      cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
     }
+    std::cerr << "here1";
     MPI_Bcast(&solved_time_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     time_ += solved_time_;
     MPI_Bcast(&solved_energy_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
