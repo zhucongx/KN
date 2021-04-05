@@ -175,17 +175,19 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     energy_ = solved_energy_;
 
     if (world_rank_ == 0) {
-      previous_j = *(jump_list_.rbegin() + 1);
+      previous_j = *jump_list_.rbegin();
     }
     MPI_Bcast(&previous_j, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
 
     if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
                   config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
                   previous_j)
-        != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend())
+        != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
       std::cerr << "previous in fnns " << std::endl;
-    else
-      std::cerr << "err";
+    }
+    else {
+      std::cerr << "err" << std::endl;
+    }
     Clear();
   }
 
