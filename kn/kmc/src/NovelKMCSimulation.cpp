@@ -86,7 +86,7 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
-
+  std::cerr << "Selected state hash: " << state_hash << std::endl;
   const auto it_state = std::find_if(state_chain_.rbegin(),
                                      state_chain_.rend(),
                                      [state_hash](const StateInfo &state_info) {
@@ -161,13 +161,14 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     MPI_Bcast(&jump_list_size, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
 
     size_t jump_to_position;
-    for (size_t i = 0; i < jump_list_size; ++i) {
+    for (size_t i = 0; i < jump_list_size - 1; ++i) {
       if (world_rank_ == 0) {
         jump_to_position = jump_list_[i];
       }
       MPI_Bcast(&jump_to_position, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
       cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
     }
+    std::cerr << "Moved state hash: " << cfg::GetHashOfAState(config_, vacancy_index_) << std::endl;
 
     MPI_Bcast(&solved_time_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     time_ += solved_time_;
@@ -178,14 +179,14 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       previous_j = *jump_list_.rbegin();
     }
     MPI_Bcast(&previous_j, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
+    cfg::AtomsJump(config_, {vacancy_index_, previous_j});
 
     if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
                   config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
                   previous_j)
         != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
       std::cerr << "previous in fnns " << std::endl;
-    }
-    else {
+    } else {
       std::cerr << "err" << std::endl;
     }
     Clear();
