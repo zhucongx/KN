@@ -75,7 +75,8 @@ ChainKMCSimulation::~ChainKMCSimulation() {
 void ChainKMCSimulation::Dump(std::ofstream &ofs) {
   if (steps_ % log_dump_steps_ == 0) {
     ofs << steps_ << '\t' << time_ << '\t' << energy_ << '\t' << one_step_barrier_ << '\t'
-        << one_step_energy_change_ << '\t' << cfg::GetHashOfAState(config_, vacancy_index_) << std::endl;
+        << one_step_energy_change_ << '\t' << cfg::GetHashOfAState(config_, vacancy_index_)
+        << std::endl;
   }
   if (steps_ % config_dump_steps_ == 0) {
     cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
@@ -270,9 +271,11 @@ void ChainKMCSimulation::Simulate() {
       energy_ += one_step_energy_change_;
       one_step_barrier_ = selected_event.GetForwardBarrier();
 
-
       cfg::AtomsJump(config_, atom_id_jump_pair_);
       previous_j = atom_id_jump_pair_.second;
+    } else {
+      std::cout << world_rank_ << '\t' << cfg::GetHashOfAState(config_, vacancy_index_)
+                << std::endl;
     }
     ++steps_;
   }

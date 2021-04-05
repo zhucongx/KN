@@ -118,7 +118,6 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   }
   jump_list_.push_back(it->next_i);
   solved_energy_ += it->energy_change_;
-  std::cerr << "here2" << std::endl;
 
 }
 
@@ -170,17 +169,23 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
     }
 
-    std::cerr << "here1" << std::endl;
     MPI_Bcast(&solved_time_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     time_ += solved_time_;
     MPI_Bcast(&solved_energy_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     energy_ = solved_energy_;
-    std::cerr << "here3" << std::endl;
 
-    if (world_rank_ == 0){
+    if (world_rank_ == 0) {
       previous_j = *(jump_list_.rbegin() + 1);
     }
     MPI_Bcast(&previous_j, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
+
+    if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
+                  config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
+                  previous_j)
+        != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend())
+      std::cerr << "previous in fnns " << std::endl;
+    else
+      std::cerr << "err";
     Clear();
   }
 
