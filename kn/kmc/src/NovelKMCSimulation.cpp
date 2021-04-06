@@ -96,7 +96,7 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
     jump_list_.push_back(it->previous_j_);
     // Todo check state hash same as state_hash
   }
-  auto & equilibrating_event_vector = it_state->quick_event_vector_;
+  auto &equilibrating_event_vector = it_state->quick_event_vector_;
   double total_rate = it_state->cumulated_absorbing_rate_;
   double cumulated_event_probability = 0;
   for (auto &event : equilibrating_event_vector) {
@@ -176,7 +176,7 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
             != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
           std::cerr << "valid " << std::endl;
         } else {
-          std::cerr << "err" << std::endl;
+          std::cerr << "not valid" << std::endl;
         }
 
         std::cerr << "Moved state hash " << i << ":\t"
@@ -193,14 +193,15 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       previous_j = *jump_list_.rbegin();
     }
     MPI_Bcast(&previous_j, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
-
-    if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
-                  config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
-                  previous_j)
-        != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
-      std::cerr << "previous in fnns " << std::endl;
-    } else {
-      std::cerr << "err" << std::endl;
+    if (world_rank_ == 0) {
+      if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
+                    config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
+                    previous_j)
+          != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
+        std::cerr << "previous in fnns " << std::endl;
+      } else {
+        std::cerr << "err" << std::endl;
+      }
     }
     Clear();
   }
