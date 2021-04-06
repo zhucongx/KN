@@ -87,13 +87,13 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
   std::cerr << "Selected state hash: " << state_hash << std::endl;
-  const auto it_state = std::find_if(state_chain_.crbegin(),
-                                     state_chain_.crend(),
+  const auto it_state = std::find_if(state_chain_.rbegin(),
+                                     state_chain_.rend(),
                                      [state_hash](const StateInfo &state_info) {
                                        return state_info.state_hash_ == state_hash;
                                      });
   std::cerr << "Found state hash: " << it_state->state_hash_ << std::endl;
-  for (auto it = state_chain_.crbegin(); it != (it_state - 1); ++it) {
+  for (auto it = state_chain_.rbegin(); it != (it_state - 1); ++it) {
     jump_list_.push_back(it->previous_j_);
     // Todo check state hash same as state_hash
   }
