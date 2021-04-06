@@ -39,7 +39,7 @@ void NovelKMCSimulation::Clear() {
   state_count_hashmap_.clear();
   state_chain_.clear();
   state_hashmap_.clear();
-  equilibrating_event_vector_.clear();
+  // equilibrating_event_vector_.clear();
   state_vector_.clear();
   jump_list_.clear();
   cumulated_energy_ = 0;
