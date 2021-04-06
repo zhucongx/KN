@@ -93,7 +93,7 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
                                        return state_info.state_hash_ == state_hash;
                                      });
   std::cerr << "Found state hash: " << it_state->state_hash_ << std::endl;
-  for (auto it = state_chain_.rbegin(); it != (it_state - 1); ++it) {
+  for (auto it = state_chain_.rbegin(); it != it_state; ++it) {
     jump_list_.push_back(it->previous_j_);
     // Todo check state hash same as state_hash
   }
