@@ -137,7 +137,8 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     state_hashmap_[state_hash] =
         {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
          state_info.cumulated_absorbing_rate_};
-    std::cout << "state_now \t" << state_hash << std::endl;
+    std::cout << "state_now \t" << state_hash << '\t' << previous_j_ <<
+              std::endl;
     if (state_hashmap_.size() > 125) {
       ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
           << std::endl;
@@ -170,6 +171,8 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
 
       if (world_rank_ == 0) {
+        std::cerr << "Jumps to " << jump_to_position << std::endl;
+
         if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
                       config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
                       jump_to_position)

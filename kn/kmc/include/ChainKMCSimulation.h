@@ -24,7 +24,7 @@ class ChainKMCSimulation {
     virtual void Simulate();
 
   protected:
-    virtual bool CheckAndSolveEquilibrium(std::ofstream &ofs) {return false;};
+    virtual bool CheckAndSolveEquilibrium(std::ofstream &ofs) { return false; };
     inline void Dump(std::ofstream &ofs);
     KMCEvent GetEventI();
     [[nodiscard]] double BuildEventListParallel();
@@ -58,8 +58,7 @@ class ChainKMCSimulation {
     int world_rank_{-1}, first_group_rank_{-1}, second_group_rank_{-1};
     // double rij{0}, pij{0};
     std::pair<size_t, size_t> atom_id_jump_pair_;
-    size_t previous_j_
-    ;
+    size_t previous_j_;
 
     MPI_Group world_group_, first_group_, second_group_;
     MPI_Comm first_comm_, second_comm_;
