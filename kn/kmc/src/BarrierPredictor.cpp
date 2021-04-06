@@ -86,9 +86,7 @@ std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
   auto e0 = 0.5 * (forward_e0 + backward_e0);
 
   auto dE = GetDEFromConfig(config, atom_id_jump_pair);
-#ifndef NDEBUG
-  std::cout << dE << '\n';
-#endif
+
   // std::cerr << config.GetAtomList().at(atom_id_jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";

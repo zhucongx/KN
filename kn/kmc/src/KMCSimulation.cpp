@@ -60,16 +60,6 @@ void KMCSimulation::BuildEventListSerial() {
     total_rate_ += event.GetForwardRate();
     event_list_.push_back(std::move(event));
   }
-#ifndef NDEBUG
-  for (const auto &event : event_list_) {
-    std::cerr << event.GetForwardBarrier() << '\t';
-  }
-  std::cerr << '\n';
-  for (const auto &event : event_list_) {
-    std::cerr << event.GetForwardRate() << '\t';
-  }
-  std::cerr << '\n';
-#endif
 }
 void KMCSimulation::BuildEventListParallel() {
   event_list_.clear();

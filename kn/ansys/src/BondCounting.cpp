@@ -61,9 +61,6 @@ std::vector<double> GetBondChange(const cfg::Config &config,
   std::vector<double> res;
   res.reserve(ordered.size());
   for (const auto &bond_count : ordered) {
-#ifndef NDEBUG
-    std::cout << bond_count.first << '\t' << bond_count.second << '\n';
-#endif
     res.push_back(bond_count.second);
   }
 

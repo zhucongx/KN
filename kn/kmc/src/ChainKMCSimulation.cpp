@@ -259,9 +259,7 @@ void ChainKMCSimulation::Simulate() {
     }
     MPI_Bcast(&selected_event, sizeof(KMCEvent), MPI_BYTE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&one_step_energy_change_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-#ifndef NDEBUG
-    std::cout << "event choose " << event_index << '\n';
-#endif
+
     atom_id_jump_pair_ = selected_event.GetAtomIDJumpPair();
 
     if (!CheckAndSolveEquilibrium(ofs)) {
@@ -273,9 +271,6 @@ void ChainKMCSimulation::Simulate() {
 
       cfg::AtomsJump(config_, atom_id_jump_pair_);
       previous_j_ = atom_id_jump_pair_.second;
-    } else {
-      std::cout << world_rank_ << '\t' << cfg::GetHashOfAState(config_, vacancy_index_)
-                << std::endl;
     }
     ++steps_;
   }

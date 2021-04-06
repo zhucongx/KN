@@ -29,7 +29,7 @@ NovelKMCSimulation::~NovelKMCSimulation() = default;
 
 bool NovelKMCSimulation::GTest() const {
   for (const auto &state_count : state_count_hashmap_) {
-    if (state_count.second < 3) {
+    if (state_count.second < 2) {
       return false;
     }
   }
@@ -86,16 +86,13 @@ size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
 
 void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   const auto state_hash = UpdateStateVectorAndChoose();
-  std::cerr << "Selected state hash: " << state_hash << std::endl;
   const auto it_state = std::find_if(state_chain_.rbegin(),
                                      state_chain_.rend(),
                                      [state_hash](const StateInfo &state_info) {
                                        return state_info.state_hash_ == state_hash;
                                      });
-  std::cerr << "Found state hash: " << it_state->state_hash_ << std::endl;
   for (auto it = state_chain_.rbegin(); it != it_state; ++it) {
     jump_list_.push_back(it->previous_j_);
-    // Todo check state hash same as state_hash
   }
   auto &equilibrating_event_vector = it_state->quick_event_vector_;
   double total_rate = it_state->cumulated_absorbing_rate_;
@@ -137,11 +134,10 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
     state_hashmap_[state_hash] =
         {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
          state_info.cumulated_absorbing_rate_};
-    std::cout << "state_now \t" << state_hash << '\t' << previous_j_ <<
-              std::endl;
+
     if (state_hashmap_.size() > 125) {
-      ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
-          << std::endl;
+      // ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
+      //     << std::endl;
       Clear();
       return_value = false;
       // Todo check if the same state hashes have the same state rate
@@ -156,7 +152,6 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
   }
   MPI_Bcast(&return_value, 1, MPI_CXX_BOOL, 0, MPI_COMM_WORLD);
   if (return_value) {
-    std::cout << "here" << std::endl;
     size_t jump_list_size = jump_list_.size();
     MPI_Bcast(&jump_list_size, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
 
@@ -169,22 +164,6 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
 
       MPI_Bcast(&jump_to_position, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
       cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
-
-      if (world_rank_ == 0) {
-        std::cerr << "Jumps to " << jump_to_position << std::endl;
-
-        if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
-                      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
-                      jump_to_position)
-            != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
-          std::cerr << "valid " << std::endl;
-        } else {
-          std::cerr << "not valid" << std::endl;
-        }
-
-        std::cerr << "Moved state hash " << i << ":\t"
-                  << cfg::GetHashOfAState(config_, vacancy_index_) << std::endl;
-      }
     }
 
     MPI_Bcast(&solved_time_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -196,17 +175,6 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       previous_j_ = *jump_list_.rbegin();
     }
     MPI_Bcast(&previous_j_, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
-
-    if (world_rank_ == 0) {
-      if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
-                    config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
-                    previous_j_)
-          != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
-        std::cerr << "previous in fnns " << std::endl;
-      } else {
-        std::cerr << "err" << std::endl;
-      }
-    }
 
     Clear();
   }
