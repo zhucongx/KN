@@ -23,7 +23,7 @@ ChainKMCSimulation::ChainKMCSimulation(cfg::Config config,
       energy_(energy),
       time_(time),
       vacancy_index_(cfg::GetVacancyIndex(config_)),
-      previous_j(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[0]),
+      previous_j_(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[0]),
       lru_cache_barrier_predictor_(json_parameters_filename,
                                    config_, type_set, lru_size),
       generator_(static_cast<unsigned long long int>(
@@ -164,7 +164,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     beta_k = 1 - beta_bar_k;
     double gamma_bar_k_j_helper = 0.0, gamma_k_j_helper = 0.0, beta_k_j_helper = 0.0,
         alpha_k_j_helper = 0.0;
-    if (event_k_i.GetAtomIDJumpPair().second == previous_j) {
+    if (event_k_i.GetAtomIDJumpPair().second == previous_j_) {
       beta_k_j_helper = beta_k_i;
       alpha_k_j_helper = probability_k_i;
     } else {
@@ -181,7 +181,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
         indirect_probability_k_j = one_over_one_minus_a_j * (gamma_bar_k_j / beta_k) * beta_k_j;
     const double
         indirect_probability_k_i = one_over_one_minus_a_j * (1 + gamma_bar_k_j / beta_k) * beta_k_i;
-    if (event_k_i.GetAtomIDJumpPair().second == previous_j) {
+    if (event_k_i.GetAtomIDJumpPair().second == previous_j_) {
       event_k_i.SetProbability(indirect_probability_k_j);
     } else {
       event_k_i.SetProbability(indirect_probability_k_i);
@@ -207,7 +207,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     double ts_numerator_helper = (t + t_i) * beta_bar_k_i;
     MPI_Allreduce(&ts_numerator_helper, &ts_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
     double ts = ts_numerator / beta_bar_k;
-    if (event_k_i.GetAtomIDJumpPair().second == previous_j) {
+    if (event_k_i.GetAtomIDJumpPair().second == previous_j_) {
       ts_numerator_helper = 0;
     }
     MPI_Allreduce(&ts_numerator_helper, &ts_j_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
@@ -272,7 +272,7 @@ void ChainKMCSimulation::Simulate() {
       one_step_barrier_ = selected_event.GetForwardBarrier();
 
       cfg::AtomsJump(config_, atom_id_jump_pair_);
-      previous_j = atom_id_jump_pair_.second;
+      previous_j_ = atom_id_jump_pair_.second;
     } else {
       std::cout << world_rank_ << '\t' << cfg::GetHashOfAState(config_, vacancy_index_)
                 << std::endl;
