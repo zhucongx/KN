@@ -29,6 +29,9 @@ std::map<std::string, std::vector<size_t>> Config::GetElementListMap() const {
   }
   return element_list_map;
 }
+const std::unordered_map<size_t, size_t> &Config::GetSiteIdToAtomIdHashmap() const {
+  return site_id_to_atom_id_hashmap_;
+}
 std::set<std::string> Config::GetTypeSet() const {
   std::set<std::string> type_set;
   for (const auto &atom : atom_list_) {
@@ -566,6 +569,9 @@ static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
               std::inserter(near_neighbors_hashset, near_neighbors_hashset.begin()));
   }
   return near_neighbors_hashset;
+}
+size_t GetSiteIDFromAtomID(size_t atom_id){
+
 }
 // lhs : vacancy_index; rhs : neighbor_index
 void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {

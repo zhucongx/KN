@@ -19,24 +19,19 @@ class NovelKMCSimulation : public ChainKMCSimulation {
     ~NovelKMCSimulation() override;
   protected:
     struct QuickEvent {
-      size_t next_i;
+      size_t next_i_;
+      size_t site_id_;
       double energy_change_;
       double rate_;
       double cumulated_event_probability_;
-    };
-    struct QuickStateInfo {
-      double state_energy_;
-      double state_rate_;
-      double state_probability_;
-      double cumulated_state_probability_;
-      double total_absorbing_rate_;
     };
     struct StateInfo {
       StateInfo(size_t state_hash,
                 size_t previous_j,
                 size_t next_i,
                 double state_energy,
-                const std::vector<KMCEvent> &event_list);
+                const std::vector<KMCEvent> &event_list,
+                const cfg::Config &config);
       size_t state_hash_;
       size_t previous_j_;
       size_t next_i_;
@@ -47,8 +42,17 @@ class NovelKMCSimulation : public ChainKMCSimulation {
       std::vector<QuickEvent> quick_event_vector_{};
     };
 
-    bool GTest() const;
+    struct QuickStateInfo {
+      double state_energy_;
+      double state_rate_;
+      double state_probability_;
+      double cumulated_state_probability_;
+      double total_absorbing_rate_;
+    };
     void Clear();
+    bool GTest() const;
+
+    void ReviewAndFixRate();
     // Returns state hash
     size_t UpdateStateVectorAndChoose();
     void UpdateEquilibratingEventVectorAndChoose();
@@ -59,6 +63,9 @@ class NovelKMCSimulation : public ChainKMCSimulation {
     std::vector<StateInfo> state_chain_{};
     // state_hash, QuickStateInfo;
     std::unordered_map<size_t, QuickStateInfo> state_hashmap_{};
+
+    std::unordered_set<size_t> position_id_hashmap_{};
+
     // state_hash, next_i, probability;
     // std::vector<QuickEvent> equilibrating_event_vector_;
     // state_hash QuickStateInfo

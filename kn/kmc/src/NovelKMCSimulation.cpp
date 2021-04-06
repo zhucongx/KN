@@ -26,24 +26,44 @@ NovelKMCSimulation::NovelKMCSimulation(const cfg::Config &config,
                          lru_size),
       checking_constant(checking_constant) {}
 NovelKMCSimulation::~NovelKMCSimulation() = default;
-
-bool NovelKMCSimulation::GTest() const {
-  for (const auto &state_count : state_count_hashmap_) {
-    if (state_count.second < 2) {
-      return false;
-    }
-  }
-  return true;
-}
 void NovelKMCSimulation::Clear() {
   state_count_hashmap_.clear();
   state_chain_.clear();
   state_hashmap_.clear();
+  position_id_hashmap_.clear();
+
   // equilibrating_event_vector_.clear();
   state_vector_.clear();
   jump_list_.clear();
   cumulated_energy_ = 0;
   cumulated_time_ = 0;
+}
+bool NovelKMCSimulation::GTest() const {
+  for (const auto &state_count : state_count_hashmap_) {
+    if (state_count.second < 3) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void NovelKMCSimulation::ReviewAndFixRate() {
+  for (auto &state : state_chain_) {
+    std::erase_if(state.quick_event_vector_,
+                  [&position_id_hashmap_ =
+                  std::as_const(position_id_hashmap_)](const auto &quick_event) {
+                    return position_id_hashmap_.contains(quick_event.site_id_);
+                  });
+    state.cumulated_absorbing_rate_ = std::accumulate(state.quick_event_vector_.begin(),
+                                                      state.quick_event_vector_.end(),
+                                                      0,
+                                                      [](double cumulated_absorbing_rate,
+                                                         const auto &quick_event) {
+                                                        return cumulated_absorbing_rate +=
+                                                                   quick_event.rate_;
+                                                      });
+    state_hashmap_.at(state.state_hash_).total_absorbing_rate_ = state.cumulated_absorbing_rate_;
+  }
 }
 size_t NovelKMCSimulation::UpdateStateVectorAndChoose() {
   double cumulated_state_rate_ = 0;
@@ -95,6 +115,11 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
     jump_list_.push_back(it->previous_j_);
   }
   auto &equilibrating_event_vector = it_state->quick_event_vector_;
+
+  if (equilibrating_event_vector.empty()) {
+    std::cerr << " here" << std::endl;
+    return;
+  }
   double total_rate = it_state->cumulated_absorbing_rate_;
   double cumulated_event_probability = 0;
   for (auto &event : equilibrating_event_vector) {
@@ -114,7 +139,7 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   if (it == equilibrating_event_vector.cend()) {
     it--;
   }
-  jump_list_.push_back(it->next_i);
+  jump_list_.push_back(it->next_i_);
   solved_energy_ += it->energy_change_;
 }
 
@@ -128,12 +153,14 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
                                previous_j_,
                                atom_id_jump_pair_.second,
                                cumulated_energy_,
-                               event_list_);
+                               event_list_,
+                               config_);
     state_count_hashmap_[state_hash]++;
     state_chain_.push_back(state_info);
     state_hashmap_[state_hash] =
         {state_info.state_energy_, state_info.state_rate_, 0.0, 0.0,
          state_info.cumulated_absorbing_rate_};
+    position_id_hashmap_.insert(config_.GetSiteIdToAtomIdHashmap().at(vacancy_index_));
 
     if (state_hashmap_.size() > 125) {
       // ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
@@ -145,6 +172,7 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       return_value = false;
     } else {
       ofs << "# G-test passed. ";
+      ReviewAndFixRate();
       UpdateEquilibratingEventVectorAndChoose();
       ofs << "Solved time is " << solved_time_ << std::endl;
       return_value = true;
@@ -186,7 +214,8 @@ NovelKMCSimulation::StateInfo::StateInfo(size_t state_hash,
                                          size_t previous_j,
                                          size_t next_i,
                                          double state_energy,
-                                         const std::vector<KMCEvent> &event_list)
+                                         const std::vector<KMCEvent> &event_list,
+                                         const cfg::Config &config)
     : state_hash_(state_hash),
       previous_j_(previous_j),
       next_i_(next_i),
@@ -197,7 +226,8 @@ NovelKMCSimulation::StateInfo::StateInfo(size_t state_hash,
     auto atom_id = kmc_event.GetAtomIDJumpPair().second;
     if (atom_id == previous_j || atom_id == next_i)
       continue;
-    quick_event_vector_.push_back({kmc_event.GetAtomIDJumpPair().second,
+    quick_event_vector_.push_back({atom_id,
+                                   config.GetSiteIdToAtomIdHashmap().at(atom_id),
                                    kmc_event.GetEnergyChange(),
                                    kmc_event.GetForwardRate(), 0.0});
     cumulated_absorbing_rate_ += kmc_event.GetForwardRate();
