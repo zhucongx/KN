@@ -96,24 +96,24 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
     jump_list_.push_back(previous_j);
     // Todo check state hash same as state_hash
   }
-  equilibrating_event_vector_ = it_state->quick_event_vector_;
+  auto & equilibrating_event_vector = it_state->quick_event_vector_;
   double total_rate = it_state->cumulated_absorbing_rate_;
   double cumulated_event_probability = 0;
-  for (auto &event : equilibrating_event_vector_) {
+  for (auto &event : equilibrating_event_vector) {
     cumulated_event_probability += event.rate_ / total_rate;
     event.cumulated_event_probability_ = cumulated_event_probability;
   }
 
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
   const double random_number = distribution(generator_);
-  auto it = std::lower_bound(equilibrating_event_vector_.cbegin(),
-                             equilibrating_event_vector_.cend(),
+  auto it = std::lower_bound(equilibrating_event_vector.cbegin(),
+                             equilibrating_event_vector.cend(),
                              random_number,
                              [](const auto &lhs, double value) {
                                return lhs.cumulated_event_probability_ < value;
                              });
   // If not find (maybe generated 1), which rarely happens, returns the last event
-  if (it == equilibrating_event_vector_.cend()) {
+  if (it == equilibrating_event_vector.cend()) {
     it--;
   }
   jump_list_.push_back(it->next_i);
@@ -165,9 +165,20 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       if (world_rank_ == 0) {
         jump_to_position = jump_list_[i];
       }
+      MPI_Barrier(MPI_COMM_WORLD);
+
       MPI_Bcast(&jump_to_position, 1, MPI_UNSIGNED_LONG, 0, MPI_COMM_WORLD);
       cfg::AtomsJump(config_, {vacancy_index_, jump_to_position});
       if (world_rank_ == 0) {
+        if (std::find(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cbegin(),
+                      config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend(),
+                      jump_to_position)
+            != config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList().cend()) {
+          std::cerr << "valid " << std::endl;
+        } else {
+          std::cerr << "err" << std::endl;
+        }
+
         std::cerr << "Moved state hash " << i << ":\t"
                   << cfg::GetHashOfAState(config_, vacancy_index_) << std::endl;
       }
