@@ -35,8 +35,6 @@ void NovelKMCSimulation::Clear() {
   // equilibrating_event_vector_.clear();
   state_vector_.clear();
   jump_list_.clear();
-  cumulated_energy_ = 0;
-  cumulated_time_ = 0;
 }
 bool NovelKMCSimulation::GTest() const {
   for (const auto &state_count : state_count_hashmap_) {
@@ -117,7 +115,8 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
   auto &equilibrating_event_vector = it_state->quick_event_vector_;
 
   if (equilibrating_event_vector.empty()) {
-    std::cerr << " here" << std::endl;
+    std::cerr << "stuck in the middle" << std::endl;
+    solved_time_ = 0;
     return;
   }
   double total_rate = it_state->cumulated_absorbing_rate_;
@@ -146,13 +145,11 @@ void NovelKMCSimulation::UpdateEquilibratingEventVectorAndChoose() {
 bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
   bool return_value;
   if (world_rank_ == 0) {
-    cumulated_energy_ += one_step_energy_change_;
-    cumulated_time_ += one_step_time_change_;
     const auto state_hash = cfg::GetHashOfAState(config_, vacancy_index_);
     const StateInfo state_info(state_hash,
                                previous_j_,
                                atom_id_jump_pair_.second,
-                               cumulated_energy_,
+                               energy_,
                                event_list_,
                                config_);
     state_count_hashmap_[state_hash]++;
@@ -167,12 +164,11 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
       //     << std::endl;
       Clear();
       return_value = false;
-      // Todo check if the same state hashes have the same state rate
     } else if (state_hashmap_.size() * checking_constant > state_chain_.size() || !GTest()) {
       return_value = false;
     } else {
       ofs << "# G-test passed. ";
-      ReviewAndFixRate();
+      // ReviewAndFixRate();
       UpdateEquilibratingEventVectorAndChoose();
       ofs << "Solved time is " << solved_time_ << std::endl;
       return_value = true;
