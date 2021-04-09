@@ -93,19 +93,6 @@ void KMCSimulation::BuildEventListParallel() {
       MPI_Gather(&event, sizeof(KMCEvent), MPI_BYTE,
                  nullptr, 0, MPI_BYTE, 0, MPI_COMM_WORLD);
     }
-    // if (mpi_rank_ == 0) {
-    //   std::vector<KMCEvent> collected_list;
-    //   double sum_rates_;
-    //
-    //   boost::mpi::reduce(world_, event.GetRate(), sum_rates_, std::plus<>(), 0);
-    //   boost::mpi::gather(world_, event, collected_list, 0);
-    //
-    //   total_rate_ += sum_rates_;
-    //   std::copy(collected_list.begin(), collected_list.end(), std::back_inserter(event_list_));
-    // } else {
-    //   boost::mpi::reduce(world_, event.GetRate(), std::plus<>(), 0);
-    //   boost::mpi::gather(world_, event, 0);
-    // }
   }
   // remainder part
   if (remainder) {
@@ -143,20 +130,8 @@ void KMCSimulation::BuildEventListParallel() {
     cumulative_probability += event.GetProbability();
     event.SetCumulativeProvability(cumulative_probability);
   }
-// #ifndef NDEBUG
-//   if (mpi_rank_ == 0) {
-//     for (const auto &event : event_list_) {
-//       std::cerr << event.GetForwardBarrier() << '\t';
-//     }
-//     std::cerr << '\n';
-//     for (const auto &event : event_list_) {
-//       std::cerr << event.GetForwardRate() << '\t';
-//     }
-//     std::cerr << '\n';
-//   }
-// #endif
 }
-
+void KMCSimulation::CheckAndSolve() {}
 size_t KMCSimulation::SelectEvent() const {
   static std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
@@ -185,7 +160,7 @@ void KMCSimulation::Simulate() {
     if (mpi_rank_ == 0) {
       if (steps_ % log_dump_steps_ == 0) {
         ofs << steps_ << '\t' << time_ << '\t' << energy_
-            << '\t' << one_step_barrier_ << '\t' << one_step_change_ << std::endl;
+            << '\t' << one_step_barrier_ << '\t' << one_step_energy_ << std::endl;
       }
       if (steps_ % config_dump_steps_ == 0) {
         cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
@@ -214,17 +189,18 @@ void KMCSimulation::Simulate() {
     if (mpi_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      auto one_step_time = -log(distribution(generator_)) / (total_rate_ * KMCEvent::kPrefactor);
-      time_ += one_step_time;
-      one_step_change_ = executed_invent.GetEnergyChange();
-      energy_ += one_step_change_;
+      one_step_time_ = -log(distribution(generator_)) / (total_rate_ * KMCEvent::kPrefactor);
+      time_ += one_step_time_;
+      one_step_energy_ = executed_invent.GetEnergyChange();
+      energy_ += one_step_energy_;
       one_step_barrier_ = executed_invent.GetForwardBarrier();
-      // CheckTimeAndFix(-one_step_time);
+      CheckAndSolve();
     }
     ++steps_;
     // world_.barrier();
   }
 
 }
+
 
 } // namespace kmc
