@@ -10,6 +10,7 @@ using namespace std;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
 #include "MpiClusters.h"
+#include "LSKMCSimulation.h"
 #include "NovelKMCSimulation.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e7, 218e7,
+  // ansys::MpiClusters test(0, 1e5, 30e5,
   //                         "Al", 10, 3);
   // test.SerialRun();
   // size_t v_i = cfg::GetVacancyIndex(conf);
@@ -57,15 +58,18 @@ int main(int argc, char *argv[]) {
   //   cout << aa << "\t";
   // }
   auto conf = cfg::Config::ReadConfig("start.cfg", 7);
-  kmc::NovelKMCSimulation a(conf,
-                            1e3,
-                            1e5,
-                            1e10,
-                            {"Al", "Mg", "Zn"},
-                            0, 0, 0,
-                            "kmc_parameters.json",
-                            100,
-                            20);
+  kmc::LSKMCSimulation a(conf,
+                         1e3,
+                         1e5,
+                         1e10,
+                         {"Al", "Mg", "Zn"},
+                         0, 0, 0,
+                         "kmc_parameters.json",
+                         100,
+                         1e5,
+                         1e-10,
+                         0.3);
+
   a.Simulate();
 
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
@@ -128,7 +132,7 @@ int main(int argc, char *argv[]) {
 // //                               {{"Mg", "Mg"}, {-0.21746198}},
 // //                               {{"Mg", "Zn"}, {-0.23373609}},
 // //                               {{"Zn", "Zn"}, {-0.17651597}}};
-// map<Bond, map<long long, int>> bond_store;
+// map<Bond, map<long long, int> > bond_store;
 // std::ofstream ofs("COUTPUT.txt", std::ofstream::out);
 // for (long long i = start; i <= end; i += interval)
 // {

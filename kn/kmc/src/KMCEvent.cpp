@@ -10,7 +10,8 @@ KMCEvent::KMCEvent(std::pair<size_t, size_t> atom_id_jump_pair,
                    std::pair<double, double> barrier_and_diff)
     : atom_id_jump_pair_(std::move(atom_id_jump_pair)),
       barrier_(barrier_and_diff.first),
-      rate_(std::exp(-barrier_and_diff.first * kBoltzmannConstantTimesTemperatureInv)),
+      rate_(std::exp(
+          -barrier_and_diff.first * kBoltzmannConstantTimesTemperatureInv)),
       energy_change_(barrier_and_diff.second) {}
 // KMCEvent::KMCEvent(const Event_Ctor_Pair_t &event_ctor_pair)
 //     : KMCEvent(event_ctor_pair.first, event_ctor_pair.second) {}
@@ -24,12 +25,15 @@ const std::pair<size_t, size_t> &KMCEvent::GetAtomIDJumpPair() const {
 double KMCEvent::GetForwardBarrier() const {
   return barrier_;
 }
-
 double KMCEvent::GetForwardRate() const {
   return rate_;
 }
+double KMCEvent::GetBackwardBarrier() const {
+  return barrier_-energy_change_;
+}
 double KMCEvent::GetBackwardRate() const {
-  return std::exp(energy_change_ - barrier_ * kBoltzmannConstantTimesTemperatureInv);
+  return std::exp(
+      (energy_change_ - barrier_) * kBoltzmannConstantTimesTemperatureInv);
 }
 double KMCEvent::GetEnergyChange() const {
   return energy_change_;

@@ -22,7 +22,7 @@ class Config {
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
     [[nodiscard]] const std::unordered_map<size_t, size_t> &GetSiteIdToAtomIdHashmap() const;
     [[nodiscard]] std::set<std::string> GetTypeSet() const;
-    [[nodiscard]] std::map<std::string, std::vector<size_t>> GetElementListMap() const;
+    [[nodiscard]] std::map<std::string, std::vector<size_t> > GetElementListMap() const;
     /// Update atoms positions
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();

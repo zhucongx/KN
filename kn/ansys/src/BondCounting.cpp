@@ -2,9 +2,9 @@
 #include <unordered_map>
 
 namespace ansys::BondCounting {
-std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond>> InitializeHashMap(
+std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond> > InitializeHashMap(
     const std::set<std::string> &type_set) {
-  std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond>> bond_count_hashmap;
+  std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond> > bond_count_hashmap;
   for (size_t label = 1; label <= 7; ++label) {
     for (const auto &element1 : type_set) {
       for (const auto &element2 : type_set) {
@@ -17,7 +17,7 @@ std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond>> InitializeHashMap(
 std::vector<double> GetBondChange(const cfg::Config &config,
                                   const std::pair<size_t, size_t> &atom_id_jump_pair,
                                   std::unordered_map<cfg::Bond, int,
-                                                     boost::hash<cfg::Bond>> initialized_hashmap) {
+                                                     boost::hash<cfg::Bond> > initialized_hashmap) {
   const auto &atom_list = config.GetAtomList();
   const std::string type1 = atom_list[atom_id_jump_pair.second].GetType();
   // plus new bonds

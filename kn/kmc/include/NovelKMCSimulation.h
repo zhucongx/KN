@@ -69,7 +69,7 @@ class NovelKMCSimulation : public ChainKMCSimulation {
     // state_hash, next_i, probability;
     // std::vector<QuickEvent> equilibrating_event_vector_;
     // state_hash QuickStateInfo
-    std::vector<std::pair<size_t, QuickStateInfo>> state_vector_;
+    std::vector<std::pair<size_t, QuickStateInfo> > state_vector_;
     std::vector<size_t> jump_list_{};
     double solved_time_;
     double solved_energy_;

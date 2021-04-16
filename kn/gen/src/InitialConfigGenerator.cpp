@@ -119,7 +119,7 @@ cfg::Config InitialConfigGenerator::ShuffleConfig(const cfg::Config &config) con
 
 static cfg::Config GenerateUnitCell(
     const Matrix_t &basis_matrix,
-    const std::vector<std::pair<std::string, Vector_t>> &type_position_list) {
+    const std::vector<std::pair<std::string, Vector_t> > &type_position_list) {
   cfg::Config config(basis_matrix, type_position_list.size());
   size_t atoms_counter = 0;
   for (const auto &[type, relative_position] : type_position_list) {
@@ -178,7 +178,7 @@ cfg::Config InitialConfigGenerator::GenerateL10(double lattice_constant_a,
                         {0, lattice_constant_a, 0},
                         {0, 0, lattice_constant_a}
                     }};
-  std::vector<std::pair<std::string, Vector_t>> element_position_list;
+  std::vector<std::pair<std::string, Vector_t> > element_position_list;
   element_position_list.emplace_back(element_list[0], Vector_t{0.0, 0.0, 0.0});
   element_position_list.emplace_back(element_list[0], Vector_t{0.5, 0.5, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.0, 0.5, 0.5});
@@ -197,7 +197,7 @@ cfg::Config InitialConfigGenerator::GenerateL12(double lattice_constant_a,
           {0, 0, lattice_constant_a}
       }
   };
-  std::vector<std::pair<std::string, Vector_t>> element_position_list;
+  std::vector<std::pair<std::string, Vector_t> > element_position_list;
   element_position_list.emplace_back(element_list[0], Vector_t{0.0, 0.0, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.5, 0.5, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.0, 0.5, 0.5});
@@ -216,7 +216,7 @@ cfg::Config InitialConfigGenerator::GenerateL10star(double lattice_constant_a,
           {0, 0, lattice_constant_a}
       }
   };
-  std::vector<std::pair<std::string, Vector_t>> element_position_list;
+  std::vector<std::pair<std::string, Vector_t> > element_position_list;
   element_position_list.emplace_back(element_list[0], Vector_t{0.0, 0.0, 0.0});
   element_position_list.emplace_back(element_list[0], Vector_t{0.5, 0.0, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.25, 0.5, 0.0});
@@ -239,7 +239,7 @@ cfg::Config InitialConfigGenerator::GenerateL12star(double lattice_constant_a,
           {0, 0, lattice_constant_a}
       }
   };
-  std::vector<std::pair<std::string, Vector_t>> element_position_list;
+  std::vector<std::pair<std::string, Vector_t> > element_position_list;
   element_position_list.emplace_back(element_list[0], Vector_t{0.0, 0.0, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.125, 0.5, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.25, 0.0, 0.0});
@@ -270,7 +270,7 @@ cfg::Config InitialConfigGenerator::GenerateZ1(double lattice_constant_a,
           {0, 0, lattice_constant_a * 2}
       }
   };
-  std::vector<std::pair<std::string, Vector_t>> element_position_list;
+  std::vector<std::pair<std::string, Vector_t> > element_position_list;
   element_position_list.emplace_back(element_list[0], Vector_t{0.0, 0.0, 0.0});
   element_position_list.emplace_back(element_list[0], Vector_t{0.5, 0.5, 0.0});
   element_position_list.emplace_back(element_list[1], Vector_t{0.0, 0.5, 0.25});

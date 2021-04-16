@@ -22,8 +22,8 @@ const Matrix_t &Config::GetBasis() const {
 const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
-std::map<std::string, std::vector<size_t>> Config::GetElementListMap() const {
-  std::map<std::string, std::vector<size_t>> element_list_map;
+std::map<std::string, std::vector<size_t> > Config::GetElementListMap() const {
+  std::map<std::string, std::vector<size_t> > element_list_map;
   for (const auto &atom : atom_list_) {
     element_list_map[atom.GetType()].push_back(atom.GetId());
   }
@@ -251,7 +251,7 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::string element;
   size_t num_atoms;
   size_t all_num_atoms = 0;
-  std::vector<std::pair<std::string, size_t>> elements_counts;
+  std::vector<std::pair<std::string, size_t> > elements_counts;
   while (element_iss >> element && count_iss >> num_atoms) {
     elements_counts.emplace_back(element, num_atoms);
     all_num_atoms += num_atoms;

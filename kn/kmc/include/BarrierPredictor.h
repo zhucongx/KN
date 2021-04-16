@@ -6,7 +6,7 @@
 namespace kmc {
 struct Element_Parameters {
   std::vector<double> mu_x{};
-  std::vector<std::vector<double>> transform_matrix{};
+  std::vector<std::vector<double> > transform_matrix{};
   std::vector<double> theta{};
   double mean_y{};
 };
@@ -30,9 +30,9 @@ class BarrierPredictor {
   private:
     std::vector<double> theta_{};
     std::unordered_map<std::string, Element_Parameters> element_parameters_hashmap_{};
-    const std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond>> initialized_hashmap_;
-    const std::vector<std::vector<std::vector<size_t>>> mapping_;
-    const std::unordered_map<std::string, std::vector<double>> one_hot_encode_hash_map_;
+    const std::unordered_map<cfg::Bond, int, boost::hash<cfg::Bond> > initialized_hashmap_;
+    const std::vector<std::vector<std::vector<size_t> > > mapping_;
+    const std::unordered_map<std::string, std::vector<double> > one_hot_encode_hash_map_;
     const size_t num_of_elements_;
 
 };

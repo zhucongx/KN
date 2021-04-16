@@ -10,7 +10,7 @@ namespace kmc {
 class KMCEvent {
     // Todo reduce KMCEvent
   public:
-    // using Event_Ctor_Pair_t = std::pair<std::pair<size_t, size_t>, std::pair<double, double>>;
+    // using Event_Ctor_Pair_t = std::pair<std::pair<size_t, size_t>, std::pair<double, double> >;
 
     static constexpr double kBoltzmannConstant = 8.617333262145e-5;
     static constexpr double kTemperature = 300;
@@ -28,6 +28,7 @@ class KMCEvent {
     [[nodiscard]] const std::pair<size_t, size_t> &GetAtomIDJumpPair() const;
     [[nodiscard]] double GetForwardBarrier() const;
     [[nodiscard]] double GetForwardRate() const;
+    [[nodiscard]] double GetBackwardBarrier() const;
     [[nodiscard]] double GetBackwardRate() const;
     [[nodiscard]] double GetEnergyChange() const;
     [[nodiscard]] double GetProbability() const;
