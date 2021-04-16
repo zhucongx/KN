@@ -38,7 +38,7 @@ void NovelKMCSimulation::Clear() {
 }
 bool NovelKMCSimulation::GTest() const {
   for (const auto &state_count : state_count_hashmap_) {
-    if (state_count.second < 4) {
+    if (state_count.second < 6) {
       return false;
     }
   }
@@ -159,7 +159,7 @@ bool NovelKMCSimulation::CheckAndSolveEquilibrium(std::ofstream &ofs) {
          state_info.cumulated_absorbing_rate_};
     position_id_hashmap_.insert(config_.GetSiteIdToAtomIdHashmap().at(vacancy_index_));
 
-    if (state_hashmap_.size() > 125) {
+    if (state_hashmap_.size() > 100000) {
       // ofs << "# Stored hashmap is too large. Reset. Chain size is " << state_chain_.size()
       //     << std::endl;
       Clear();

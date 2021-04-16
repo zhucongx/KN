@@ -5,6 +5,8 @@
 #include "KMCEvent.h"
 
 namespace kmc {
+// todo check energy
+// todo debug with generated configs
 LSKMCSimulation::LSKMCSimulation(const cfg::Config &config,
                                  unsigned long long int log_dump_steps,
                                  unsigned long long int config_dump_steps,
