@@ -72,17 +72,29 @@ int main(int argc, char *argv[]) {
   //
   // a.Simulate();
   auto conf = cfg::Config::ReadConfig("start.cfg", 7);
-  kmc::NovelKMCSimulation a(conf,
-                            1e4,
-                            1e5,
-                            1e10,
-                            {"Al", "Mg", "Zn"},
-                            0, 0, 0,
-                            "kmc_parameters.json",
-                            100,
-                            100);
+  kmc::LSKMCSimulation a(conf,
+                         1e3,
+                         1e5,
+                         1e10,
+                         {"Al", "Mg", "Zn"},
+                         0, 0, 0,
+                         "kmc_parameters.json",
+                         100,
+                         1e4,
+                         1e-9,
+                         0.3);
+  // kmc::NovelKMCSimulation a(conf,
+  //                           1e4,
+  //                           1e5,
+  //                           1e10,
+  //                           {"Al", "Mg", "Zn"},
+  //                           0, 0, 0,
+  //                           "kmc_parameters.json",
+  //                           100,
+  //                           100);
 
   a.Simulate();
+  // a.Simulate();
   // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
   // auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
   // vector<size_t> index_v;
