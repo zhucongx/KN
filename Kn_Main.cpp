@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e5, 106e5,
+  // ansys::MpiClusters test(0, 1e5, 412e5,
   //                         "Al", 10, 3);
   // test.SerialRun();
   // size_t v_i = cfg::GetVacancyIndex(conf);
@@ -72,17 +72,14 @@ int main(int argc, char *argv[]) {
   //
   // a.Simulate();
   auto conf = cfg::Config::ReadConfig("start.cfg", 7);
-  kmc::LSKMCSimulation a(conf,
-                         1e3,
-                         1e5,
-                         1e10,
-                         {"Al", "Mg", "Zn"},
-                         0, 0, 0,
-                         "kmc_parameters.json",
-                         100,
-                         1e4,
-                         1e-9,
-                         0.3);
+  kmc::ChainKMCSimulation a(conf,
+                            1e3,
+                            1e5,
+                            1e10,
+                            {"Al", "Mg", "Zn"},
+                            0, 0, 0,
+                            "kmc_parameters.json",
+                            100);
   // kmc::NovelKMCSimulation a(conf,
   //                           1e4,
   //                           1e5,

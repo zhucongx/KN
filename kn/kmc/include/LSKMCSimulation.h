@@ -1,5 +1,5 @@
-#ifndef KN_KN_KMC_INCLUDE_LSKMC_H_
-#define KN_KN_KMC_INCLUDE_LSKMC_H_
+#ifndef KN_KN_KMC_INCLUDE_LSKMCSIMULATION_H_
+#define KN_KN_KMC_INCLUDE_LSKMCSIMULATION_H_
 
 /// Fichthorn, Kristen A., and Yangzheng Lin.
 /// "A local superbasin kinetic Monte Carlo method."
@@ -162,4 +162,4 @@ class LSKMCSimulation : public KMCSimulation {
 };
 } // namespace kmc
 
-#endif //KN_KN_KMC_INCLUDE_LSKMC_H_
+#endif //KN_KN_KMC_INCLUDE_LSKMCSIMULATION_H_

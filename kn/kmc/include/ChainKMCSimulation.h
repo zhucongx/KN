@@ -69,4 +69,4 @@ class ChainKMCSimulation {
 };
 
 } // namespace kmc
-#endif //KN_KN_KMC_INCLUDE_CHAINKMC_H_
+#endif //KN_KN_KMC_INCLUDE_CHAINKMCSIMULATION_H_

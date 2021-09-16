@@ -4,6 +4,7 @@
 #include "KMCEvent.h"
 #include "LRUCacheBarrierPredictor.h"
 #include <mpi.h>
+/*This method may be wrong. Do not use*/
 namespace kmc {
 class SecondKMCSimulation {
   public:
@@ -54,4 +55,4 @@ class SecondKMCSimulation {
 };
 
 } // namespace kmc
-#endif //KN_KN_KMC_INCLUDE_SECONDKMC_H_
+#endif //KN_KN_KMC_INCLUDE_SECONDKMCSIMULATION_H_
