@@ -6,9 +6,9 @@ namespace gen {
 ClusterConfigGenerator::ClusterConfigGenerator(double lattice_constant,
                                                const Factor_t &factors,
                                                const std::string &solvent_element,
-                                               const std::set<std::string> &element_list,
+                                               const std::set<std::string> &element_set,
                                                const std::filesystem::path &pot_folder_path)
-    : ConfigGenerator(lattice_constant, factors, solvent_element, element_list, pot_folder_path) {}
+    : ConfigGenerator(lattice_constant, factors, solvent_element, element_set, pot_folder_path) {}
 ClusterConfigGenerator::~ClusterConfigGenerator() = default;
 static std::vector<size_t> GetEquivalentSingletIndexVector(
     const cfg::Config &config,

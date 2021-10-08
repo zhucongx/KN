@@ -48,6 +48,7 @@ class Config {
     void UpdateFirstAndSecondNeighbors(
         double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
         double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff);
+    void CreateSiteIdToAtomIdHashmap();
     /// Add new atoms
     void AppendAtomWithoutChangingAtomID(const Atom &atom);
     void AppendAtomWithChangingAtomID(Atom atom);

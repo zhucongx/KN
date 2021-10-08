@@ -1,7 +1,7 @@
 // #include "Encode.h"
 #include "InitialConfigGenerator.h"
 // #include <SizeMisfitGenerator.h>
-#include "deprecated/Analysis.h"
+#include "ClusterConfigGenerator.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
 // using namespace kn;
@@ -21,10 +21,15 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  // ansys::MpiClusters test(0, 1e6, 210e6,
-  //                         "Al", 3, 3);
+  // ansys::MpiClusters test(0, 1e5, 310e5,
+  //                         "Al", 4, 3);
   // test.SerialRun();
-
+  // auto a = gen::ClusterConfigGenerator(4.046,
+  //                                      {4, 4, 4},
+  //                                      "Al",
+  //                                      {"Al", "Mg", "Zn"},
+  //                                      "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
+  // a.CreateConfigs();
   // auto a = gen::InitialConfigGenerator::GenerateL10(4.046, {"Mg", "Zn"}, {1, 2, 2});
   // auto b = gen::InitialConfigGenerator::EmbedToLarge(4.046,
   //                                                    {14, 14, 14},
@@ -71,33 +76,35 @@ int main(int argc, char *argv[]) {
   //                        0.3);
   //
   // a.Simulate();
-  auto conf = cfg::Config::ReadConfig("start.cfg", 7);
+  auto conf = cfg::Config::ReadConfig("42500000.cfg", 7);
   kmc::ChainKMCSimulation a(conf,
                             1e3,
                             1e5,
                             1e10,
                             {"Al", "Mg", "Zn"},
-                            0, 0, 0,
+                            42500000, -10.436093, 0.053808228,
                             "kmc_parameters.json",
                             100);
-  // kmc::NovelKMCSimulation a(conf,
-  //                           1e4,
-  //                           1e5,
-  //                           1e10,
-  //                           {"Al", "Mg", "Zn"},
-  //                           0, 0, 0,
-  //                           "kmc_parameters.json",
-  //                           100,
-  //                           100);
-
   a.Simulate();
+
+  // // kmc::NovelKMCSimulation a(conf,
+  // //                           1e4,
+  // //                           1e5,
+  // //                           1e10,
+  // //                           {"Al", "Mg", "Zn"},
+  // //                           0, 0, 0,
+  // //                           "kmc_parameters.json",
+  // //                           100,
+  // //                           100);
+  //
   // a.Simulate();
-  // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
-  // auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
+  // std::mt19937_64
+  //     generator(std::chrono::system_clock::now().time_since_epoch().count());
+  // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
   // vector<size_t> index_v;
-  // constexpr size_t All = 108000;
-  // constexpr size_t Mg = 1108;
-  // constexpr size_t Zn = 2114;
+  // constexpr size_t All = 10976;
+  // constexpr size_t Mg = 648;
+  // constexpr  size_t Zn = 540;
   //
   // index_v.resize(All);
   // for (size_t i = 0; i < All; ++i)
@@ -110,7 +117,7 @@ int main(int argc, char *argv[]) {
   // for (size_t i = Mg; i < Mg+Zn; ++i){
   //   config.atom_list_[index_v[i]].SetType("Zn");
   // }
-  // cfg::Config::WriteConfig(config, "start_liu.cfg");
+  // cfg::Config::WriteConfig(config, "Mg50_Zn112.cfg", 0);
 
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 2},
