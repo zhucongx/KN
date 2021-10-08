@@ -76,13 +76,14 @@ int main(int argc, char *argv[]) {
   //                        0.3);
   //
   // a.Simulate();
-  auto conf = cfg::Config::ReadConfig("31000000.cfg", 7);
+  auto conf = cfg::Config::ReadConfig("42500000.cfg", 2);
+  conf.UpdateNeighbors();
   kmc::ChainKMCSimulation a(conf,
                             1e3,
                             1e5,
                             1e10,
                             {"Al", "Mg", "Zn"},
-                            31000000, -3.5846901, 3.7633971e-05,
+                            42500000, -10.544577, 0.053770354,
                             "kmc_parameters.json",
                             100);
   a.Simulate();
