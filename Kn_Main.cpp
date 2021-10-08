@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
                             1e5,
                             1e10,
                             {"Al", "Mg", "Zn"},
-                            42500000, -10.436093, 0.053808228,
+                            42500000, -10.544577, 0.053770354,
                             "kmc_parameters.json",
                             100);
   a.Simulate();
