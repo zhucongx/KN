@@ -76,13 +76,13 @@ int main(int argc, char *argv[]) {
   //                        0.3);
   //
   // a.Simulate();
-  auto conf = cfg::Config::ReadConfig("36300000.cfg", 7);
+  auto conf = cfg::Config::ReadConfig("31000000.cfg", 7);
   kmc::ChainKMCSimulation a(conf,
                             1e3,
                             1e5,
                             1e10,
                             {"Al", "Mg", "Zn"},
-                            36300000, -64.671809, 4.4321992e-05,
+                            31000000, -3.5846901, 3.7633971e-05,
                             "kmc_parameters.json",
                             100);
   a.Simulate();
