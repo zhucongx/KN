@@ -28,7 +28,17 @@ MpiClusters::MpiClusters(unsigned long long int initial_number,
   unsigned long long filename;
   double time;
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  while (ifs >> filename >> time) {
+
+  while (true) {
+    if (ifs.eof() || ifs.bad()) {
+      break;
+    }
+    if (ifs.peek() == '#') {
+      ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      continue;
+    }
+
+    ifs >> filename >> time;
     ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (filename >= initial_number_ && filename <= finial_number_
         && (filename - initial_number_) % increment_number == 0)
@@ -38,7 +48,7 @@ MpiClusters::MpiClusters(unsigned long long int initial_number,
 
 MpiClusters::~MpiClusters() = default;
 
-void MpiClusters::SerialRun() const{
+void MpiClusters::SerialRun() const {
   // start
   std::ofstream ofs("clusters_info.json", std::ofstream::out);
   ofs << "[ \n";
@@ -57,7 +67,7 @@ void MpiClusters::SerialRun() const{
     for (auto it = num_different_element.cbegin(); it < num_different_element.cend(); ++it) {
       ofs << "[ ";
       const auto &cluster = *it;
-      std::for_each(it -> cbegin(), --(cluster.cend()), [&ofs](auto it) {
+      std::for_each(it->cbegin(), --(cluster.cend()), [&ofs](auto it) {
         ofs << it.second << ", ";
       });
       ofs << (cluster.crbegin())->second;

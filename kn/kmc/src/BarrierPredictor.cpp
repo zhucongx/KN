@@ -63,9 +63,9 @@ double BarrierPredictor::GetE0FromEncode(
   return e0;
 }
 double BarrierPredictor::GetDEFromConfig(const cfg::Config &config,
-                                         const std::pair<size_t, size_t> &jump_pair) const {
+                                         const std::pair<size_t, size_t> &atom_id_jump_pair) const {
   auto bond_change_vector =
-      ansys::BondCounting::GetBondChange(config, jump_pair, initialized_hashmap_);
+      ansys::BondCounting::GetBondChange(config, atom_id_jump_pair, initialized_hashmap_);
   const size_t bond_size = theta_.size();
   double dE = 0;
   for (size_t i = 0; i < bond_size; ++i) {
@@ -76,20 +76,18 @@ double BarrierPredictor::GetDEFromConfig(const cfg::Config &config,
 
 std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) const {
-  const auto &element_type = config.GetAtomList().at(jump_pair.second).GetType();
+    const std::pair<size_t, size_t> &atom_id_jump_pair) const {
+  const auto &element_type = config.GetAtomList().at(atom_id_jump_pair.second).GetType();
   auto[forward_encode_list, backward_encode_list] =
-  ansys::ClusterExpansion::GetForwardAndBackwardEncode(config, jump_pair);
+  ansys::ClusterExpansion::GetForwardAndBackwardEncode(config, atom_id_jump_pair);
 
   auto forward_e0 = GetE0FromEncode(element_type, forward_encode_list);
   auto backward_e0 = GetE0FromEncode(element_type, backward_encode_list);
   auto e0 = 0.5 * (forward_e0 + backward_e0);
 
-  auto dE = GetDEFromConfig(config, jump_pair);
-#ifndef NDEBUG
-  std::cout << dE << '\n';
-#endif
-  // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
+  auto dE = GetDEFromConfig(config, atom_id_jump_pair);
+
+  // std::cerr << config.GetAtomList().at(atom_id_jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";
   // static std::mt19937_64 generator(static_cast<unsigned long long int>(

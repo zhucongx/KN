@@ -66,7 +66,7 @@ void SizeMisfitGenerator::CreateConfigs() const {
 
       auto out_config = reference_config;
       out_config.ScaleWith(scale);
-      cfg::Config::WriteConfig(reference_config, scale_path / "supercell.cfg", false);
+      cfg::Config::WriteConfig(reference_config, scale_path / "supercell.cfg", 0);
       // out_config.Perturb(generator_);
       cfg::Config::WritePOSCAR(out_config, scale_path / "POSCAR", false);
       PrepareVASPFiles(out_config, scale_path);

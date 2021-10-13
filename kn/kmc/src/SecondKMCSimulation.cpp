@@ -158,11 +158,11 @@ void SecondKMCSimulation::BuildEventListParallel() {
                 MPI_BYTE,
                 MPI_COMM_WORLD);
   /* calculate relative and cumulative probability */
-  double cumulative_provability = 0.0;
+  double cumulative_probability = 0.0;
   for (auto &event : event_list_) {
     event.CalculateProbability(second_total_rate_);
-    cumulative_provability += event.GetProbability();
-    event.SetCumulativeProvability(cumulative_provability);
+    cumulative_probability += event.GetProbability();
+    event.SetCumulativeProvability(cumulative_probability);
   }
   cfg::AtomsJump(config_, first_jump_pair);
 }
@@ -198,7 +198,7 @@ void SecondKMCSimulation::Simulate() {
             << '\t' << one_step_barrier_ << '\t' << one_step_change_ << std::endl;
       }
       if (steps_ % config_dump_steps_ == 0) {
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
+        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
       }
     }
     // world_.barrier();
@@ -226,16 +226,15 @@ void SecondKMCSimulation::Simulate() {
 
     const auto &executed_invent = event_list_[event_index];
     // std::cout <<"Second " << executed_invent.GetJumpPair().first << ' ' << executed_invent.GetJumpPair().second << '\n';
-    cfg::AtomsJump(config_, executed_invent.GetJumpPair());
+    cfg::AtomsJump(config_, executed_invent.GetAtomIDJumpPair());
 
     // std::pair<size_t,size_t> CheckingPair{0,0};
 
     if (world_rank_ == 0) {
       // update time and energy
       static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-      constexpr double kPrefactor = 1e14;
-      auto one_step_time = log(distribution(generator_)) / (second_total_rate_ * kPrefactor);
-      time_ -= one_step_time;
+      auto one_step_time = -std::log(distribution(generator_)) / (second_total_rate_ * KMCEvent::kPrefactor);
+      time_ += one_step_time;
       one_step_change_ = executed_invent.GetEnergyChange();
       energy_ += one_step_change_;
       one_step_barrier_ = executed_invent.GetForwardBarrier();

@@ -7,16 +7,14 @@ Atom::Atom(size_t id, double mass, std::string type, double x, double y, double 
     id_(id),
     mass_(mass),
     type_(std::move(type)),
-    cartesian_position_{x, y, z},
-    relative_position_{x, y, z} {
+    lattice_(id, x, y, z) {
   ReserveNeighborsVector();
 }
 Atom::Atom(size_t id, double mass, std::string type, Vector_t position) :
     id_(id),
     mass_(mass),
     type_(std::move(type)),
-    cartesian_position_(position),
-    relative_position_(position) {
+    lattice_(id, position) {
   ReserveNeighborsVector();
 }
 void Atom::ReserveNeighborsVector() {
@@ -28,11 +26,14 @@ void Atom::ReserveNeighborsVector() {
   sixth_nearest_neighbors_list_.reserve(Al_const::kNumSixthNearestNeighbors);
   seventh_nearest_neighbors_list_.reserve(Al_const::kNumSeventhNearestNeighbors);
 }
+size_t Atom::GetSiteId() const {
+  return lattice_.id_;
+}
 const Vector_t &Atom::GetCartesianPosition() const {
-  return cartesian_position_;
+  return lattice_.cartesian_position_;
 }
 const Vector_t &Atom::GetRelativePosition() const {
-  return relative_position_;
+  return lattice_.relative_position_;
 }
 size_t Atom::GetId() const {
   return id_;
@@ -65,10 +66,10 @@ const std::vector<size_t> &Atom::GetSeventhNearestNeighborsList() const {
   return seventh_nearest_neighbors_list_;
 }
 void Atom::SetCartesianPosition(const Vector_t &cartesian_position) {
-  cartesian_position_ = cartesian_position;
+  lattice_.cartesian_position_ = cartesian_position;
 }
 void Atom::SetRelativePosition(const Vector_t &relative_position) {
-  relative_position_ = relative_position;
+  lattice_.relative_position_ = relative_position;
 }
 void Atom::SetId(size_t id) {
   id_ = id;

@@ -20,6 +20,7 @@ class KMCSimulation {
     virtual ~KMCSimulation();
     void Simulate();
   protected:
+    virtual void CheckAndSolve();
     void BuildEventListSerial();
     void BuildEventListParallel();
     size_t SelectEvent() const;
@@ -36,7 +37,8 @@ class KMCSimulation {
     double time_;
     const size_t vacancy_index_;
     double one_step_barrier_{0.0};
-    double one_step_change_{0.0};
+    double one_step_energy_{0.0};
+    double one_step_time_{0.0};
 
     // helpful properties
     double total_rate_{0.0};
@@ -44,7 +46,7 @@ class KMCSimulation {
     size_t mpi_size_;
 
     std::vector<KMCEvent> event_list_{};
-    const LRUCacheBarrierPredictor lru_cache_barrier_predictor_;
+    const LRUCacheBarrierPredictor barrier_predictor_;
     mutable std::mt19937_64 generator_;
 };
 } // namespace kmc

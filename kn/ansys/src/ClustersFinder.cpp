@@ -11,7 +11,7 @@ ClustersFinder::ClustersFinder(std::string cfg_filename,
                                size_t smallest_cluster_criteria,
                                size_t solvent_bond_criteria)
     : cfg_filename_(std::move(cfg_filename)),
-      config_(cfg::Config::ReadConfig(cfg_filename_, true)),
+      config_(cfg::Config::ReadConfig(cfg_filename_, 2)),
       solvent_element_(std::move(solvent_atom_type)),
       smallest_cluster_criteria_(smallest_cluster_criteria),
       solvent_bond_criteria_(solvent_bond_criteria) {
@@ -22,7 +22,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
 
   cfg::Config config_out(config_.GetBasis(), config_.GetNumAtoms());
-  std::vector<std::map<std::string, size_t>> num_atom_in_clusters_set;
+  std::vector<std::map<std::string, size_t> > num_atom_in_clusters_set;
   for (auto &atom_list : cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
     std::map<std::string, size_t> num_atom_in_one_cluster;
@@ -41,7 +41,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto output_name("cluster/" + cfg_filename_);
   auto const pos = output_name.find_last_of('.');
   output_name.insert(pos, "_cluster");
-  cfg::Config::WriteConfig(config_out, output_name, false);
+  cfg::Config::WriteConfig(config_out, output_name, 0);
   return num_atom_in_clusters_set;
 }
 
@@ -73,9 +73,9 @@ std::unordered_set<size_t> ClustersFinder::FindSoluteAtomsHelper() const {
   return solute_atoms_hashset;
 }
 
-std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClustersBFSHelper(
+std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClustersBFSHelper(
     std::unordered_set<size_t> unvisited_atoms_id_set) const {
-  std::vector<std::vector<size_t>> cluster_atom_list;
+  std::vector<std::vector<size_t> > cluster_atom_list;
   std::queue<size_t> visit_id_queue;
   size_t atom_id;
 
@@ -109,7 +109,7 @@ std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClustersBFSHelper
   return cluster_atom_list;
 }
 
-std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClusters() const {
+std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters

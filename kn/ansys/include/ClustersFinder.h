@@ -9,7 +9,7 @@
 namespace ansys {
 class ClustersFinder {
   public:
-    using ClusterElementNumMap = std::vector<std::map<std::string, size_t>>;
+    using ClusterElementNumMap = std::vector<std::map<std::string, size_t> >;
     ClustersFinder(std::string cfg_filename,
                    std::string solvent_atom_type,
                    size_t smallest_cluster_criteria,
@@ -23,12 +23,12 @@ class ClustersFinder {
   private:
     void UpdateElementSet();
     [[nodiscard]] std::unordered_set<size_t> FindSoluteAtomsHelper() const;
-    [[nodiscard]] std::vector<std::vector<size_t>> FindAtomListOfClustersBFSHelper(
+    [[nodiscard]] std::vector<std::vector<size_t> > FindAtomListOfClustersBFSHelper(
         std::unordered_set<size_t> unvisited_atoms_id_set) const;
 
     // Return a 2D array where values of each row representing the number of atoms of different
     // element in one cluster
-    [[nodiscard]] std::vector<std::vector<size_t>> FindAtomListOfClusters() const;
+    [[nodiscard]] std::vector<std::vector<size_t> > FindAtomListOfClusters() const;
 
     std::string cfg_filename_;
     cfg::Config config_;

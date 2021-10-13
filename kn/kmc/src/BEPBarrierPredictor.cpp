@@ -11,15 +11,12 @@ kmc::BEPBarrierPredictor::~BEPBarrierPredictor() {
 }
 std::pair<double, double> BEPBarrierPredictor::GetBarrierAndDiff(const cfg::Config &config,
                                                                  const std::pair<size_t,
-                                                                                 size_t> &jump_pair) const {
-  const auto &element_type = config.GetAtomList().at(jump_pair.second).GetType();
+                                                                                 size_t> &atom_id_jump_pair) const {
+  const auto &element_type = config.GetAtomList().at(atom_id_jump_pair.second).GetType();
   auto e0 = standard_e0_.at(element_type);
 
-  auto dE = GetDEFromConfig(config, jump_pair);
-#ifndef NDEBUG
-  std::cout << dE << '\n';
-#endif
-  // std::cerr << config.GetAtomList().at(jump_pair.second).GetType() << "  ";
+  auto dE = GetDEFromConfig(config, atom_id_jump_pair);
+  // std::cerr << config.GetAtomList().at(atom_id_jump_pair.second).GetType() << "  ";
 
   // std::cerr << forward_barrier << "\n";
   // static std::mt19937_64 generator(static_cast<unsigned long long int>(

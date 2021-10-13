@@ -5,9 +5,6 @@
 #include <utility>
 namespace kmc {
 
-constexpr size_t kFirstEventListSize = Al_const::kNumFirstNearestNeighbors;
-constexpr size_t kSecondEventListSize = 11;
-
 ChainKMCSimulation::ChainKMCSimulation(cfg::Config config,
                                        unsigned long long int log_dump_steps,
                                        unsigned long long int config_dump_steps,
@@ -26,7 +23,7 @@ ChainKMCSimulation::ChainKMCSimulation(cfg::Config config,
       energy_(energy),
       time_(time),
       vacancy_index_(cfg::GetVacancyIndex(config_)),
-      previous_j(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[0]),
+      previous_j_(config_.GetAtomList()[vacancy_index_].GetFirstNearestNeighborsList()[0]),
       lru_cache_barrier_predictor_(json_parameters_filename,
                                    config_, type_set, lru_size),
       generator_(static_cast<unsigned long long int>(
@@ -74,6 +71,15 @@ ChainKMCSimulation::~ChainKMCSimulation() {
   if (MPI_COMM_NULL != first_comm_) MPI_Comm_free(&first_comm_);
   if (MPI_COMM_NULL != second_comm_) MPI_Comm_free(&second_comm_);
   MPI_Finalize();
+}
+void ChainKMCSimulation::Dump(std::ofstream &ofs) {
+  if (steps_ % log_dump_steps_ == 0) {
+    ofs << steps_ << '\t' << time_ << '\t' << energy_ << '\t' << one_step_barrier_ << '\t'
+        << one_step_energy_change_ << std::endl;
+  }
+  if (steps_ % config_dump_steps_ == 0) {
+    cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", 2);
+  }
 }
 
 // get the energy change and the probability from j to k, pjk by the reference.
@@ -130,13 +136,13 @@ double ChainKMCSimulation::BuildEventListParallel() {
   auto event_k_i = GetEventI();
   const auto l_indexes = GetLIndexes();
   const auto probability_k_i = event_k_i.GetProbability();
-  cfg::AtomsJump(config_, event_k_i.GetJumpPair());
+  cfg::AtomsJump(config_, event_k_i.GetAtomIDJumpPair());
   total_rate_i_ = 0.0;
   const auto l_index = l_indexes[static_cast<size_t>(second_group_rank_)];
   KMCEvent event_i_l
       ({vacancy_index_, l_index},
        lru_cache_barrier_predictor_.GetBarrierAndDiff(config_, {vacancy_index_, l_index}));
-  cfg::AtomsJump(config_, event_k_i.GetJumpPair());
+  cfg::AtomsJump(config_, event_k_i.GetAtomIDJumpPair());
 
   // get sum r_{k to l}
   const double r_i_l = event_i_l.GetForwardRate();
@@ -157,7 +163,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     beta_k = 1 - beta_bar_k;
     double gamma_bar_k_j_helper = 0.0, gamma_k_j_helper = 0.0, beta_k_j_helper = 0.0,
         alpha_k_j_helper = 0.0;
-    if (event_k_i.GetJumpPair().second == previous_j) {
+    if (event_k_i.GetAtomIDJumpPair().second == previous_j_) {
       beta_k_j_helper = beta_k_i;
       alpha_k_j_helper = probability_k_i;
     } else {
@@ -174,7 +180,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
         indirect_probability_k_j = one_over_one_minus_a_j * (gamma_bar_k_j / beta_k) * beta_k_j;
     const double
         indirect_probability_k_i = one_over_one_minus_a_j * (1 + gamma_bar_k_j / beta_k) * beta_k_i;
-    if (event_k_i.GetJumpPair().second == previous_j) {
+    if (event_k_i.GetAtomIDJumpPair().second == previous_j_) {
       event_k_i.SetProbability(indirect_probability_k_j);
     } else {
       event_k_i.SetProbability(indirect_probability_k_i);
@@ -194,23 +200,22 @@ double ChainKMCSimulation::BuildEventListParallel() {
       event.SetCumulativeProvability(cumulative_provability);
     }
 
-    constexpr double kPrefactor = 1e14;
-    double t = 1 / total_rate_k_ / kPrefactor;
-    double t_i = 1 / total_rate_i_ / kPrefactor;
+    double t = 1 / total_rate_k_ / KMCEvent::kPrefactor;
+    double t_i = 1 / total_rate_i_ / KMCEvent::kPrefactor;
     double ts_numerator = 0.0, ts_j_numerator = 0.0;
     double ts_numerator_helper = (t + t_i) * beta_bar_k_i;
     MPI_Allreduce(&ts_numerator_helper, &ts_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
     double ts = ts_numerator / beta_bar_k;
-    if (event_k_i.GetJumpPair().second == previous_j) {
+    if (event_k_i.GetAtomIDJumpPair().second == previous_j_) {
       ts_numerator_helper = 0;
     }
     MPI_Allreduce(&ts_numerator_helper, &ts_j_numerator, 1, MPI_DOUBLE, MPI_SUM, first_comm_);
     double ts_j = ts_j_numerator / gamma_bar_k_j;
 
     t_2 = one_over_one_minus_a_j
-            * (gamma_k_j * t + gamma_bar_k_j * (ts_j + t + beta_bar_k / beta_k * ts));
+        * (gamma_k_j * t + gamma_bar_k_j * (ts_j + t + beta_bar_k / beta_k * ts));
   }
-  // MPI_Bcast(event_list_.data(), sizeof(KMCEvent) * kFirstEventListSize, MPI_BYTE, 0, second_comm_);
+  MPI_Bcast(&t_2, 1, MPI_DOUBLE, 0, second_comm_);
   return t_2;
 }
 // run this on this first process
@@ -234,55 +239,39 @@ size_t ChainKMCSimulation::SelectEvent() const {
 void ChainKMCSimulation::Simulate() {
   std::ofstream ofs("kmc_log.txt", std::ofstream::out | std::ofstream::app);
   if (world_rank_ == 0) {
-    ofs << "steps\ttime\tenergy\tEa\tdE\tposition\n";
+    ofs << "steps\ttime\tenergy\tEa\tdE\n";
     ofs.precision(8);
   }
 
   while (steps_ < maximum_number_) {
-    // log and config file
     if (world_rank_ == 0) {
-      if (steps_ % log_dump_steps_ == 0) {
-        ofs << steps_ << '\t' << time_ << '\t' << energy_ << '\t' << one_step_barrier_ << '\t'
-            << one_step_energy_change_ << '\t' << previous_j << std::endl;
-      }
-      if (steps_ % config_dump_steps_ == 0) {
-        cfg::Config::WriteConfig(config_, std::to_string(steps_) + ".cfg", true);
-      }
+      Dump(ofs);
     }
-    // world_.barrier();
     MPI_Barrier(MPI_COMM_WORLD);
 
-    auto one_step_time = BuildEventListParallel();
-
-    std::pair<size_t, size_t> jump_pair;
+    one_step_time_change_ = BuildEventListParallel();
+    KMCEvent selected_event;
     if (world_rank_ == 0) {
-      auto event_index = SelectEvent();
-      const auto &selected_event = event_list_[event_index];
-      jump_pair = selected_event.GetJumpPair();
-#ifndef NDEBUG
-      std::cout << "event choose " << event_index << '\n';
-#endif
+      selected_event = event_list_[SelectEvent()];
+      static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+      one_step_energy_change_ *= distribution(generator_);
+    }
+    MPI_Bcast(&selected_event, sizeof(KMCEvent), MPI_BYTE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&one_step_energy_change_, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    atom_id_jump_pair_ = selected_event.GetAtomIDJumpPair();
+
+    if (!CheckAndSolveEquilibrium(ofs)) {
       // update time and energy
-      time_ += one_step_time;
+      time_ += one_step_time_change_;
       one_step_energy_change_ = selected_event.GetEnergyChange();
       energy_ += one_step_energy_change_;
       one_step_barrier_ = selected_event.GetForwardBarrier();
+
+      cfg::AtomsJump(config_, atom_id_jump_pair_);
+      previous_j_ = atom_id_jump_pair_.second;
     }
-    // world_.barrier();
-    MPI_Bcast(&jump_pair, sizeof(std::pair<size_t, size_t>), MPI_BYTE, 0, MPI_COMM_WORLD);
-    // boost::mpi::broadcast(world_, event_index, 0);
-    // world_.barrier();
-
-    // std::cout << jump_pair.first << ' ' << jump_pair.second << '\n';
-    cfg::AtomsJump(config_, jump_pair);
-    previous_j = jump_pair.second;
     ++steps_;
-    // world_.barrier();
   }
-
 }
-
-}
-
-
-// namespace kmc
+} // namespace kmc

@@ -129,9 +129,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 #    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 #endif ()
 ############################################ ARMADILLO #############################################
-#find_package(ARMADILLO REQUIRED)
-#target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
-#target_link_libraries(${PROJECT_NAME} PUBLIC ${ARMADILLO_LIBRARIES})
+find_package(ARMADILLO REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ARMADILLO_LIBRARIES})
 ############################################## EIGEN ###############################################
 #find_package(EIGEN3 REQUIRED)
 #target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIRS})

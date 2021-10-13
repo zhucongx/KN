@@ -1,5 +1,5 @@
-#ifndef KN_KN_KMC_INCLUDE_LSKMC_H_
-#define KN_KN_KMC_INCLUDE_LSKMC_H_
+#ifndef KN_KN_KMC_INCLUDE_LSKMCSIMULATION_H_
+#define KN_KN_KMC_INCLUDE_LSKMCSIMULATION_H_
 
 /// Fichthorn, Kristen A., and Yangzheng Lin.
 /// "A local superbasin kinetic Monte Carlo method."
@@ -13,13 +13,13 @@
 
 namespace kmc {
 using Vec_t = std::vector<double>;
-using Mat_t = std::vector<std::vector<double>>;
-// inline Eigen::RowVectorXd StdVectorToEigenRowVector(const Vec_t & vec_t) {
+using Mat_t = std::vector<std::vector<double> >;
+// inline Eigen::RowVectorXd StdVectorToEigenRowVector(const Vec_t &vec_t) {
 //   Eigen::RowVectorXd eigen_row_vector =
 //       Eigen::RowVectorXd::Map(vec_t.data(), vec_t.size());
 //   return eigen_row_vector;
 // }
-// inline Eigen::VectorXd StdVectorToEigenVector(const Vec_t & vec_t) {
+// inline Eigen::VectorXd StdVectorToEigenVector(const Vec_t &vec_t) {
 //   Eigen::VectorXd eigen_vector =
 //       Eigen::VectorXd::Map(vec_t.data(), vec_t.size());
 //   return eigen_vector;
@@ -43,7 +43,10 @@ inline arma::mat StdVectorToArmMatrixTranspose(const Mat_t &mat_t) {
   for (size_t i = 0; i < mat_t.size(); ++i)
     for (size_t j = 0; j < mat_t[0].size(); ++j)
       continuum[j * mat_t.size() + i] = mat_t[i][j];
-  return arma::mat(&continuum.front(), mat_t.size(), mat_t[0].size(), false).t();
+  return arma::mat(&continuum.front(),
+                   mat_t.size(),
+                   mat_t[0].size(),
+                   false).t();
 }
 inline Vec_t ArmMatrixToStdVector(const arma::mat &mat) {
   Vec_t res(mat.n_rows * mat.n_cols, 0.0);
@@ -78,21 +81,28 @@ class LSKMCSimulation : public KMCSimulation {
                     unsigned long long int log_dump_steps,
                     unsigned long long int config_dump_steps,
                     unsigned long long int maximum_number,
-                    std::unordered_map<std::string, double> type_category_hashmap,
+                    const std::set<std::string> &type_set,
                     unsigned long long int steps,
                     double energy,
                     double time,
+                    const std::string &json_parameters_filename,
+                    size_t lru_size,
                     unsigned long long int trap_steps_criteria,
                     double one_trap_time_criteria,
                     double energy_barrier_criteria);
     ~LSKMCSimulation() override;
-    void CheckAndFix(double one_step_time) override;
+    void CheckAndSolve() override;
   private:
+    bool SingleCoreReturnPathAndUpdate();
     void ClearAndSearch();
 
     // get barrier from hashmap "event_hashmap_" or calculate and put to hashmap
-    KMCEvent CheckEventHashMapAndGet(const std::pair<size_t, size_t> &jump_pair);
-    void DFSHelper(size_t i, std::unordered_set<int> &visited);
+    KMCEvent CheckEventHashMapAndGet(
+        const std::pair<size_t, size_t> &state_and_next_position);
+
+    void DFSHelper(size_t state,
+                   std::vector<size_t> &path,
+                   std::unordered_set<size_t> &visited);
     void Search_States_DFS();
     void DumpBarrierStatistics();
     void UpdateMarkovMatrix();
@@ -100,7 +110,7 @@ class LSKMCSimulation : public KMCSimulation {
     void UpdateTransientMatrixFromMarkovMatrix();
     void CalculateExitTimePi();
     bool IsValidTrap();
-    bool IsTrapped(double one_step_time);
+    bool IsTrapped();
     // simulation parameters
     const unsigned long long trap_steps_criteria_;
     const double one_trap_time_criteria_;
@@ -124,20 +134,32 @@ class LSKMCSimulation : public KMCSimulation {
     // Eigen::MatrixXd eigen_pi_matrix_;
     // Eigen::MatrixXd eigen_tau_vector_;
 
+    // hashset for transient states of each atom
+    std::unordered_set<size_t> transient_hashset_;
+    // hashset for absorbing states of each atom
+    std::unordered_set<size_t> absorbing_hashset_;
 
-    // lists for trapping locations of each atom
-    std::unordered_set<size_t> trap_hashset_;
-    // lists for absorbing locations of each atom
-    std::unordered_set<size_t> absorb_hashset_;
-    // event map: i_j --> event_i_j
-    std::unordered_map<std::pair<size_t, size_t>,
-                       KMCEvent, boost::hash<std::pair<size_t, size_t>>> event_hashmap_;
+    // state and final position --> event
+    std::unordered_map<
+        std::pair<size_t, size_t>,
+        KMCEvent,
+        boost::hash<std::pair<size_t, size_t> > > state_position_event_hashmap_;
 
-    // a hashmap trap atom id -> matrix id
-    std::unordered_map<size_t, size_t> atom_id_to_mat_id_hashmap_;
-    // a hashmap trap atom id -> matrix id
-    std::unordered_map<size_t, size_t> mat_id_to_atom_id_hashmap_;
+    // state and next state --> event
+    std::unordered_map<
+        size_t,
+        std::unordered_map<size_t, KMCEvent> > state_state_event_hashmap_;
+
+    // state path hashmap: state i --> p1, p2, p3
+    std::unordered_map<size_t, std::vector<size_t> > state_path_hashmap_;
+
+    // a hashmap transient state -> matrix id
+    std::unordered_map<size_t, size_t> state_to_matid_hashmap_;
+    // a hashmap transient matrix id -> state
+    std::unordered_map<size_t, size_t> matid_to_state_hashmap_;
+
+    std::vector<size_t> path_{};
 };
 } // namespace kmc
 
-#endif //KN_KN_KMC_INCLUDE_LSKMC_H_
+#endif //KN_KN_KMC_INCLUDE_LSKMCSIMULATION_H_

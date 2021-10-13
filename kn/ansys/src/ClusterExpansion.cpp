@@ -7,10 +7,10 @@ using Singlet_t = cfg::Cluster<1>;
 using Pair_t = cfg::Cluster<2>;
 using Triplet_t = cfg::Cluster<3>;
 
-std::unordered_map<std::string, std::vector<double>> GetOneHotEncodeHashmap(
+std::unordered_map<std::string, std::vector<double> > GetOneHotEncodeHashmap(
     const std::set<std::string> &type_set) {
   size_t num_singlets = type_set.size();
-  std::unordered_map<std::string, std::vector<double>> encode_dict;
+  std::unordered_map<std::string, std::vector<double> > encode_dict;
 
   size_t ct1 = 0;
   for (const auto &element : type_set) {
@@ -126,8 +126,8 @@ static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
 static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     std::vector<cfg::Atom> &&atom_list,
     const cfg::Config &reference_config,
-    const std::pair<size_t, size_t> &jump_pair) {
-  RotateAtomVector(atom_list, GetPairRotationMatrix(reference_config, jump_pair));
+    const std::pair<size_t, size_t> &atom_id_jump_pair) {
+  RotateAtomVector(atom_list, GetPairRotationMatrix(reference_config, atom_id_jump_pair));
   //sort using mm2 group point
   std::sort(atom_list.begin(), atom_list.end(),
             [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
@@ -146,14 +146,14 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
 // Returns forward and backward sorted atom lists
 static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) {
+    const std::pair<size_t, size_t> &atom_id_jump_pair) {
   // First, second, third nearest neighbors of the jump pairs
   constexpr size_t kNumOfAtoms = 60;
 
   std::unordered_set<size_t>
-      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, jump_pair);
+      atom_id_hashset = GetFirstAndSecondThirdNeighborsSetOfJumpPair(config, atom_id_jump_pair);
 
-  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, jump_pair);
+  const auto move_distance = Vector_t{0.5, 0.5, 0.5} - GetPairCenter(config, atom_id_jump_pair);
 
   std::vector<cfg::Atom> atom_list_forward;
   atom_list_forward.reserve(kNumOfAtoms);
@@ -169,7 +169,7 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
 
     atom.SetRelativePosition(relative_position);
 
-    if (atom.GetId() == jump_pair.first) {
+    if (atom.GetId() == atom_id_jump_pair.first) {
       vacancy_relative_position = atom.GetRelativePosition();
       vacancy_cartesian_position = atom.GetCartesianPosition();
       continue;
@@ -180,24 +180,24 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
 
   auto atom_list_backward(atom_list_forward);
   auto jump_atom_it_backward = std::find_if(atom_list_backward.begin(), atom_list_backward.end(),
-                                            [&jump_pair](const auto &atom) {
-                                              return atom.GetId() == jump_pair.second;
+                                            [&atom_id_jump_pair](const auto &atom) {
+                                              return atom.GetId() == atom_id_jump_pair.second;
                                             });
   jump_atom_it_backward->SetRelativePosition(vacancy_relative_position);
   jump_atom_it_backward->SetCartesianPosition(vacancy_cartesian_position);
 
   return {RotateAtomVectorAndSortHelper(std::move(atom_list_forward),
                                         config,
-                                        jump_pair),
+                                        atom_id_jump_pair),
           RotateAtomVectorAndSortHelper(std::move(atom_list_backward),
                                         config,
-                                        {jump_pair.second, jump_pair.first})};
+                                        {atom_id_jump_pair.second, atom_id_jump_pair.first})};
 }
 
 std::array<std::vector<std::string>, 2> GetForwardAndBackwardEncode(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair) {
-  const auto atom_vectors = GetSymmetricallySortedAtomVectors(config, jump_pair);
+    const std::pair<size_t, size_t> &atom_id_jump_pair) {
+  const auto atom_vectors = GetSymmetricallySortedAtomVectors(config, atom_id_jump_pair);
 
   // First, second, third nearest neighbors of the jump pairs
   constexpr size_t kNumOfAtoms = 60;
@@ -216,15 +216,15 @@ std::array<std::vector<std::string>, 2> GetForwardAndBackwardEncode(
 
 template<size_t DataSize>
 static void GetAverageParametersMappingFromClusterVectorHelper(
-    std::vector<cfg::Cluster<DataSize>> &&cluster_vector,
-    std::vector<std::vector<std::vector<size_t>>> &cluster_mapping) {
+    std::vector<cfg::Cluster<DataSize> > &&cluster_vector,
+    std::vector<std::vector<std::vector<size_t> > > &cluster_mapping) {
   // sort clusters
   std::sort(cluster_vector.begin(), cluster_vector.end(),
             [](const auto &lhs, const auto &rhs) {
               return IsClusterSmallerSymmetrically(lhs, rhs);
             });
   // start to point at Cluster in the first range
-  typename std::vector<cfg::Cluster<DataSize>>::const_iterator lower_it, upper_it;
+  typename std::vector<cfg::Cluster<DataSize> >::const_iterator lower_it, upper_it;
   lower_it = cluster_vector.cbegin();
 
   do {
@@ -233,7 +233,7 @@ static void GetAverageParametersMappingFromClusterVectorHelper(
                                 [](const auto &lhs, const auto &rhs) {
                                   return IsClusterSmallerSymmetrically(lhs, rhs);
                                 });
-    std::vector<std::vector<size_t>> cluster_index_vector;
+    std::vector<std::vector<size_t> > cluster_index_vector;
     for (auto it = lower_it; it != upper_it; ++it) {
       std::vector<size_t> cluster_index;
       cluster_index.reserve(DataSize);
@@ -249,7 +249,7 @@ static void GetAverageParametersMappingFromClusterVectorHelper(
   } while (upper_it != cluster_vector.cend());
 }
 
-std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping(
+std::vector<std::vector<std::vector<size_t> > > GetAverageClusterParametersMapping(
     const cfg::Config &config) {
 
   size_t vacancy_index = cfg::GetVacancyIndex(config);
@@ -257,7 +257,7 @@ std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping
   const auto atom_vector = GetSymmetricallySortedAtomVectors(config, {vacancy_index,
                                                                       neighbor_index})[0];
 
-  std::vector<std::vector<std::vector<size_t>>> cluster_mapping{};
+  std::vector<std::vector<std::vector<size_t> > > cluster_mapping{};
   /// singlets
   // find all singlets
   std::vector<Singlet_t> singlet_vector;
@@ -271,7 +271,7 @@ std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping
       std::move(singlet_vector), cluster_mapping);
   /// first nearest pairs
   // find all pairs
-  std::unordered_set<Pair_t, boost::hash<Pair_t>> first_pair_set;
+  std::unordered_set<Pair_t, boost::hash<Pair_t> > first_pair_set;
   for (const auto &atom1 : atom_vector) {
     for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
       first_pair_set.emplace(atom1, atom_vector.at(atom2_index));
@@ -281,7 +281,7 @@ std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping
       std::vector<Pair_t>(first_pair_set.begin(), first_pair_set.end()), cluster_mapping);
   /// second nearest pairs
   // find all pairs
-  std::unordered_set<Pair_t, boost::hash<Pair_t>> second_pair_set;
+  std::unordered_set<Pair_t, boost::hash<Pair_t> > second_pair_set;
   for (const auto &atom1 : atom_vector) {
     for (const auto &atom2_index : atom1.GetSecondNearestNeighborsList()) {
       second_pair_set.emplace(atom1, atom_vector.at(atom2_index));
@@ -291,7 +291,7 @@ std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping
       std::vector<Pair_t>(second_pair_set.begin(), second_pair_set.end()), cluster_mapping);
   // /// first nearest triplets
   // // find all triplets
-  // std::unordered_set<Triplet_t, boost::hash<Triplet_t>> triplets_set;
+  // std::unordered_set<Triplet_t, boost::hash<Triplet_t> > triplets_set;
   // for (const auto &atom1 : atom_vector) {
   //   for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
   //     const auto &atom2 = atom_vector[atom2_index];
@@ -311,9 +311,9 @@ std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping
 
 std::vector<double> GetOneHotParametersFromMap(
     const std::vector<std::string> &encode,
-    const std::unordered_map<std::string, std::vector<double>> &one_hot_encode_hashmap,
+    const std::unordered_map<std::string, std::vector<double> > &one_hot_encode_hashmap,
     size_t num_of_elements,
-    const std::vector<std::vector<std::vector<size_t>>> &cluster_mapping) {
+    const std::vector<std::vector<std::vector<size_t> > > &cluster_mapping) {
   constexpr size_t kEncodeListSizeThirdToDimer = 522;
   std::vector<double> res_encode;
   res_encode.reserve(kEncodeListSizeThirdToDimer);

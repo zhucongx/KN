@@ -9,22 +9,22 @@
 #include "Config.h"
 
 namespace ansys::ClusterExpansion {
-std::unordered_map<std::string, std::vector<double>> GetOneHotEncodeHashmap(
+std::unordered_map<std::string, std::vector<double> > GetOneHotEncodeHashmap(
     const std::set<std::string> &type_set);
 
 // this function rotates and sorts the config in a particular way, basically from center to outside
 // and returns a mapping of it
-std::vector<std::vector<std::vector<size_t>>> GetAverageClusterParametersMapping(const cfg::Config &config);
+std::vector<std::vector<std::vector<size_t> > > GetAverageClusterParametersMapping(const cfg::Config &config);
 
 std::array<std::vector<std::string>, 2> GetForwardAndBackwardEncode(
     const cfg::Config &config,
-    const std::pair<size_t, size_t> &jump_pair);
+    const std::pair<size_t, size_t> &atom_id_jump_pair);
 
 std::vector<double> GetOneHotParametersFromMap(
     const std::vector<std::string> &encode,
-    const std::unordered_map<std::string, std::vector<double>> &one_hot_encode_hashmap,
+    const std::unordered_map<std::string, std::vector<double> > &one_hot_encode_hashmap,
     size_t num_of_elements,
-    const std::vector<std::vector<std::vector<size_t>>> &cluster_mapping);
+    const std::vector<std::vector<std::vector<size_t> > > &cluster_mapping);
 
 } // namespace ansys::ClusterExpansion
 

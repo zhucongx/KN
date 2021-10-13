@@ -41,7 +41,7 @@ static void PrepareINCAR(const std::filesystem::path &path) {
       << "ISPIN  = 1       \n"
       << "\n"
       << "LWAVE  = .FALSE. \n"
-      << "LCHARG = .TRUE.  \n"
+      << "LCHARG = .FALSE.  \n"
       << "                 \n"
       << "NPAR   = 4       \n";
 }

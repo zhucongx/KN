@@ -20,8 +20,9 @@ class Config {
     [[nodiscard]] size_t GetNumAtoms() const;
     [[nodiscard]] const Matrix_t &GetBasis() const;
     [[nodiscard]] const std::vector<Atom> &GetAtomList() const;
+    [[nodiscard]] const std::unordered_map<size_t, size_t> &GetSiteIdToAtomIdHashmap() const;
     [[nodiscard]] std::set<std::string> GetTypeSet() const;
-    [[nodiscard]] std::map<std::string, std::vector<size_t>> GetElementListMap() const;
+    [[nodiscard]] std::map<std::string, std::vector<size_t> > GetElementListMap() const;
     /// Update atoms positions
     void ConvertRelativeToCartesian();
     void ConvertCartesianToRelative();
@@ -47,6 +48,7 @@ class Config {
     void UpdateFirstAndSecondNeighbors(
         double first_r_cutoff = Al_const::kFirstNearestNeighborsCutoff,
         double second_r_cutoff = Al_const::kSecondNearestNeighborsCutoff);
+    void CreateSiteIdToAtomIdHashmap();
     /// Add new atoms
     void AppendAtomWithoutChangingAtomID(const Atom &atom);
     void AppendAtomWithChangingAtomID(Atom atom);
@@ -58,7 +60,7 @@ class Config {
     void ChangeAtomTypeAt(size_t id, const std::string &type);
     /// IO Todo: rewrite as friend function
     static Config ReadPOSCAR(const std::string &filename, bool update_neighbors = true);
-    static Config ReadConfig(const std::string &filename, bool update_neighbors = true);
+    static Config ReadConfig(const std::string &filename, size_t update_neighbors);
     // Write Configuration out as POSCAR file. If the show_vacancy_option is
     // true, output will have "X" for visualization. If false, vacancies will be
     // ignored for VASP calculation.
@@ -67,7 +69,7 @@ class Config {
                             bool show_vacancy_option = false);
     static void WriteConfig(const Config &config,
                             const std::string &filename,
-                            bool neighbors_info = true);
+                            size_t neighbors_info);
 
   private:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
@@ -82,25 +84,31 @@ class Config {
     // Matrix_t reciprocal_matrix_{},
     // The index of atom in the vector is not always same as of the id of the atom
     std::vector<Atom> atom_list_{};
+    std::unordered_map<size_t, size_t> site_id_to_atom_id_hashmap_{};
   public:
     /// Friend function
-    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-    // friend void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    friend void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+    friend void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 };
 
 // Swap two atoms in a config, and update their near neighbors list
 std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
-    const Config &config, const std::pair<size_t, size_t> &jump_pair);
-void AtomsJump(Config &config, const std::pair<size_t, size_t> &jump_pair);
-void AtomsJumpMore(Config &config, const std::pair<size_t, size_t> &jump_pair);
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+// The first indicate to atom
+std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
+    const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+size_t GetHashOfAState(const Config &config, size_t vacancy_index);
+void AtomsJump(Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+void SitesJump(Config &config, const std::pair<size_t, size_t> &site_id_jump_pair);
 std::map<std::string, size_t> CountAllType(const Config &config);
 // std::map<Bond, size_t> CountAllBonds(const Config &config);
 // Returns the config's type hashmap with the key type name and a categorical label
 std::unordered_map<std::string, size_t> GetTypeCategoryHashmap(const Config &config);
 // std::set<std::string> GetTypeSet(const Config &config);
-// jump_pair in a pair of two indexes, this function return the center of these two atoms
-Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &jump_pair);
-Matrix_t GetPairRotationMatrix(const Config &config, const std::pair<size_t, size_t> &jump_pair);
+// atom_id_jump_pair in a pair of two indexes, this function return the center of these two atoms
+Vector_t GetPairCenter(const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair);
+Matrix_t GetPairRotationMatrix(const Config &config,
+                               const std::pair<size_t, size_t> &atom_id_jump_pair);
 void RotateAtomVector(std::vector<Atom> &atom_list, const Matrix_t &rotation_matrix);
 
 size_t GetVacancyIndex(const Config &config);
