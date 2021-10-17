@@ -21,7 +21,7 @@ struct Lattice {
     // relative position in the box
     Vector_t relative_position_{};
 };
-}// namespace cfg
+} // namespace cfg
 
 
 #endif //KN_KN_CFG_INCLUDE_LATTICE_H_

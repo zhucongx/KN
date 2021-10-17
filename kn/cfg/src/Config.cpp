@@ -317,38 +317,28 @@ Config Config::ReadConfig(const std::string &filename,
   double scale;
   ifs >> scale;
 
-  double basis_xx, basis_xy, basis_xz, basis_yx, basis_yy, basis_yz, basis_zx,
-      basis_zy,
-      basis_zz;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(1,1) = %lf A"
+  double basis_xx, basis_xy, basis_xz,
+      basis_yx, basis_yy, basis_yz,
+      basis_zx, basis_zy, basis_zz;
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,1) = %lf A"
   ifs >> basis_xx;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(1,2) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,2) = %lf A"
   ifs >> basis_xy;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(1,3) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(1,3) = %lf A"
   ifs >> basis_xz;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(2,1) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(2,1) = %lf A"
   ifs >> basis_yx;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(2,2) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(2,2) = %lf A"
   ifs >> basis_yy;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(2,3) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(2,3) = %lf A"
   ifs >> basis_yz;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(3,1) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,1) = %lf A"
   ifs >> basis_zx;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(3,2) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,2) = %lf A"
   ifs >> basis_zy;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '='); // "H0(3,3) = %lf A"
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '='); // "H0(3,3) = %lf A"
   ifs >> basis_zz;
-  ifs.ignore(std::numeric_limits<std::streamsize>::max(),
-             '\n'); // finish this line
+  ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
   Config config(Matrix_t{{{basis_xx, basis_xy, basis_xz},
                           {basis_yx, basis_yy, basis_yz},
                           {basis_zx, basis_zy, basis_zz}}} * scale, num_atoms);

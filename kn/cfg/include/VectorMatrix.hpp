@@ -31,7 +31,7 @@ inline std::istream &operator>>(std::istream &is, Vector_t &vector) {
   return is;
 }
 
-const double kEpsilon = 1e-10;
+constexpr double kEpsilon = 1e-10;
 
 inline bool operator==(const Vector_t &lhs, const Vector_t &rhs) {
   return std::abs(lhs[kXDimension] - rhs[kXDimension]) < kEpsilon &&
