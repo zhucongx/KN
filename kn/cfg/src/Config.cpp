@@ -728,11 +728,9 @@ Vector_t GetPairCenter(const Config &config,
                        const std::pair<size_t, size_t> &atom_id_jump_pair) {
   Vector_t center_position;
   for (const auto kDim: All_Dimensions) {
-    double
-        first_relative =
+    double first_relative =
         config.GetAtomList()[atom_id_jump_pair.first].GetRelativePosition()[kDim];
-    const double
-        second_relative =
+    const double second_relative =
         config.GetAtomList()[atom_id_jump_pair.second].GetRelativePosition()[kDim];
 
     double distance = first_relative - second_relative;
