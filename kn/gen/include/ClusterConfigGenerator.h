@@ -10,7 +10,7 @@ class ClusterConfigGenerator : public ConfigGenerator {
                            const std::string &solvent_element,
                            const std::set<std::string> &element_set,
                            const std::filesystem::path &pot_folder_path);
-    virtual ~ClusterConfigGenerator();
+    ~ClusterConfigGenerator() override;
     void CreateConfigs() const override;
   private:
     void CreateSingletsConfigs() const;

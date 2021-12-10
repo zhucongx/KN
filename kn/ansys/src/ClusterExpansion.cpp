@@ -13,7 +13,7 @@ std::unordered_map<std::string, std::vector<double> > GetOneHotEncodeHashmap(
   std::unordered_map<std::string, std::vector<double> > encode_dict;
 
   size_t ct1 = 0;
-  for (const auto &element : type_set) {
+  for (const auto &element: type_set) {
     std::vector<double> element_encode(num_singlets, 0);
     element_encode[ct1] = 1.0;
     encode_dict[element] = element_encode;
@@ -22,8 +22,8 @@ std::unordered_map<std::string, std::vector<double> > GetOneHotEncodeHashmap(
 
   size_t num_pairs = num_singlets * num_singlets;
   size_t ct2 = 0;
-  for (const auto &element1 : type_set) {
-    for (const auto &element2 : type_set) {
+  for (const auto &element1: type_set) {
+    for (const auto &element2: type_set) {
       std::vector<double> element_encode(num_pairs, 0);
       element_encode[ct2] = 1.0;
       encode_dict[element1 + element2] = element_encode;
@@ -135,7 +135,7 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
             });
 
   size_t new_id = 0;
-  for (auto &atom : atom_list) {
+  for (auto &atom: atom_list) {
     atom.SetId(new_id++);
   }
   cfg::Config config(reference_config.GetBasis(), std::move(atom_list));
@@ -159,7 +159,7 @@ static std::array<std::vector<cfg::Atom>, 2> GetSymmetricallySortedAtomVectors(
   atom_list_forward.reserve(kNumOfAtoms);
 
   Vector_t vacancy_relative_position, vacancy_cartesian_position;
-  for (auto id : atom_id_hashset) {
+  for (auto id: atom_id_hashset) {
     cfg::Atom atom = config.GetAtomList()[id];
     atom.CleanNeighborsLists();
     // move to center
@@ -272,8 +272,8 @@ std::vector<std::vector<std::vector<size_t> > > GetAverageClusterParametersMappi
   /// first nearest pairs
   // find all pairs
   std::unordered_set<Pair_t, boost::hash<Pair_t> > first_pair_set;
-  for (const auto &atom1 : atom_vector) {
-    for (const auto &atom2_index : atom1.GetFirstNearestNeighborsList()) {
+  for (const auto &atom1: atom_vector) {
+    for (const auto &atom2_index: atom1.GetFirstNearestNeighborsList()) {
       first_pair_set.emplace(atom1, atom_vector.at(atom2_index));
     }
   }
@@ -282,8 +282,8 @@ std::vector<std::vector<std::vector<size_t> > > GetAverageClusterParametersMappi
   /// second nearest pairs
   // find all pairs
   std::unordered_set<Pair_t, boost::hash<Pair_t> > second_pair_set;
-  for (const auto &atom1 : atom_vector) {
-    for (const auto &atom2_index : atom1.GetSecondNearestNeighborsList()) {
+  for (const auto &atom1: atom_vector) {
+    for (const auto &atom2_index: atom1.GetSecondNearestNeighborsList()) {
       second_pair_set.emplace(atom1, atom_vector.at(atom2_index));
     }
   }
@@ -317,12 +317,12 @@ std::vector<double> GetOneHotParametersFromMap(
   constexpr size_t kEncodeListSizeThirdToDimer = 522;
   std::vector<double> res_encode;
   res_encode.reserve(kEncodeListSizeThirdToDimer);
-  for (const auto &cluster_vector : cluster_mapping) {
+  for (const auto &cluster_vector: cluster_mapping) {
     std::vector<double> sum_of_list(
         static_cast<size_t>(std::pow(num_of_elements, cluster_vector[0].size())), 0);
-    for (const auto &cluster : cluster_vector) {
+    for (const auto &cluster: cluster_vector) {
       std::string cluster_type;
-      for (auto index : cluster) {
+      for (auto index: cluster) {
         cluster_type += encode[index];
       }
       const auto &cluster_one_hot_encode = one_hot_encode_hashmap.at(cluster_type);
