@@ -51,43 +51,19 @@ std::unordered_map<std::string, std::vector<double> > GetOneHotEncodeHashmap(
 /// be considered same positions
 
 // Helps to sort the atoms first symmetrically and then positionally
+
 static bool AtomSortCompare(const cfg::Atom &lhs, const cfg::Atom &rhs) {
   const auto &relative_position_lhs = lhs.GetRelativePosition();
   const auto &relative_position_rhs = rhs.GetRelativePosition();
 
+  const double diff_norm = Inner(relative_position_lhs - 0.5) - Inner(relative_position_rhs - 0.5);
+  if (diff_norm < -kEpsilon)
+    return true;
+  if (diff_norm > kEpsilon)
+    return false;
   const double diff_x_sym = std::abs(relative_position_lhs[kXDimension] - 0.5)
       - std::abs(relative_position_rhs[kXDimension] - 0.5);
-  if (diff_x_sym < -kEpsilon)
-    return true;
-  if (diff_x_sym > kEpsilon)
-    return false;
-
-  const double diff_y_sym = std::abs(relative_position_lhs[kYDimension] - 0.5)
-      - std::abs(relative_position_rhs[kYDimension] - 0.5);
-  if (diff_y_sym < -kEpsilon)
-    return true;
-  if (diff_y_sym > kEpsilon)
-    return false;
-
-  const double diff_z_sym = std::abs(relative_position_lhs[kZDimension] - 0.5)
-      - std::abs(relative_position_rhs[kZDimension] - 0.5);
-  if (diff_z_sym < -kEpsilon)
-    return true;
-  if (diff_z_sym > kEpsilon)
-    return false;
-
-  // sort by position if they are same
-  const double diff_x = relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
-  if (diff_x < -kEpsilon)
-    return true;
-  if (diff_x > kEpsilon)
-    return false;
-  const double y_diff = relative_position_lhs[kYDimension] - relative_position_rhs[kYDimension];
-  if (y_diff < -kEpsilon)
-    return true;
-  if (y_diff > kEpsilon)
-    return false;
-  return relative_position_lhs[kZDimension] < relative_position_rhs[kZDimension] - kEpsilon;
+  return diff_x_sym < -kEpsilon;
 }
 
 // Helps to sort the atoms symmetrically
@@ -95,29 +71,10 @@ template<size_t DataSize>
 static bool IsClusterSmallerSymmetrically(const cfg::Cluster<DataSize> &lhs,
                                           const cfg::Cluster<DataSize> &rhs) {
   for (size_t i = 0; i < DataSize; ++i) {
-    const auto &relative_position_lhs = lhs.GetAtomAt(i).GetRelativePosition();
-    const auto &relative_position_rhs = rhs.GetAtomAt(i).GetRelativePosition();
-
-    const double diff_x = std::abs(relative_position_lhs[kXDimension] - 0.5)
-        - std::abs(relative_position_rhs[kXDimension] - 0.5);
-    if (diff_x < -kEpsilon)
-      return true;
-    if (diff_x > kEpsilon)
-      return false;
-
-    const double diff_y = std::abs(relative_position_lhs[kYDimension] - 0.5)
-        - std::abs(relative_position_rhs[kYDimension] - 0.5);
-    if (diff_y < -kEpsilon)
-      return true;
-    if (diff_y > kEpsilon)
-      return false;
-
-    const double diff_z = std::abs(relative_position_lhs[kZDimension] - 0.5)
-        - std::abs(relative_position_rhs[kZDimension] - 0.5);
-    if (diff_z < -kEpsilon)
-      return true;
-    if (diff_z > kEpsilon)
-      return false;
+    const auto &atom_lhs = lhs.GetAtomAt(i);
+    const auto &atom_rhs = rhs.GetAtomAt(i);
+    if (AtomSortCompare(atom_lhs, atom_rhs)) { return true; }
+    if (AtomSortCompare(atom_rhs, atom_lhs)) { return false; }
   }
   // if it reaches here, it means that the clusters are same symmetrically. Returns false.
   return false;
@@ -131,7 +88,23 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
   //sort using mm2 group point
   std::sort(atom_list.begin(), atom_list.end(),
             [](const cfg::Atom &lhs, const cfg::Atom &rhs) -> bool {
-              return AtomSortCompare(lhs, rhs);
+              if (AtomSortCompare(lhs, rhs)) { return true; }
+              if (AtomSortCompare(rhs, lhs)) { return false; }
+              const auto &relative_position_lhs = lhs.GetRelativePosition();
+              const auto &relative_position_rhs = rhs.GetRelativePosition();
+              const double diff_x =
+                  relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+              if (diff_x < -kEpsilon) { return true; }
+              if (diff_x > kEpsilon) { return false; }
+              const double diff_y =
+                  relative_position_lhs[kYDimension] - relative_position_rhs[kYDimension];
+              if (diff_y < -kEpsilon) { return true; }
+              if (diff_y > kEpsilon) { return false; }
+              const double diff_z =
+                  relative_position_lhs[kZDimension] - relative_position_rhs[kZDimension];
+              if (diff_z < -kEpsilon) { return true; }
+              if (diff_z > kEpsilon) { return false; }
+              return lhs.GetId() < rhs.GetId();
             });
 
   size_t new_id = 0;
@@ -139,7 +112,7 @@ static std::vector<cfg::Atom> RotateAtomVectorAndSortHelper(
     atom.SetId(new_id++);
   }
   cfg::Config config(reference_config.GetBasis(), std::move(atom_list));
-  config.UpdateFirstAndSecondNeighbors();
+  config.UpdateFirstSecondThirdNeighbors();
   return config.GetAtomList();
 }
 
@@ -289,6 +262,18 @@ std::vector<std::vector<std::vector<size_t> > > GetAverageClusterParametersMappi
   }
   GetAverageParametersMappingFromClusterVectorHelper(
       std::vector<Pair_t>(second_pair_set.begin(), second_pair_set.end()), cluster_mapping);
+
+  /// third nearest pairs
+  // find all pairs
+  std::unordered_set<Pair_t, boost::hash<Pair_t> > third_pair_set;
+  for (const auto &atom1: atom_vector) {
+    for (const auto &atom2_index: atom1.GetThirdNearestNeighborsList()) {
+      third_pair_set.emplace(atom1, atom_vector.at(atom2_index));
+    }
+  }
+  GetAverageParametersMappingFromClusterVectorHelper(
+      std::vector<Pair_t>(third_pair_set.begin(), third_pair_set.end()), cluster_mapping);
+
   // /// first nearest triplets
   // // find all triplets
   // std::unordered_set<Triplet_t, boost::hash<Triplet_t> > triplets_set;

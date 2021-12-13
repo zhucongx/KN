@@ -9,7 +9,6 @@
 #include <iomanip>
 
 #include "Constants.hpp"
-// TODO use size_t
 const size_t kDimension = 3;
 
 enum Dimension { kXDimension, kYDimension, kZDimension };
@@ -22,7 +21,8 @@ using Matrix_t = std::array<Vector_t, kDimension>;
 using Factor_t = std::array<size_t, kDimension>;
 
 inline std::ostream &operator<<(std::ostream &os, const Vector_t &vector) {
-  os << std::fixed << vector[kXDimension] << ' ' << vector[kYDimension] << ' ' << vector[kZDimension];
+  os << std::fixed << vector[kXDimension] << ' ' << vector[kYDimension] << ' '
+     << vector[kZDimension];
   return os;
 }
 
@@ -91,17 +91,23 @@ inline Vector_t &operator/=(Vector_t &lhs, double divisor) {
   lhs[kZDimension] /= divisor;
   return lhs;
 }
-
 inline Vector_t operator+(const Vector_t &lhs, const Vector_t &rhs) {
   Vector_t temp(lhs);
   return (temp += rhs);
 }
-
 inline Vector_t operator-(const Vector_t &lhs, const Vector_t &rhs) {
   Vector_t temp(lhs);
   return (temp -= rhs);
 }
+inline Vector_t operator+(const Vector_t &lhs, double rhs) {
+  Vector_t temp{rhs, rhs, rhs};
+  return (lhs + temp);
+}
 
+inline Vector_t operator-(const Vector_t &lhs, double rhs) {
+  Vector_t temp{rhs, rhs, rhs};
+  return (lhs - temp);
+}
 inline Vector_t operator*(const Vector_t &vector, double factor) {
   Vector_t temp(vector);
   return (temp *= factor);
@@ -258,13 +264,6 @@ inline Matrix_t TransposeMatrix(const Matrix_t &input) {
             input[kZDimension][kZDimension]}}};
 }
 inline Matrix_t InverseMatrix(const Matrix_t &input) {
-  // arma::mat mat_input = {{input[kXDimension][kXDimension], input[kXDimension][kYDimension], input[kXDimension][kZDimension]},
-  //                        {input[kYDimension][kXDimension], input[kYDimension][kYDimension], input[kYDimension][kZDimension]},
-  //                        {input[kZDimension][kXDimension], input[kZDimension][kYDimension], input[kZDimension][kZDimension]}};
-  // arma::mat inverse_matrix = arma::inv(mat_input);
-  // return {{inverse_matrix(0, 0), inverse_matrix(0, 1), inverse_matrix(0, 2)},
-  //         {inverse_matrix(1, 0), inverse_matrix(1, 1), inverse_matrix(1, 2)},
-  //         {inverse_matrix(2, 0), inverse_matrix(2, 1), inverse_matrix(2, 2)}};
   double det = Determinant(input);
   return {
       {

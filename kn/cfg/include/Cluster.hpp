@@ -37,13 +37,6 @@ class Cluster {
       }
       return true;
     }
-    friend bool operator<(const Cluster<DataSize> &lhs, const Cluster<DataSize> &rhs) {
-      for (size_t i = 0; i < DataSize; ++i) {
-        if (lhs.atom_array_[i].GetId() < rhs.atom_array_[i].GetId())
-          return true;
-      }
-      return false;
-    }
     friend size_t hash_value(const Cluster<DataSize> &cluster) {
       size_t seed = 0;
       for (size_t i = 0; i < DataSize; ++i) {
@@ -54,7 +47,28 @@ class Cluster {
   private:
     void Sort() {
       std::sort(atom_array_.begin(), atom_array_.end(), [](const auto &lhs, const auto &rhs) {
-        // sort to make sure the uniqueness of clusters
+        const auto &relative_position_lhs = lhs.GetRelativePosition();
+        const auto &relative_position_rhs = rhs.GetRelativePosition();
+        const double diff_norm =
+            Inner(relative_position_lhs - 0.5) - Inner(relative_position_rhs - 0.5);
+        if (diff_norm < -kEpsilon) { return true; }
+        if (diff_norm > kEpsilon) { return false; }
+        const double diff_x = std::abs(relative_position_lhs[kXDimension] - 0.5)
+            - std::abs(relative_position_rhs[kXDimension] - 0.5);
+        if (diff_x < -kEpsilon) { return true; }
+        if (diff_x > kEpsilon) { return false; }
+        const double diff_x2 =
+            relative_position_lhs[kXDimension] - relative_position_rhs[kXDimension];
+        if (diff_x2 < -kEpsilon) { return true; }
+        if (diff_x2 > kEpsilon) { return false; }
+        const double diff_y =
+            relative_position_lhs[kYDimension] - relative_position_rhs[kYDimension];
+        if (diff_y < -kEpsilon) { return true; }
+        if (diff_y > kEpsilon) { return false; }
+        const double diff_z =
+            relative_position_lhs[kZDimension] - relative_position_rhs[kZDimension];
+        if (diff_z < -kEpsilon) { return true; }
+        if (diff_z > kEpsilon) { return false; }
         return lhs.GetId() < rhs.GetId();
       });
     }

@@ -6,9 +6,11 @@
 namespace kmc {
 struct Element_Parameters {
   std::vector<double> mu_x{};
-  std::vector<std::vector<double> > transform_matrix{};
+  std::vector<double> sigma_x{};
+  double mu_y{};
+  double sigma_y{};
+  std::vector<std::vector<double> > U{};
   std::vector<double> theta{};
-  double mean_y{};
 };
 
 class BarrierPredictor {

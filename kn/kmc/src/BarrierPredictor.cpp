@@ -17,16 +17,19 @@ BarrierPredictor::BarrierPredictor(
   std::ifstream ifs(predictor_filename, std::ifstream::in);
   json all_parameters;
   ifs >> all_parameters;
-  for (const auto &[element, parameters] : all_parameters.items()) {
+  for (const auto &[element, parameters]: all_parameters.items()) {
     if (element == "Bond") {
       theta_ = std::vector<double>(parameters.at("theta"));
       continue;
     }
     element_parameters_hashmap_[element] = Element_Parameters{
         parameters.at("mu_x"),
-        parameters.at("transform_matrix"),
+        parameters.at("sigma_x"),
+        parameters.at("mu_y"),
+        parameters.at("sigma_y"),
+        parameters.at("U"),
         parameters.at("theta"),
-        parameters.at("mean_y")};
+    };
   }
 }
 BarrierPredictor::~BarrierPredictor() = default;
@@ -36,30 +39,34 @@ double BarrierPredictor::GetE0FromEncode(
 
   auto one_hot_parameters = ansys::ClusterExpansion::GetOneHotParametersFromMap(
       encode_list, one_hot_encode_hash_map_, num_of_elements_, mapping_);
+  // std::cout << one_hot_parameters.size() << std::endl;
 
-  const auto &element_parameter = element_parameters_hashmap_.at(element_type);
-  const auto &mu_x = element_parameter.mu_x;
-  const auto &transform_matrix = element_parameter.transform_matrix;
-  const auto &theta = element_parameter.theta;
-  const auto mean_y = element_parameter.mean_y;
+  const auto &element_parameters = element_parameters_hashmap_.at(element_type);
+  const auto &mu_x = element_parameters.mu_x;
+  const auto &sigma_x = element_parameters.sigma_x;
+  const auto mu_y = element_parameters.mu_y;
+  const auto sigma_y = element_parameters.sigma_y;
+
+  const auto &U = element_parameters.U;
+  const auto &theta = element_parameters.theta;
 
   const size_t old_size = mu_x.size();
   const size_t new_size = theta.size();
 
   for (size_t i = 0; i < old_size; ++i) {
     one_hot_parameters[i] -= mu_x[i];
+    one_hot_parameters[i] /= sigma_x[i];
   }
   double e0 = 0;
-
   for (size_t j = 0; j < new_size; ++j) {
     double pca_dot = 0;
     for (size_t i = 0; i < old_size; ++i) {
-      pca_dot += one_hot_parameters[i] * transform_matrix[j][i];
+      pca_dot += one_hot_parameters[i] * U[j][i];
     }
     e0 += pca_dot * theta[j];
   }
-  e0 += mean_y;
-
+  e0 *= sigma_y;
+  e0 += mu_y;
   return e0;
 }
 double BarrierPredictor::GetDEFromConfig(const cfg::Config &config,
@@ -72,6 +79,7 @@ double BarrierPredictor::GetDEFromConfig(const cfg::Config &config,
     dE += theta_[i] * bond_change_vector[i];
   }
   return dE;
+  // return 0.0;
 }
 
 std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(

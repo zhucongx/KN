@@ -21,9 +21,9 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  ansys::MpiClusters test(0, 1e5, 1434e5,
-                          "Al", 4, 3);
-  test.SerialRun();
+  // ansys::MpiClusters test(0, 1e5, 1422e5,
+  //                         "Al", 4, 3);
+  // test.SerialRun();
   // auto a = gen::ClusterConfigGenerator(4.046,
   //                                      {4, 4, 4},
   //                                      "Al",
@@ -76,17 +76,17 @@ int main(int argc, char *argv[]) {
   //                        0.3);
   //
   // a.Simulate();
-  // auto conf = cfg::Config::ReadConfig("36339000.cfg", 2);
-  // conf.UpdateNeighbors();
-  // kmc::ChainKMCSimulation a(conf,
-  //                           1e3,
-  //                           1e5,
-  //                           1e10,
-  //                           {"Al", "Mg", "Zn"},
-  //                           42500000, -10.544577, 4.4461127e-05,
-  //                           "kmc_parameters.json",
-  //                           100);
-  // a.Simulate();
+  auto conf = cfg::Config::ReadConfig("start.cfg", 3);
+  conf.UpdateNeighbors();
+  kmc::ChainKMCSimulation a(conf,
+                            1e3,
+                            1e5,
+                            1e10,
+                            {"Al", "Mg", "Zn"},
+                            0, 0, 0,
+                            "kmc_parameters_old.json",
+                            100);
+  a.Simulate();
 
   // // kmc::NovelKMCSimulation a(conf,
   // //                           1e4,
