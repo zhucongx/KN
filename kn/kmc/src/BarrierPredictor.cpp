@@ -36,11 +36,8 @@ BarrierPredictor::~BarrierPredictor() = default;
 double BarrierPredictor::GetE0FromEncode(
     const std::string &element_type,
     const std::vector<std::string> &encode_list) const {
-
   auto one_hot_parameters = ansys::ClusterExpansion::GetOneHotParametersFromMap(
       encode_list, one_hot_encode_hash_map_, num_of_elements_, mapping_);
-  // std::cout << one_hot_parameters.size() << std::endl;
-
   const auto &element_parameters = element_parameters_hashmap_.at(element_type);
   const auto &mu_x = element_parameters.mu_x;
   const auto &sigma_x = element_parameters.sigma_x;
@@ -79,7 +76,6 @@ double BarrierPredictor::GetDEFromConfig(const cfg::Config &config,
     dE += theta_[i] * bond_change_vector[i];
   }
   return dE;
-  // return 0.0;
 }
 
 std::pair<double, double> BarrierPredictor::GetBarrierAndDiff(
