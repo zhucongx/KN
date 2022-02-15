@@ -197,7 +197,7 @@ double ChainKMCSimulation::BuildEventListParallel() {
     double cumulative_provability = 0.0;
     for (auto &event : event_list_) {
       cumulative_provability += event.GetProbability();
-      event.SetCumulativeProvability(cumulative_provability);
+      event.SetCumulativeProbability(cumulative_provability);
     }
 
     double t = 1 / total_rate_k_ / KMCEvent::kPrefactor;

@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  ansys::MpiClusters test(0, 1e5, 1054e5,
+  ansys::MpiClusters test(0, 1e6, 157e6,
                           "Al", 4, 3);
   test.SerialRun();
   // auto a = gen::ClusterConfigGenerator(4.046,

@@ -62,6 +62,13 @@ void KMCSimulation::BuildEventListSerial() {
     total_rate_ += event.GetForwardRate();
     event_list_.push_back(std::move(event));
   }
+  /* calculate relative and cumulative probability */
+  double cumulative_probability = 0.0;
+  for (auto &event : event_list_) {
+    event.CalculateProbability(total_rate_);
+    cumulative_probability += event.GetProbability();
+    event.SetCumulativeProbability(cumulative_probability);
+  }
 }
 void KMCSimulation::BuildEventListParallel() {
   event_list_.clear();
@@ -148,7 +155,7 @@ void KMCSimulation::BuildEventListParallel() {
   for (auto &event : event_list_) {
     event.CalculateProbability(total_rate_);
     cumulative_probability += event.GetProbability();
-    event.SetCumulativeProvability(cumulative_probability);
+    event.SetCumulativeProbability(cumulative_probability);
   }
 }
 void KMCSimulation::CheckAndSolve() {}

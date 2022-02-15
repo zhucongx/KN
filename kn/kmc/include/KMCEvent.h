@@ -39,8 +39,8 @@ class KMCEvent {
     void SetRate(double rate);
     void SetEnergyChange(double energy_change);
     void SetProbability(double probability);
-    void SetCumulativeProvability(double cumulative_provability);
-    void CalculateProbability(double total_rates);
+    void SetCumulativeProbability(double cumulative_provability);
+    void CalculateProbability(double total_rate);
     /// MPI serialization access
     // friend class boost::serialization::access;
     // template<class Archive>

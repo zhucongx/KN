@@ -162,7 +162,7 @@ void SecondKMCSimulation::BuildEventListParallel() {
   for (auto &event : event_list_) {
     event.CalculateProbability(second_total_rate_);
     cumulative_probability += event.GetProbability();
-    event.SetCumulativeProvability(cumulative_probability);
+    event.SetCumulativeProbability(cumulative_probability);
   }
   cfg::AtomsJump(config_, first_jump_pair);
 }

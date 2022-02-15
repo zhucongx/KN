@@ -42,19 +42,15 @@ double KMCEvent::GetEnergyChange() const {
 double KMCEvent::GetProbability() const {
   return probability_;
 }
-
 double KMCEvent::GetCumulativeProvability() const {
   return cumulative_probability_;
 }
-
 void KMCEvent::SetJumpPair(const std::pair<size_t, size_t> &atom_id_jump_pair) {
   atom_id_jump_pair_ = atom_id_jump_pair;
 }
-
 void KMCEvent::SetBarrier(double barrier) {
   barrier_ = barrier;
 }
-
 void KMCEvent::SetRate(double rate) {
   rate_ = rate;
 }
@@ -67,12 +63,12 @@ void KMCEvent::SetProbability(double probability) {
   probability_ = probability;
 }
 
-void KMCEvent::SetCumulativeProvability(double cumulative_provability) {
+void KMCEvent::SetCumulativeProbability(double cumulative_provability) {
   cumulative_probability_ = cumulative_provability;
 }
 
-void KMCEvent::CalculateProbability(double total_rates) {
-  probability_ = rate_ / total_rates;
+void KMCEvent::CalculateProbability(double total_rate) {
+  probability_ = rate_ / total_rate;
 }
 
 } // namespace kmc

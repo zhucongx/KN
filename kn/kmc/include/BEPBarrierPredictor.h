@@ -13,7 +13,7 @@ class BEPBarrierPredictor : BarrierPredictor {
         const cfg::Config &config,
         const std::pair<size_t, size_t> &atom_id_jump_pair) const override;
   private:
-    const std::map<std::string, double> standard_e0_{{"Al", 0.52}, {"Mg", 0.45}, {"Zn", 0.29}};
+    const std::map<std::string, double> standard_e0_{{"Al", 0.52}, {"Mg", 0.45}, {"Zn", 0.34}};
 };
 } // namespace kmc
 
