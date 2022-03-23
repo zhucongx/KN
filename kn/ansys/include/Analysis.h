@@ -6,16 +6,18 @@
 
 namespace ansys {
 
-class MpiClusters{
+class Analysis{
   public:
-    MpiClusters(unsigned long long int initial_number,
-                unsigned long long int increment_number,
-                unsigned long long int finial_number,
-                std::string solvent_element,
-                size_t smallest_cluster_criteria,
-                size_t solvent_bond_criteria);
-    ~MpiClusters();
-    void SerialRun() const;
+    Analysis(unsigned long long int initial_number,
+             unsigned long long int increment_number,
+             unsigned long long int finial_number,
+             std::string solvent_element,
+             size_t smallest_cluster_criteria,
+             size_t solvent_bond_criteria);
+    ~Analysis();
+    void SerialRunCluster() const;
+    void SerialRunWarrenCowley() const;
+
   private:
     const unsigned long long initial_number_;
     const unsigned long long increment_number_;

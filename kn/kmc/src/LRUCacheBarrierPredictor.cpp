@@ -1,7 +1,3 @@
-//
-// Created by zhucongx on 1/8/21.
-//
-
 #include "LRUCacheBarrierPredictor.h"
 namespace kmc {
 LRUCacheBarrierPredictor::LRUCacheBarrierPredictor(const std::string &predictor_filename,

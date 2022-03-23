@@ -1,6 +1,6 @@
 // #include "Encode.h"
 #include "InitialConfigGenerator.h"
-// #include <SizeMisfitGenerator.h>
+#include "WarrenCowley.h"
 #include "ClusterConfigGenerator.h"
 // #include "ClusterExpansion.h"
 // #include "NebDistance.h"
@@ -9,7 +9,7 @@ using namespace std;
 // namespace mpi = boost::mpi;
 // pure Al lattice constant 4.0404778433873281
 #include "KMCSimulation.h"
-#include "MpiClusters.h"
+#include "Analysis.h"
 #include "LSKMCSimulation.h"
 #include "NovelKMCSimulation.h"
 // #include "ClusterExpansion.h"
@@ -21,9 +21,14 @@ int main(int argc, char *argv[]) {
   //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
   // a.CreateConfigs();
   // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  ansys::MpiClusters test(0, 1e6, 157e6,
-                          "Al", 4, 3);
-  test.SerialRun();
+  // ansys::WarrenCowley a("0.cfg");
+  // a.FindWarrenCowley();
+
+
+  ansys::Analysis test(0, 1e5, 614e5,
+                       "Al", 4, 3);
+  test.SerialRunCluster();
+  test.SerialRunWarrenCowley();
   // auto a = gen::ClusterConfigGenerator(4.046,
   //                                      {4, 4, 4},
   //                                      "Al",
@@ -40,7 +45,7 @@ int main(int argc, char *argv[]) {
   //
   // cfg::Config::WriteConfig(b, "start_l10.cfg");
 
-  // ansys::MpiClusters test(0, 1e5, 412e5,
+  // ansys::Analysis test(0, 1e5, 412e5,
   //                         "Al", 10, 3);
   // test.SerialRun();
   // size_t v_i = cfg::GetVacancyIndex(conf);

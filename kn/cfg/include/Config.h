@@ -73,6 +73,10 @@ class Config {
                             const std::string &filename,
                             size_t neighbors_info);
 
+    // Three translational Bravais lattice vector
+    // Matrix_t reciprocal_matrix_{},
+    // The index of atom in the vector is not always same as of the id of the atom
+    std::vector<Atom> atom_list_{};
   private:
     // double lowx, lowy, lowz, highx, highy, highz, xy xz yz;
     // std::array<double, 9> cell;
@@ -82,10 +86,6 @@ class Config {
     // and POSCAR file representing three Bravais lattice vectors that can be
     // used to convert relative position to absolute
     Matrix_t basis_{};
-    // Three translational Bravais lattice vector
-    // Matrix_t reciprocal_matrix_{},
-    // The index of atom in the vector is not always same as of the id of the atom
-    std::vector<Atom> atom_list_{};
     std::unordered_map<size_t, size_t> site_id_to_atom_id_hashmap_{};
   public:
     /// Friend function
