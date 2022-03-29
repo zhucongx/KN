@@ -21,7 +21,7 @@ Analysis::Analysis(unsigned long long int initial_number,
     solvent_element_(std::move(solvent_element)),
     smallest_cluster_criteria_(smallest_cluster_criteria),
     solvent_bond_criteria_(solvent_bond_criteria) {
-  std::ifstream ifs("kmc_log.txt", std::ifstream::in);
+  std::ifstream ifs("kmc_log_modified.txt", std::ifstream::in);
   if (!ifs.is_open()) {
     std::cout << "Cannot open kmc_log.txt\n";
     return;

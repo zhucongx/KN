@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   // a.FindWarrenCowley();
 
 
-  ansys::Analysis test(0, 1e5, 614e5,
+  ansys::Analysis test(0, 1e5, 728e5,
                        "Al", 4, 3);
   test.SerialRunCluster();
   test.SerialRunWarrenCowley();
@@ -104,26 +104,29 @@ int main(int argc, char *argv[]) {
   // //                           100);
   //
   // a.Simulate();
-  // std::mt19937_64
-  //     generator(std::chrono::system_clock::now().time_since_epoch().count());
+  // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
   // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
   // vector<size_t> index_v;
   // constexpr size_t All = 10976;
-  // constexpr size_t Mg = 648;
-  // constexpr  size_t Zn = 540;
+  // constexpr size_t Mg = 314;
+  // constexpr size_t Zn = 262;
+  // constexpr size_t Sn = 3;
   //
   // index_v.resize(All);
   // for (size_t i = 0; i < All; ++i)
   //   index_v[i] = i;
   // shuffle(index_v.begin(), index_v.end(), generator);
   //
-  // for (size_t i = 0; i < Mg; ++i){
+  // for (size_t i = 0; i < Mg; ++i) {
   //   config.atom_list_[index_v[i]].SetType("Mg");
   // }
-  // for (size_t i = Mg; i < Mg+Zn; ++i){
+  // for (size_t i = Mg; i < Mg + Zn; ++i) {
   //   config.atom_list_[index_v[i]].SetType("Zn");
   // }
-  // cfg::Config::WriteConfig(config, "Mg50_Zn112.cfg", 0);
+  // for (size_t i = Mg + Zn; i < Mg + Zn + Sn; ++i) {
+  //   config.atom_list_[index_v[i]].SetType("Sn");
+  // }
+  // cfg::Config::WriteConfig(config, "Sn3.cfg", 0);
 
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 2},
