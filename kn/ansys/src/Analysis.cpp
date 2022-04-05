@@ -45,6 +45,7 @@ Analysis::Analysis(unsigned long long int initial_number,
       finial_number_ = filename;
     }
   }
+  finial_number_ -= increment_number;
 }
 
 Analysis::~Analysis() = default;
@@ -54,7 +55,7 @@ void Analysis::SerialRunCluster() const {
   std::ofstream ofs("clusters_info.json", std::ofstream::out);
   ofs << "[ \n";
 
-  for (unsigned long long i = 0; i < finial_number_; i += increment_number_) {
+  for (unsigned long long i = 0; i <= finial_number_; i += increment_number_) {
     ClustersFinder cluster_finder(std::to_string(i) + ".cfg",
                                   solvent_element_,
                                   smallest_cluster_criteria_,
@@ -85,14 +86,14 @@ void Analysis::SerialRunCluster() const {
       ofs << "} \n";
     }
   }
-  ofs << " ]";
+  ofs << " ]" << std::endl;;
 }
 
 void Analysis::SerialRunWarrenCowley() const {
   // start
   std::ofstream ofs("warren_cowley.csv", std::ofstream::out);
 
-  for (unsigned long long i = 0; i < finial_number_; i += increment_number_) {
+  for (unsigned long long i = 0; i <= finial_number_; i += increment_number_) {
     WarrenCowley warren_cowley_finder(std::to_string(i) + ".cfg");
     if (i == 0) {
       for (const auto &[pair, value]: warren_cowley_finder.FindWarrenCowley()) {
