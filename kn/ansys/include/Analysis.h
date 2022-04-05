@@ -10,7 +10,6 @@ class Analysis{
   public:
     Analysis(unsigned long long int initial_number,
              unsigned long long int increment_number,
-             unsigned long long int finial_number,
              std::string solvent_element,
              size_t smallest_cluster_criteria,
              size_t solvent_bond_criteria);
@@ -21,7 +20,7 @@ class Analysis{
   private:
     const unsigned long long initial_number_;
     const unsigned long long increment_number_;
-    const unsigned long long finial_number_;
+    unsigned long long finial_number_;
     std::string solvent_element_;
     size_t smallest_cluster_criteria_;
     size_t solvent_bond_criteria_;

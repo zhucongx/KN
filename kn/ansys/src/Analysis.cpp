@@ -11,19 +11,18 @@
 namespace ansys {
 Analysis::Analysis(unsigned long long int initial_number,
                    unsigned long long int increment_number,
-                   unsigned long long int finial_number,
                    std::string solvent_element,
                    size_t smallest_cluster_criteria,
                    size_t solvent_bond_criteria) :
     initial_number_(initial_number),
     increment_number_(increment_number),
-    finial_number_(finial_number),
+    finial_number_(increment_number),
     solvent_element_(std::move(solvent_element)),
     smallest_cluster_criteria_(smallest_cluster_criteria),
     solvent_bond_criteria_(solvent_bond_criteria) {
   std::ifstream ifs("kmc_log_modified.txt", std::ifstream::in);
   if (!ifs.is_open()) {
-    std::cout << "Cannot open kmc_log.txt\n";
+    std::cout << "Cannot open kmc_log_modified.txt\n";
     return;
   }
   unsigned long long filename;
@@ -41,9 +40,10 @@ Analysis::Analysis(unsigned long long int initial_number,
 
     ifs >> filename >> time;
     ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    if (filename >= initial_number_ && filename <= finial_number_
-        && (filename - initial_number_) % increment_number == 0)
+    if (filename >= initial_number_ && (filename - initial_number_) % increment_number == 0) {
       filename_time_hashset_[filename] = time;
+      finial_number_ = filename;
+    }
   }
 }
 
@@ -54,7 +54,7 @@ void Analysis::SerialRunCluster() const {
   std::ofstream ofs("clusters_info.json", std::ofstream::out);
   ofs << "[ \n";
 
-  for (unsigned long long i = 0; i <= finial_number_; i += increment_number_) {
+  for (unsigned long long i = 0; i < finial_number_; i += increment_number_) {
     ClustersFinder cluster_finder(std::to_string(i) + ".cfg",
                                   solvent_element_,
                                   smallest_cluster_criteria_,
@@ -92,7 +92,7 @@ void Analysis::SerialRunWarrenCowley() const {
   // start
   std::ofstream ofs("warren_cowley.csv", std::ofstream::out);
 
-  for (unsigned long long i = 0; i <= finial_number_; i += increment_number_) {
+  for (unsigned long long i = 0; i < finial_number_; i += increment_number_) {
     WarrenCowley warren_cowley_finder(std::to_string(i) + ".cfg");
     if (i == 0) {
       for (const auto &[pair, value]: warren_cowley_finder.FindWarrenCowley()) {

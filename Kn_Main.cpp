@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   // a.FindWarrenCowley();
 
 
-  ansys::Analysis test(0, 1e5, 728e5,
+  ansys::Analysis test(0, 1e5,
                        "Al", 4, 3);
   test.SerialRunCluster();
   test.SerialRunWarrenCowley();
