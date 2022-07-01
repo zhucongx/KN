@@ -14,21 +14,38 @@ using namespace std;
 #include "NovelKMCSimulation.h"
 // #include "ClusterExpansion.h"
 int main(int argc, char *argv[]) {
-  // gen::SizeMisfitGenerator a(4.0404778433873281,
-  //                            {2, 2, 2},
-  //                            "Al",
-  //                            {"Al", "Cu", "Mg", "Zn", "X"},
-  //                            "/Users/zhucongx/Program/goali/pot_old/potpaw_PBE/elements/");
-  // a.CreateConfigs();
-  // cfg::Config::WriteConfig(cfg::Config::ReadConfig("init.cfg"), "start.cfg");
-  // ansys::WarrenCowley a("0.cfg");
-  // a.FindWarrenCowley();
+
+  std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
+  auto config = cfg::GenerateFCC(4.046, "Al", {30, 30, 30});
+  vector<size_t> index_v;
+  constexpr size_t All = 108000;
+  constexpr size_t Mg = 3090;
+  constexpr size_t Zn = 2573;
+  // constexpr size_t X = 1;
+
+  index_v.resize(All);
+  for (size_t i = 0; i < All; ++i)
+    index_v[i] = i;
+  shuffle(index_v.begin(), index_v.end(), generator);
+
+  for (size_t i = 0; i < Mg; ++i) {
+    config.atom_list_[index_v[i]].SetType("Mg");
+  }
+  for (size_t i = Mg; i < Mg + Zn; ++i) {
+    config.atom_list_[index_v[i]].SetType("Zn");
+  }
+  // for (size_t i = Mg + Zn; i < Mg + Zn + Sn; ++i) {
+  //   config.atom_list_[index_v[i]].SetType("Sn");
+  // }
+  cfg::Config::WriteConfig(config, "Large30_Mg29_Zn24.cfg", 0);
 
 
-  ansys::Analysis test(0, 1e5,
-                       "Al", 4, 3);
-  test.SerialRunCluster();
-  test.SerialRunWarrenCowley();
+  // ansys::Analysis test(0, 1e5,
+  //                      "Al", 4, 3);
+  // test.SerialRunCluster();
+  // test.SerialRunWarrenCowley();
+
+
   // auto a = gen::ClusterConfigGenerator(4.046,
   //                                      {4, 4, 4},
   //                                      "Al",
@@ -104,29 +121,6 @@ int main(int argc, char *argv[]) {
   // //                           100);
   //
   // a.Simulate();
-  // std::mt19937_64 generator(std::chrono::system_clock::now().time_since_epoch().count());
-  // auto config = cfg::GenerateFCC(4.046, "Al", {14, 14, 14});
-  // vector<size_t> index_v;
-  // constexpr size_t All = 10976;
-  // constexpr size_t Mg = 314;
-  // constexpr size_t Zn = 262;
-  // constexpr size_t Sn = 3;
-  //
-  // index_v.resize(All);
-  // for (size_t i = 0; i < All; ++i)
-  //   index_v[i] = i;
-  // shuffle(index_v.begin(), index_v.end(), generator);
-  //
-  // for (size_t i = 0; i < Mg; ++i) {
-  //   config.atom_list_[index_v[i]].SetType("Mg");
-  // }
-  // for (size_t i = Mg; i < Mg + Zn; ++i) {
-  //   config.atom_list_[index_v[i]].SetType("Zn");
-  // }
-  // for (size_t i = Mg + Zn; i < Mg + Zn + Sn; ++i) {
-  //   config.atom_list_[index_v[i]].SetType("Sn");
-  // }
-  // cfg::Config::WriteConfig(config, "Sn3.cfg", 0);
 
   // unordered_map<std::string, double> type_category_hashmap{{"Al", 0},
   //                                                          {"Mg", 2},

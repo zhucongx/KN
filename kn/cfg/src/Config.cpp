@@ -1,9 +1,9 @@
-#include"Config.h"
+#include "Config.h"
 
-#include <iostream>
-#include <fstream>
-#include <utility>
 #include <boost/range/combine.hpp>
+#include <fstream>
+#include <iostream>
+#include <utility>
 namespace cfg {
 
 Config::Config() = default;
@@ -22,32 +22,33 @@ const Matrix_t &Config::GetBasis() const {
 const std::vector<Atom> &Config::GetAtomList() const {
   return atom_list_;
 }
-std::map<std::string, std::vector<size_t> > Config::GetElementListMap() const {
-  std::map<std::string, std::vector<size_t> > element_list_map;
-  for (const auto &atom: atom_list_) {
+std::map<std::string, std::vector<size_t>> Config::GetElementListMap() const {
+  std::map<std::string, std::vector<size_t>> element_list_map;
+  for (const auto &atom : atom_list_) {
     element_list_map[atom.GetType()].push_back(atom.GetId());
   }
   return element_list_map;
 }
 const std::unordered_map<size_t,
-                         size_t> &Config::GetSiteIdToAtomIdHashmap() const {
+                         size_t> &
+Config::GetSiteIdToAtomIdHashmap() const {
   return site_id_to_atom_id_hashmap_;
 }
 std::set<std::string> Config::GetTypeSet() const {
   std::set<std::string> type_set;
-  for (const auto &atom: atom_list_) {
+  for (const auto &atom : atom_list_) {
     type_set.insert(atom.GetType());
   }
   return type_set;
 }
 void Config::ConvertRelativeToCartesian() {
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
   }
 }
 void Config::ConvertCartesianToRelative() {
   auto inverse_basis = InverseMatrix(basis_);
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
   }
 }
@@ -56,7 +57,7 @@ void Config::ScaleWith(double scale) {
   ConvertRelativeToCartesian();
 }
 void Config::WrapAtomRelative() {
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.SetRelativePosition(
         atom.GetRelativePosition() - ElementFloor(atom.GetRelativePosition()));
     atom.SetCartesianPosition(atom.GetRelativePosition() * basis_);
@@ -64,7 +65,7 @@ void Config::WrapAtomRelative() {
 }
 void Config::WrapAtomCartesian() {
   auto inverse_basis = InverseMatrix(basis_);
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.SetRelativePosition(atom.GetCartesianPosition() * inverse_basis);
     atom.SetRelativePosition(
         atom.GetRelativePosition() - ElementFloor(atom.GetRelativePosition()));
@@ -72,7 +73,7 @@ void Config::WrapAtomCartesian() {
   }
 }
 void Config::MoveRelativeDistance(const Vector_t &distance_vector) {
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.SetRelativePosition(atom.GetRelativePosition() + distance_vector);
     atom.SetRelativePosition(
         atom.GetRelativePosition() - ElementFloor(atom.GetRelativePosition()));
@@ -84,7 +85,7 @@ void Config::MoveOneAtomRelativeDistance(size_t index,
   atom_list_[index].SetRelativePosition(
       atom_list_[index].GetRelativePosition() + distance_vector);
   atom_list_[index].SetRelativePosition(atom_list_[index].GetRelativePosition()
-                                            - ElementFloor(atom_list_[index].GetRelativePosition()));
+                                        - ElementFloor(atom_list_[index].GetRelativePosition()));
   atom_list_[index].SetCartesianPosition(
       atom_list_[index].GetRelativePosition() * basis_);
 }
@@ -94,9 +95,9 @@ void Config::Perturb(std::mt19937_64 &generator) {
   constexpr double kPerturbCutOff = 0.3;
   std::normal_distribution<double> distribution(kMean, kStandardDeviation);
 
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     auto cartesian_position = atom.GetCartesianPosition();
-    for (const auto kDim: All_Dimensions) {
+    for (const auto kDim : All_Dimensions) {
       double displacement;
       // make sure displacement is not too large
       do {
@@ -109,7 +110,7 @@ void Config::Perturb(std::mt19937_64 &generator) {
   WrapAtomCartesian();
 }
 void Config::ClearNeighbors() {
-  for (auto &atom: atom_list_)
+  for (auto &atom : atom_list_)
     atom.CleanNeighborsLists();
 }
 // TODO rewrite this function
@@ -242,7 +243,7 @@ void Config::SortAtomListWith(const std::function<bool(const cfg::Atom &,
 }
 void Config::ReIndexAtoms() {
   size_t new_id = 0;
-  for (auto &atom: atom_list_) {
+  for (auto &atom : atom_list_) {
     atom.SetId(new_id++);
   }
 }
@@ -269,7 +270,7 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   std::string element;
   size_t num_atoms;
   size_t all_num_atoms = 0;
-  std::vector<std::pair<std::string, size_t> > elements_counts;
+  std::vector<std::pair<std::string, size_t>> elements_counts;
   while (element_iss >> element && count_iss >> num_atoms) {
     elements_counts.emplace_back(element, num_atoms);
     all_num_atoms += num_atoms;
@@ -277,7 +278,7 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
   getline(ifs, buffer);
   bool relative_option =
       buffer[0] != 'C' && buffer[0] != 'c' && buffer[0] != 'K'
-          && buffer[0] != 'k';
+      && buffer[0] != 'k';
   Config config(basis * scale, all_num_atoms);
 
   // If relative_option is ture, only relative position need to scaled, set it to 1
@@ -286,7 +287,7 @@ Config Config::ReadPOSCAR(const std::string &filename, bool update_neighbors) {
 
   size_t id_count = 0;
   double position_X, position_Y, position_Z;
-  for (const auto &[element_name, count]: elements_counts) {
+  for (const auto &[element_name, count] : elements_counts) {
     double mass = FindMass(element_name);
     for (size_t j = 0; j < count; ++j) {
       ifs >> position_X >> position_Y >> position_Z;
@@ -347,7 +348,9 @@ Config Config::ReadConfig(const std::string &filename,
   ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // finish this line
   Config config(Matrix_t{{{basis_xx, basis_xy, basis_xz},
                           {basis_yx, basis_yy, basis_yz},
-                          {basis_zx, basis_zy, basis_zz}}} * scale, num_atoms);
+                          {basis_zx, basis_zy, basis_zz}}}
+                    * scale,
+                num_atoms);
 
   ifs.ignore(std::numeric_limits<std::streamsize>::max(),
              '\n'); // .NO_VELOCITY.
@@ -436,19 +439,20 @@ void Config::WritePOSCAR(const Config &config,
   ofs << config.GetBasis() << '\n';
   std::ostringstream ele_oss, count_oss;
   const auto element_list_map = config.GetElementListMap();
-  for (const auto &[element, element_list]: element_list_map) {
+  for (const auto &[element, element_list] : element_list_map) {
     if (!show_vacancy_option && element == "X")
       continue;
     ele_oss << element << ' ';
     count_oss << element_list.size() << ' ';
   }
-  ofs << ele_oss.str() << '\n' << count_oss.str() << '\n';
+  ofs << ele_oss.str() << '\n'
+      << count_oss.str() << '\n';
   ofs << "Direct\n";
 
-  for (const auto &[element, element_list]: element_list_map) {
+  for (const auto &[element, element_list] : element_list_map) {
     if (!show_vacancy_option && element == "X")
       continue;
-    for (auto index: element_list) {
+    for (auto index : element_list) {
       ofs << config.GetAtomList()[index].GetRelativePosition() << '\n';
     }
   }
@@ -472,38 +476,38 @@ void Config::WriteConfig(const Config &config,
   ofs << "H0(3,3) = " << basis[kZDimension][kZDimension] << " A\n";
   ofs << ".NO_VELOCITY.\n";
   ofs << "entry_count = 3\n";
-  for (const auto &atom: config.GetAtomList()) {
+  for (const auto &atom : config.GetAtomList()) {
     ofs << atom.GetMass() << '\n'
         << atom.GetType() << '\n'
         << atom.GetRelativePosition();
     if (neighbors_info > 0) {
       ofs << " # ";
       if (neighbors_info >= 1)
-        for (auto neighbor_index: atom.GetFirstNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetFirstNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
       if (neighbors_info >= 2)
-        for (auto neighbor_index: atom.GetSecondNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetSecondNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
       if (neighbors_info >= 3)
-        for (auto neighbor_index: atom.GetThirdNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetThirdNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
       if (neighbors_info >= 4)
-        for (auto neighbor_index: atom.GetFourthNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetFourthNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
       if (neighbors_info >= 5)
-        for (auto neighbor_index: atom.GetFifthNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetFifthNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
       if (neighbors_info >= 6)
-        for (auto neighbor_index: atom.GetSixthNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetSixthNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
       if (neighbors_info >= 7)
-        for (auto neighbor_index: atom.GetSeventhNearestNeighborsList()) {
+        for (auto neighbor_index : atom.GetSeventhNearestNeighborsList()) {
           ofs << neighbor_index << ' ';
         }
     }
@@ -515,7 +519,7 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
 
   std::unordered_set<size_t> near_neighbors_hashset;
-  for (const auto i: {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
+  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
     const auto &atom = config.GetAtomList()[i];
     std::copy(atom.GetFirstNearestNeighborsList().begin(),
               atom.GetFirstNearestNeighborsList().end(),
@@ -535,7 +539,7 @@ std::unordered_set<size_t> GetFirstAndSecondThirdNeighborsSetOfJumpPair(
 std::map<size_t, size_t> GetAtomIDToSiteIDMapOfFirstThreeNeighborsOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
   std::map<size_t, size_t> atom_id_to_site_id_map;
-  for (const auto i: {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
+  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
     const auto &atom = config.GetAtomList()[i];
     std::transform(atom.GetFirstNearestNeighborsList().begin(),
                    atom.GetFirstNearestNeighborsList().end(),
@@ -569,7 +573,7 @@ size_t GetHashOfAState(const Config &config, size_t vacancy_index) {
       config.GetAtomList()[vacancy_index].GetFirstNearestNeighborsList();
   std::sort(atom_id_list.begin(), atom_id_list.end());
   size_t seed = 0;
-  for (auto atom_id: atom_id_list) {
+  for (auto atom_id : atom_id_list) {
     boost::hash_combine(seed, atom_id);
     boost::hash_combine(seed, config.GetAtomList()[atom_id].GetSiteId());
   }
@@ -579,7 +583,7 @@ static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
     const Config &config, const std::pair<size_t, size_t> &atom_id_jump_pair) {
 
   std::unordered_set<size_t> near_neighbors_hashset;
-  for (const auto i: {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
+  for (const auto i : {atom_id_jump_pair.first, atom_id_jump_pair.second}) {
     const auto &atom = config.GetAtomList()[i];
     std::copy(atom.GetFirstNearestNeighborsList().begin(),
               atom.GetFirstNearestNeighborsList().end(),
@@ -613,12 +617,11 @@ static std::unordered_set<size_t> GetAllNeighborsSetOfJumpPair(
   return near_neighbors_hashset;
 }
 size_t GetSiteIDFromAtomID(size_t atom_id) {
-
 }
 // lhs : vacancy_index; rhs : neighbor_index
 void AtomsJump(Config &config,
                const std::pair<size_t, size_t> &atom_id_jump_pair) {
-  const auto[lhs, rhs] = atom_id_jump_pair;
+  const auto [lhs, rhs] = atom_id_jump_pair;
   auto &atom_list = config.atom_list_;
   //   auto it_lhs = std::find_if(config.atom_list_.begin(),
   //                              config.atom_list_.end(),
@@ -666,21 +669,21 @@ void AtomsJump(Config &config,
   std::unordered_set<size_t>
       atom_id_hashset = GetAllNeighborsSetOfJumpPair(config, atom_id_jump_pair);
 
-  for (auto i: atom_id_hashset) {
+  for (auto i : atom_id_hashset) {
     // auto it_id = std::find_if(config.atom_list_.begin(),
     //                           config.atom_list_.end(),
     //                           [id](const auto &atom) {
     //                             return atom.GetId() == id;
     //                           });
     // const auto i = static_cast<const size_t>(std::distance(config.atom_list_.begin(), it_id));
-    for (auto neighbors_list: {&atom_list[i].first_nearest_neighbors_list_,
-                               &atom_list[i].second_nearest_neighbors_list_,
-                               &atom_list[i].third_nearest_neighbors_list_,
-                               &atom_list[i].fourth_nearest_neighbors_list_,
-                               &atom_list[i].fifth_nearest_neighbors_list_,
-                               &atom_list[i].sixth_nearest_neighbors_list_,
-                               &atom_list[i].seventh_nearest_neighbors_list_})
-      for (auto &j: *neighbors_list) {
+    for (auto neighbors_list : {&atom_list[i].first_nearest_neighbors_list_,
+                                &atom_list[i].second_nearest_neighbors_list_,
+                                &atom_list[i].third_nearest_neighbors_list_,
+                                &atom_list[i].fourth_nearest_neighbors_list_,
+                                &atom_list[i].fifth_nearest_neighbors_list_,
+                                &atom_list[i].sixth_nearest_neighbors_list_,
+                                &atom_list[i].seventh_nearest_neighbors_list_})
+      for (auto &j : *neighbors_list) {
         if (j == lhs)
           j = rhs;
         else if (j == rhs)
@@ -691,7 +694,7 @@ void AtomsJump(Config &config,
 
 void SitesJump(Config &config,
                const std::pair<size_t, size_t> &site_id_jump_pair) {
-  const auto[lhs, rhs] = site_id_jump_pair;
+  const auto [lhs, rhs] = site_id_jump_pair;
   AtomsJump(config,
             {config.site_id_to_atom_id_hashmap_.at(lhs),
              config.site_id_to_atom_id_hashmap_[lhs]});
@@ -699,7 +702,7 @@ void SitesJump(Config &config,
 
 std::map<std::string, size_t> CountAllType(const Config &config) {
   std::map<std::string, size_t> types_count_map;
-  for (const auto &atom: config.GetAtomList()) {
+  for (const auto &atom : config.GetAtomList()) {
     types_count_map[atom.GetType()]++;
   }
   return types_count_map;
@@ -721,10 +724,11 @@ std::map<std::string, size_t> CountAllType(const Config &config) {
 //   return bonds_count_map;
 // }
 std::unordered_map<std::string,
-                   size_t> GetTypeCategoryHashmap(const Config &config) {
+                   size_t>
+GetTypeCategoryHashmap(const Config &config) {
   size_t count = 1;
   std::unordered_map<std::string, size_t> type_category_hashmap;
-  for (const auto &element_list: config.GetElementListMap()) {
+  for (const auto &element_list : config.GetElementListMap()) {
     type_category_hashmap[element_list.first] = count++;
   }
   return type_category_hashmap;
@@ -733,7 +737,7 @@ std::unordered_map<std::string,
 Vector_t GetPairCenter(const Config &config,
                        const std::pair<size_t, size_t> &atom_id_jump_pair) {
   Vector_t center_position;
-  for (const auto kDim: All_Dimensions) {
+  for (const auto kDim : All_Dimensions) {
     double first_relative =
         config.GetAtomList()[atom_id_jump_pair.first].GetRelativePosition()[kDim];
     const double second_relative =
@@ -759,7 +763,7 @@ Matrix_t GetPairRotationMatrix(const Config &config,
       config.GetAtomList()[atom_id_jump_pair.second]));
   const auto &first_atom = config.GetAtomList()[atom_id_jump_pair.first];
   Vector_t vertical_vector{};
-  for (const auto index: first_atom.GetFirstNearestNeighborsList()) {
+  for (const auto index : first_atom.GetFirstNearestNeighborsList()) {
     const Vector_t jump_vector =
         GetRelativeDistanceVector(first_atom, config.GetAtomList()[index]);
     const double dot_prod = Dot(pair_direction, jump_vector);
@@ -777,7 +781,7 @@ void RotateAtomVector(std::vector<Atom> &atom_list,
                       const Matrix_t &rotation_matrix) {
   const auto move_distance_after_rotation = Vector_t{0.5, 0.5, 0.5}
       - (Vector_t{0.5, 0.5, 0.5} * rotation_matrix);
-  for (auto &atom: atom_list) {
+  for (auto &atom : atom_list) {
     auto relative_position = atom.GetRelativePosition();
     // rotate
     relative_position = relative_position * rotation_matrix;
@@ -807,12 +811,10 @@ Config GenerateFCC(double lattice_constant_a,
                    const Factor_t &factors) {
 
   double mass = FindMass(element);
-  Config config
-      ({{{lattice_constant_a * static_cast<double>(factors[kXDimension]), 0, 0},
-         {0, lattice_constant_a * static_cast<double>(factors[kYDimension]), 0},
-         {0, 0,
-          lattice_constant_a * static_cast<double>(factors[kZDimension])}}},
-       4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
+  Config config({{{lattice_constant_a * static_cast<double>(factors[kXDimension]), 0, 0},
+                  {0, lattice_constant_a * static_cast<double>(factors[kYDimension]), 0},
+                  {0, 0, lattice_constant_a * static_cast<double>(factors[kZDimension])}}},
+                4 * factors[kXDimension] * factors[kYDimension] * factors[kZDimension]);
   size_t atoms_counter = 0;
   auto x_length = static_cast<double>(factors[kXDimension]);
   auto y_length = static_cast<double>(factors[kYDimension]);
@@ -823,47 +825,39 @@ Config GenerateFCC(double lattice_constant_a,
         auto x_reference = static_cast<double>(i);
         auto y_reference = static_cast<double>(j);
         auto z_reference = static_cast<double>(k);
-        config.AppendAtomWithoutChangingAtomID({
-                                                   atoms_counter++, mass,
-                                                   element,
-                                                   x_reference / x_length,
-                                                   y_reference / y_length,
-                                                   z_reference / z_length
-                                               });
-        config.AppendAtomWithoutChangingAtomID({
-                                                   atoms_counter++, mass,
-                                                   element,
-                                                   (x_reference + 0.5)
-                                                       / x_length,
-                                                   (y_reference + 0.5)
-                                                       / y_length,
-                                                   z_reference / z_length
-                                               });
-        config.AppendAtomWithoutChangingAtomID({
-                                                   atoms_counter++, mass,
-                                                   element,
-                                                   (x_reference + 0.5)
-                                                       / x_length,
-                                                   y_reference / y_length,
-                                                   (z_reference + 0.5)
-                                                       / z_length
-                                               });
-        config.AppendAtomWithoutChangingAtomID({
-                                                   atoms_counter++, mass,
-                                                   element,
-                                                   x_reference / x_length,
-                                                   (y_reference + 0.5)
-                                                       / y_length,
-                                                   (z_reference + 0.5)
-                                                       / z_length
-                                               });
+        config.AppendAtomWithoutChangingAtomID({atoms_counter++, mass,
+                                                element,
+                                                x_reference / x_length,
+                                                y_reference / y_length,
+                                                z_reference / z_length});
+        config.AppendAtomWithoutChangingAtomID({atoms_counter++, mass,
+                                                element,
+                                                (x_reference + 0.5)
+                                                    / x_length,
+                                                (y_reference + 0.5)
+                                                    / y_length,
+                                                z_reference / z_length});
+        config.AppendAtomWithoutChangingAtomID({atoms_counter++, mass,
+                                                element,
+                                                (x_reference + 0.5)
+                                                    / x_length,
+                                                y_reference / y_length,
+                                                (z_reference + 0.5)
+                                                    / z_length});
+        config.AppendAtomWithoutChangingAtomID({atoms_counter++, mass,
+                                                element,
+                                                x_reference / x_length,
+                                                (y_reference + 0.5)
+                                                    / y_length,
+                                                (z_reference + 0.5)
+                                                    / z_length});
       }
     }
   }
   config.ConvertRelativeToCartesian();
-  config.UpdateNeighbors();
+  // config.UpdateNeighbors();
   config.CreateSiteIdToAtomIdHashmap();
   return config;
 }
 
-}// namespace cfg
+} // namespace cfg

@@ -20,7 +20,7 @@ class Analysis{
   private:
     const unsigned long long initial_number_;
     const unsigned long long increment_number_;
-    unsigned long long finial_number_;
+    unsigned long long final_number_;
     std::string solvent_element_;
     size_t smallest_cluster_criteria_;
     size_t solvent_bond_criteria_;

@@ -1,9 +1,9 @@
 #include "ClustersFinder.h"
 
+#include <filesystem>
 #include <queue>
 #include <unordered_map>
 #include <utility>
-#include <filesystem>
 
 namespace ansys {
 ClustersFinder::ClustersFinder(std::string cfg_filename,
@@ -22,7 +22,7 @@ ClustersFinder::ClusterElementNumMap ClustersFinder::FindClustersAndOutput() {
   auto cluster_to_atom_map = FindAtomListOfClusters();
 
   cfg::Config config_out(config_.GetBasis(), config_.GetNumAtoms());
-  std::vector<std::map<std::string, size_t> > num_atom_in_clusters_set;
+  std::vector<std::map<std::string, size_t>> num_atom_in_clusters_set;
   for (auto &atom_list : cluster_to_atom_map) {
     // initialize map with all the element, because some cluster may not have all types of element
     std::map<std::string, size_t> num_atom_in_one_cluster;
@@ -73,9 +73,9 @@ std::unordered_set<size_t> ClustersFinder::FindSoluteAtomsHelper() const {
   return solute_atoms_hashset;
 }
 
-std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClustersBFSHelper(
+std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClustersBFSHelper(
     std::unordered_set<size_t> unvisited_atoms_id_set) const {
-  std::vector<std::vector<size_t> > cluster_atom_list;
+  std::vector<std::vector<size_t>> cluster_atom_list;
   std::queue<size_t> visit_id_queue;
   size_t atom_id;
 
@@ -109,7 +109,7 @@ std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClustersBFSHelpe
   return cluster_atom_list;
 }
 
-std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClusters() const {
+std::vector<std::vector<size_t>> ClustersFinder::FindAtomListOfClusters() const {
   auto cluster_atom_list = FindAtomListOfClustersBFSHelper(FindSoluteAtomsHelper());
 
   // remove small clusters
@@ -138,16 +138,13 @@ std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClusters() const
       for (auto neighbor_id : *neighbors_list) {
         const auto &neighbor_type = config_.GetAtomList()[neighbor_id].GetType();
         if (neighbor_type != solvent_element_ && neighbor_type != "X"
-            && all_found_solute_set.find(config_.GetAtomList()[neighbor_id].GetId())
-                != all_found_solute_set.end())
+            && all_found_solute_set.find(neighbor_id) != all_found_solute_set.end())
           neighbor_bond_count++;
       }
     }
     if (neighbor_bond_count >= solvent_bond_criteria_)
       all_found_solute_set.insert(atom.GetId());
   }
-
-
 
   // // add solvent neighbors
   // for (auto &atom_list : cluster_atom_list) {
@@ -178,4 +175,4 @@ std::vector<std::vector<size_t> > ClustersFinder::FindAtomListOfClusters() const
   return cluster_atom_list_after_removing;
 }
 
-} // namespace kn
+} // namespace ansys
