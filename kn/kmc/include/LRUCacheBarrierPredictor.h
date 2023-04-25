@@ -2,7 +2,7 @@
 #define KN_KN_KMC_INCLUDE_LRUCACHEBARRIERPREDICTOR_H_
 #include "BarrierPredictor.h"
 #include <boost/functional/hash.hpp>
-
+#include <list>
 namespace kmc {
 class LRUCacheBarrierPredictor : BarrierPredictor {
   public:
